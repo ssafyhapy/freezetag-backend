@@ -4,6 +4,7 @@ import com.ssafy.freezetag.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,5 +29,11 @@ public class Member extends BaseEntity {
     private String memberIntroduction;
 
     @OneToMany(mappedBy = "member")
-    private List<MemberHistory> memberHistories;
+    private List<MemberHistory> memberHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberHobby> memberHobbies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberInterest> memberInterests = new ArrayList<>();
 }
