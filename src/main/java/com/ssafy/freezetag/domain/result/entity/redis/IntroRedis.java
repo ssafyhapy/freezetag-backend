@@ -1,6 +1,5 @@
-package com.ssafy.freezetag.domain.result.entity;
+package com.ssafy.freezetag.domain.result.entity.redis;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -19,11 +18,14 @@ public class IntroRedis {
     @Indexed
     private Long roomId;
 
+    private Long memberRoomId;
+
     private String content;
 
-    public IntroRedis(Long roomId, String content) {
+    public IntroRedis(Long roomId, Long memberRoomId, String content) {
         this.id = UUID.randomUUID().toString();
         this.roomId = roomId;
+        this.memberRoomId = memberRoomId;
         this.content = content;
     }
 
