@@ -1,44 +1,77 @@
 pipeline {
     agent any
+
     environment {
-        DOCKER_IMAGE = 'sonjiseokk/freezetag'
-        BLUE_CONTAINER = 'backend-blue'
-        GREEN_CONTAINER = 'backend-green'
+        DOCKER_HUB_REPO = 'sonjiseokk/freezetag'
+        DOCKER_HUB_CREDENTIALS_ID = 'dockerhub2'
     }
+
     stages {
-        stage('Build') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                sh 'chmod +x ./gradlew'
+                sh './gradlew build'
+                sh 'ls -la build/libs/'
+            }
+        }
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Docker 이미지를 빌드
-                    sh 'docker build -t ${DOCKER_IMAGE}:latest .'
+                    def app = docker.build("${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}", ".")
                 }
             }
         }
-        stage('Push') {
+
+        stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Docker 이미지를 푸시
-                    sh 'docker push ${DOCKER_IMAGE}:latest'
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                        def app = docker.image("${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}")
+                        app.push()
+                    }
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy to Server') {
             steps {
-                script {
-                    // 현재 사용 중인 컨테이너 확인
-                    def current_container = sh(script: "docker ps --filter 'name=${BLUE_CONTAINER}' --format '{{.Names}}'", returnStdout: true).trim()
-                    def new_container = (current_container == BLUE_CONTAINER) ? GREEN_CONTAINER : BLUE_CONTAINER
-
-                    // 새로운 버전의 컨테이너 실행
-                    sh "docker-compose up -d --no-deps --scale ${new_container}=1 ${new_container}"
-
-                    // 기존 컨테이너 중지
-                    sh "docker-compose stop ${current_container}"
-
-                    // 사용하지 않는 컨테이너 제거
-                    sh "docker-compose rm -f ${current_container}"
-                }
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'ubuntu', // Jenkins SSH 서버 설정 이름
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: '', // 파일 전송이 필요 없으므로 빈 문자열
+                                execCommand: """
+                                    docker pull ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
+                                    docker stop myapp || true
+                                    docker rm myapp || true
+                                    docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker stop
+                                    docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker rm
+                                    docker run -d --name myapp -p 8080:8080 ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
+                                """,
+                                remoteDirectory: '/home/ubuntu', // 원격 디렉토리
+                                removePrefix: ''
+                            )
+                        ],
+                        usePromotionTimestamp: false,
+                        useWorkspaceInPromotion: false,
+                        verbose: true
+                    )
+                ])
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
