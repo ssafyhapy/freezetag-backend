@@ -11,7 +11,7 @@ public class ResultService {
 
     private final IntroRedisRepository introRedisRepository;
 
-    public void save(Long id, Long roomId, String content) {
-        introRedisRepository.save(new IntroRedis(id, roomId, content));
+    public void save(Long roomId, String content) {
+        introRedisRepository.save(new IntroRedis(roomId, content));
     }
 }
