@@ -58,8 +58,7 @@ public class IntroResultService {
                     MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
                         .orElseThrow(() -> new IllegalArgumentException("해당 memberRoomId가 존재하지 않습니다: " + introRedis.getMemberRoomId()));
 
-                IntroResult introResult = new IntroResult(memberRoom, introRedis.getContent());
-                return introResult;
+                    return new IntroResult(memberRoom, introRedis.getContent());
         }).toList();
 
         introResultRepository.saveAll(introResultList);
