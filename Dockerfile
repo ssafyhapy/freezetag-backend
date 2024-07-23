@@ -5,7 +5,7 @@ FROM openjdk:17-slim
 VOLUME /tmp
 
 # 빌드된 jar 파일을 Docker 이미지에 복사합니다.
-ARG JAR_FILE=build/libs/devops-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=build/libs/freezetag-backend-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
 
 # 애플리케이션을 실행합니다.
