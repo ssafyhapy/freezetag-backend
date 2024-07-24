@@ -5,10 +5,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class IntroAllRequestDto {
+public class RoomIdRequestDto {
     private Long roomId;
 
-    public IntroAllRequestDto(Long roomId) {
+    public RoomIdRequestDto(Long roomId) {
         this.roomId = roomId;
     }
 }
