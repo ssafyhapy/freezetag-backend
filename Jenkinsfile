@@ -81,7 +81,7 @@ pipeline {
                         git checkout main
                         git add .
                         git commit -m "Automated commit"
-                        git push origin main
+                        git push --force origin main
                     '''
                 }
             }
