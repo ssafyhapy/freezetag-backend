@@ -3,13 +3,17 @@ package com.ssafy.freezetag.domain.member.entity;
 import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue
@@ -40,4 +44,20 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
+
+    // MemberBuilder
+    @Builder
+    public Member(String memberName, String memberProvider, String memberProviderEmail, String memberProfileImageUrl) {
+        this.memberName = memberName;
+        this.memberProvider = memberProvider;
+        this.memberProviderEmail =memberProviderEmail;
+        this.memberProfileImageUrl = memberProfileImageUrl;
+    }
+
+    // MemberUpdate
+    public Member updateMemberName(String memberName) {
+        this.memberName = memberName;
+
+        return this;
+    }
 }
