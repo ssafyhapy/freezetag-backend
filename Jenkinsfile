@@ -79,10 +79,9 @@ pipeline {
                         git config --global user.name "sonjiseokk"
                         git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@lab.ssafy.com/s11-webmobile1-sub2/S11P12C209.git
                         git checkout main
-                        git pull origin main
                         git add .
                         git commit -m "Automated commit"
-                        git push origin main
+                        git push --force origin main
                     '''
                 }
             }
