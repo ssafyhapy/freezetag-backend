@@ -1,6 +1,7 @@
 package com.ssafy.freezetag.domain.member.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
+import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -36,4 +37,7 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<MemberInterest> memberInterests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberRoom> memberRooms = new ArrayList<>();
 }
