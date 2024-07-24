@@ -4,8 +4,7 @@ import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -22,9 +21,8 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomOAuth2UserService.class);
 
     private final MemberRepository memberRepository;
     private final HttpSession httpSession;
@@ -38,16 +36,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId(); // OAuth 제공자의 ID를 가져옴
 
-        logger.info("oauth2user: {}", oAuth2User);
-        logger.info("registration_id : {}", registrationId);
+        log.info("oauth2user: {}", oAuth2User);
+        log.info("registration_id : {}", registrationId);
 
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
         OAuthAttributesDto attributes = OAuthAttributesDto.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        logger.info("userNameAttributeName : {}", userNameAttributeName);
-        logger.info("attributes : {}", attributes);
+        log.info("userNameAttributeName : {}", userNameAttributeName);
+        log.info("attributes : {}", attributes);
 
         // 여기서 이제 attributes를  활용해서 DB에 회원가입 or login 진행
         Member member = saveOrUpdate(attributes);
@@ -64,7 +62,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
      */
     private Member saveOrUpdate(OAuthAttributesDto attributes) {
         Member member = memberRepository.findByMemberProviderEmail(attributes.getMemberProviderEmail())
-                .map(entity -> entity.update(attributes.getMemberName()))
+                .map(entity -> entity.updateMemberName(attributes.getMemberName()))
                 .orElse(attributes.toEntity());
 
         return memberRepository.save(member);
