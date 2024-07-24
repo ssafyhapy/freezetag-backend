@@ -3,6 +3,7 @@ package com.ssafy.freezetag.domain.member.entity;
 import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -40,4 +41,24 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
+
+    // MemberBuilder
+    @Builder
+    public Member(String memberName, String memberProvider, String memberProviderEmail, String memberProfileImageUrl) {
+        this.memberName = memberName;
+        this.memberProvider = memberProvider;
+        this.memberProviderEmail =memberProviderEmail;
+        this.memberProfileImageUrl = memberProfileImageUrl;
+    }
+
+    public Member() {
+
+    }
+
+    // MemberUpdate
+    public Member update(String memberName) {
+        this.memberName = memberName;
+
+        return this;
+    }
 }
