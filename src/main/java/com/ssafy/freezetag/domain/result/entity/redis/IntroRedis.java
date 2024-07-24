@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.util.UUID;
 
 @Getter
-@RedisHash(value = "intro", timeToLive = 1800)
+@RedisHash(value = "intro", timeToLive = 600)
 @NoArgsConstructor
 public class IntroRedis {
     @Id
@@ -29,8 +29,7 @@ public class IntroRedis {
         this.content = content;
     }
 
-    public String updateContent(String newContent){
+    public void update(String newContent){
         this.content = newContent;
-        return this.content;
     }
 }

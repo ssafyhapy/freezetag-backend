@@ -4,7 +4,7 @@ import com.ssafy.freezetag.domain.result.entity.IntroResult;
 import com.ssafy.freezetag.domain.result.entity.redis.IntroRedis;
 import com.ssafy.freezetag.domain.result.repository.IntroRedisRepository;
 import com.ssafy.freezetag.domain.result.repository.IntroResultRepository;
-import com.ssafy.freezetag.domain.result.service.request.IntroAllRequestDto;
+import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroSaveRequestDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
@@ -39,24 +39,24 @@ public class IntroResultService {
 
     public IntroRedis modify(IntroModifyRequestDto introModifyRequestDto) {
         IntroRedis findIntroRedis = findById(introModifyRequestDto.getId());
-        findIntroRedis.updateContent(introModifyRequestDto.getContent());
+        findIntroRedis.update(introModifyRequestDto.getContent());
 
         return introRedisRepository.save(findIntroRedis);
     }
 
-    public List<IntroRedis> findAllByRoomId(IntroAllRequestDto introAllRequestDto) {
-        return introRedisRepository.findByRoomId(introAllRequestDto.getRoomId());
+    public List<IntroRedis> findAllByRoomId(RoomIdRequestDto roomIdRequestDto) {
+        return introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
     }
 
     @Transactional
-    public void deleteAll(IntroAllRequestDto introAllRequestDto) {
+    public void deleteAll(RoomIdRequestDto roomIdRequestDto) {
         // DB 저장하기
-        List<IntroRedis> introRedisList = introRedisRepository.findByRoomId(introAllRequestDto.getRoomId());
+        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
 
         List<IntroResult> introResultList = introRedisList.stream()
                 .map(introRedis -> {
                     MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
-                        .orElseThrow(() -> new IllegalArgumentException("해당 memberRoomId가 존재하지 않습니다: " + introRedis.getMemberRoomId()));
+                        .orElseThrow(() -> new IllegalArgumentException("해당 memberRoomId가 존재하지 않습니다. " + introRedis.getMemberRoomId()));
 
                     return new IntroResult(memberRoom, introRedis.getContent());
         }).toList();
