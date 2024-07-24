@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_REPO = 'sonjiseokk/freezetag'
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub2'
+        NETWORK_NAME = 'my-network'
     }
 
     stages {
@@ -54,7 +55,8 @@ pipeline {
                                     docker rm myapp || true
                                     docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker stop
                                     docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker rm
-                                    docker run -d --name myapp -p 8080:8080 ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
+                                    docker run -d --name myapp --network ${NETWORK_NAME} -p 8080:8080 ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
+
                                 """,
                                 remoteDirectory: '/home/ubuntu', // 원격 디렉토리
                                 removePrefix: ''
