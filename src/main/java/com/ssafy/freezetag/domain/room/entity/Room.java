@@ -17,7 +17,7 @@ public class Room extends BaseEntity {
 
     // TODO : 이거 관계 맞는지 확인하기
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_room_id")
     private MemberRoom host;
 
     private String roomName;
