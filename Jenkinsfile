@@ -5,6 +5,7 @@ pipeline {
         DOCKER_HUB_REPO = 'sonjiseokk/freezetag'
         DOCKER_HUB_CREDENTIALS_ID = 'dockerhub2'
         NETWORK_NAME = 'my-network'
+        GITLAB_CREDENTIALS_ID = 'gitlab' // GitLab 인증 정보 ID
     }
 
     stages {
@@ -67,6 +68,22 @@ pipeline {
                         verbose: true
                     )
                 ])
+            }
+        }
+
+        stage('Push to GitLab Main') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${GITLAB_CREDENTIALS_ID}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    sh '''
+                        git config --global user.email "thswltjr11@gmail.com"
+                        git config --global user.name "sonjiseokk"
+                        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@lab.ssafy.com/s11-webmobile1-sub2/S11P12C209.git
+                        git checkout master
+                        git add .
+                        git commit -m "Automated commit"
+                        git push origin main
+                    '''
+                }
             }
         }
     }
