@@ -22,7 +22,11 @@ public class OXResult extends BaseEntity {
     private String oxResultContent;
 
     @Column(name = "ox_result_answer")
-    private String oxResultAnswer;
+    private Boolean oxResultAnswer;
 
-
+    public OXResult(MemberRoom memberRoom, String oxResultContent, Boolean oxResultAnswer) {
+        this.memberRoom = memberRoom;
+        this.oxResultContent = oxResultContent;
+        this.oxResultAnswer = oxResultAnswer;
+    }
 }
