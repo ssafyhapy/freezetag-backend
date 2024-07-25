@@ -21,7 +21,7 @@ public class RoomController {
     private final OpenviduService openviduService;
     private final RoomService roomService;
 
-    @PostMapping("/enter")
+    @PostMapping("/create")
     public ResponseEntity<?> enterRoom(@RequestBody RoomCreateRequestDto createRequestDto, HttpServletRequest request) {
 //        Cookie cookie = request.getCookies()[0];
 //        String jwtToken = cookie.getAttribute("Authorization");
