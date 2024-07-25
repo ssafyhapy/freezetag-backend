@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.room.service;
 
-import com.ssafy.freezetag.domain.room.entity.dto.OpenviduDto;
+import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import com.ssafy.freezetag.global.exception.OpenviduTokenException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
@@ -24,7 +24,7 @@ public class OpenviduService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public OpenviduDto createRoom() throws OpenviduTokenException {
+    public OpenviduResponseDto createRoom() throws OpenviduTokenException {
         try {
             // 세션 생성
             SessionProperties properties = new SessionProperties.Builder().build();
@@ -39,10 +39,7 @@ public class OpenviduService {
             String openviduToken = session.createConnection(connectionProperties).getToken();
 
             // 세션 ID와 토큰을 DTO 에 저장
-            return OpenviduDto.builder()
-                    .token(openviduToken)
-                    .sessionId(session.getSessionId())
-                    .build();
+            return new OpenviduResponseDto(session.getSessionId(), openviduToken);
         } catch (Exception e) {
             throw new OpenviduTokenException();
         }
