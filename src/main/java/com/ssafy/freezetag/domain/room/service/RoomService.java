@@ -7,12 +7,14 @@ import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class RoomService {
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
@@ -25,10 +27,11 @@ public class RoomService {
                 dto.getRoomCode(),
                 dto.getRoomPersonCount()
         );
-
+        log.info("createRoom parameter : memberId = {}",memberId);
+        log.info("createRoom parameter : dto = {}, {}",dto.getRoomName(),dto.getRoomCode());
         // TODO: 찾을 수 없는 memberId 일 경우 사용자 정의 NotFound Exception 처리
         Member member = memberRepository.findById(memberId).orElseThrow();
-
+        log.info("createRoom parameter : findMember = {}", member.getId());
         // 방장 설정
         MemberRoom host = new MemberRoom(member, unfinishedRoom);
         unfinishedRoom.assignHost(host);

@@ -10,10 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/room")
@@ -22,6 +19,10 @@ public class RoomController {
     private final OpenviduService openviduService;
     private final RoomService roomService;
 
+    @GetMapping("/test")
+    public String test() {
+        return "ok";
+    }
     @PostMapping("/enter")
     public ResponseEntity<?> enterRoom(@RequestBody RoomCreateRequestDto createRequestDto, HttpServletRequest request) {
         Cookie cookie = request.getCookies()[0];
@@ -30,7 +31,6 @@ public class RoomController {
         // TODO: 사용자 인증 로직 수행
         // TODO: 실제 사용자 아이디를 JWT Token 에서 가져와야함
         Long userId = 1L;
-
         // 생성된 방 정보 (방 제목, 접속 코드 등) 을 DB에 엔티티로 저장
         roomService.createRoom(createRequestDto, userId);
 
