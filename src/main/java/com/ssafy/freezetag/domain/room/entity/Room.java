@@ -1,14 +1,18 @@
 package com.ssafy.freezetag.domain.room.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
-import com.ssafy.freezetag.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = PROTECTED)
 public class Room extends BaseEntity {
     @Id
     @GeneratedValue
@@ -27,5 +31,24 @@ public class Room extends BaseEntity {
     private Integer roomPersonCount;
 
     @OneToMany(mappedBy = "room")
-    private List<MemberRoom> memberRooms;
+    private List<MemberRoom> memberRooms = new ArrayList<>();
+
+    public Room(final String roomName, final String roomCode, final Integer roomPersonCount) {
+        this.roomName = roomName;
+        this.roomCode = roomCode;
+        this.roomPersonCount = roomPersonCount;
+    }
+
+    // Room 생성 후 의존관계 주입
+    public void assignHost(final MemberRoom host) {
+        this.host = host;
+        memberRooms.add(host);
+
+        // 양방향 관계 설정
+        host.setRoom(this);
+    }
+
+
+
+
 }
