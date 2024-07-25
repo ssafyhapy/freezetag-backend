@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.result.service.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
