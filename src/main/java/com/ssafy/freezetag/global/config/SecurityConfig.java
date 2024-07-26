@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/public/**").permitAll() // added "/public/**"
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2Login ->
                         oauth2Login
