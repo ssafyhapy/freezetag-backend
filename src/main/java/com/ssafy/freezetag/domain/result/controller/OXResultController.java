@@ -5,6 +5,7 @@ import com.ssafy.freezetag.domain.result.service.OXResultService;
 import com.ssafy.freezetag.domain.result.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.OXSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
+import com.ssafy.freezetag.domain.result.service.response.OXResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +24,24 @@ public class OXResultController {
 
     @PostMapping()
     public ResponseEntity<?> saveOX(@RequestBody List<OXSaveRequestDto> oxSaveRequestDtoList){
-        List<OXRedis> oxRedisList = oxResultService.save(oxSaveRequestDtoList);
+        List<OXResponseDto> oxResponseDtoList = oxResultService.save(oxSaveRequestDtoList);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Result<>(true, oxRedisList));
+                .body(new Result<>(true, oxResponseDtoList));
     }
 
     @PatchMapping("/modify")
     public ResponseEntity<?> modifyOX(@RequestBody List<OXModifyRequestDto> oxModifyRequestDtoList){
-        List<OXRedis> modifiedOXRedisList = oxResultService.modify(oxModifyRequestDtoList);
+        List<OXResponseDto> oxResponseDtoList = oxResultService.modify(oxModifyRequestDtoList);
         return ResponseEntity.ok()
-                .body(new Result<>(true, modifiedOXRedisList));
+                .body(new Result<>(true, oxResponseDtoList));
     }
 
     @GetMapping()
     public ResponseEntity<?> getOXs(@RequestBody RoomIdRequestDto roomIdRequestDto){
-        List<OXRedis> oxRedisList = oxResultService.findAllByRoomId(roomIdRequestDto);
+        List<OXResponseDto> oxResponseDtoList = oxResultService.findAllByRoomId(roomIdRequestDto);
         return ResponseEntity.ok()
-                .body(new Result<>(true, oxRedisList));
+                .body(new Result<>(true, oxResponseDtoList));
     }
 
     @DeleteMapping()

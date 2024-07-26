@@ -7,6 +7,8 @@ import com.ssafy.freezetag.domain.result.repository.IntroResultRepository;
 import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroSaveRequestDto;
+import com.ssafy.freezetag.domain.result.service.response.IntroResponseDto;
+import com.ssafy.freezetag.domain.result.service.response.IntroSaveResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +26,17 @@ public class IntroResultService {
     private final IntroResultRepository introResultRepository;
     private final MemberRoomRepository memberRoomRepository;
 
-    public IntroRedis save(IntroSaveRequestDto introSaveRequestDto) {
+    public IntroSaveResponseDto save(IntroSaveRequestDto introSaveRequestDto) {
         IntroRedis introRedis = new IntroRedis(introSaveRequestDto.getRoomId(),
                                                 introSaveRequestDto.getMemberRoomId(),
                                                 introSaveRequestDto.getContent());
 
-        return introRedisRepository.save(introRedis);
+        IntroRedis savedIntroRedis = introRedisRepository.save(introRedis);
+
+        return new IntroSaveResponseDto(savedIntroRedis.getId(),
+                savedIntroRedis.getRoomId(),
+                savedIntroRedis.getMemberRoomId(),
+                savedIntroRedis.getContent());
     }
 
     public IntroRedis findById(String id) {
@@ -37,15 +44,21 @@ public class IntroResultService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 한 줄 자기소개입니다."));
     }
 
-    public IntroRedis modify(IntroModifyRequestDto introModifyRequestDto) {
+    public IntroResponseDto modify(IntroModifyRequestDto introModifyRequestDto) {
         IntroRedis findIntroRedis = findById(introModifyRequestDto.getId());
-        findIntroRedis.update(introModifyRequestDto.getContent());
 
-        return introRedisRepository.save(findIntroRedis);
+        findIntroRedis.update(introModifyRequestDto.getContent());
+        IntroRedis savedIntroRedis = introRedisRepository.save(findIntroRedis);
+
+        return new IntroResponseDto(savedIntroRedis.getId(), savedIntroRedis.getContent());
     }
 
-    public List<IntroRedis> findAllByRoomId(RoomIdRequestDto roomIdRequestDto) {
-        return introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+    public List<IntroResponseDto> findAllByRoomId(RoomIdRequestDto roomIdRequestDto) {
+        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+
+        return introRedisList.stream()
+                .map(introRedis -> new IntroResponseDto(introRedis.getId(), introRedis.getContent()))
+                .toList();
     }
 
     @Transactional

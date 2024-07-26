@@ -25,27 +25,23 @@ public class IntroResultController {
 
     @PostMapping()
     public ResponseEntity<?> saveIntro(@RequestBody IntroSaveRequestDto introSaveRequestDto) {
-        IntroRedis saveIntroRedis = introResultService.save(introSaveRequestDto);
+        IntroSaveResponseDto introSaveResponseDto = introResultService.save(introSaveRequestDto);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Result<>(true, new IntroSaveResponseDto(saveIntroRedis.getId(),
-                        saveIntroRedis.getRoomId(),
-                        saveIntroRedis.getMemberRoomId(),
-                        saveIntroRedis.getContent())));
+                .body(new Result<>(true, introSaveResponseDto));
     }
 
     @PostMapping("/modify")
     public ResponseEntity<?> modifyIntro(@RequestBody IntroModifyRequestDto introModifyRequestDto) {
-        IntroRedis modifiedIntroRedis = introResultService.modify(introModifyRequestDto);
+        IntroResponseDto introResponseDto = introResultService.modify(introModifyRequestDto);
+
         return ResponseEntity.ok()
-                .body(new Result<>(true, new IntroResponseDto(modifiedIntroRedis.getId(),
-                        modifiedIntroRedis.getContent())));
+                .body(new Result<>(true,introResponseDto));
     }
 
     @GetMapping()
     public ResponseEntity<?> getIntros(@RequestBody RoomIdRequestDto roomIdRequestDto) {
-        List<IntroRedis> introRedisList = introResultService.findAllByRoomId(roomIdRequestDto);
-        List<IntroResponseDto> introResponseDtoList = introRedisList.stream()
-                .map(introRedis -> new IntroResponseDto(introRedis.getId(), introRedis.getContent())).toList();
+        List<IntroResponseDto> introResponseDtoList = introResultService.findAllByRoomId(roomIdRequestDto);
 
         return ResponseEntity.ok()
                 .body(new Result<>(true, introResponseDtoList));

@@ -7,6 +7,7 @@ import com.ssafy.freezetag.domain.result.repository.OXResultRepository;
 import com.ssafy.freezetag.domain.result.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.OXSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
+import com.ssafy.freezetag.domain.result.service.response.OXResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class OXResultService {
     private final OXResultRepository oxResultRepository;
     private final MemberRoomRepository memberRoomRepository;
 
-    public List<OXRedis> save(List<OXSaveRequestDto> oxSaveRequestDtoList) {
-        List<OXRedis> oxRedisList = oxSaveRequestDtoList.stream()
+    public List<OXResponseDto> save(List<OXSaveRequestDto> oxSaveRequestDtoList) {
+        List<OXResponseDto> OXResponseDtoList = oxSaveRequestDtoList.stream()
                 .map(oxSaveRequestDto -> {
                     OXRedis oxRedis = new OXRedis(
                             oxSaveRequestDto.getRoomId(),
@@ -33,10 +34,13 @@ public class OXResultService {
                             oxSaveRequestDto.getContent(),
                             oxSaveRequestDto.isAnswer()
                     );
-                    return oxRedisRepository.save(oxRedis);
+                    oxRedisRepository.save(oxRedis);
+                    return new OXResponseDto(oxRedis.getId(),
+                            oxRedis.getContent(),
+                            oxRedis.getAnswer());
                 }).toList();
 
-        return oxRedisList;
+        return OXResponseDtoList;
     }
 
     public OXRedis findById(String id){
@@ -44,19 +48,28 @@ public class OXResultService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 OX입니다."));
     }
 
-    public List<OXRedis> modify(List<OXModifyRequestDto> oxModifyRequestDtoList){
-        List<OXRedis> ModifiedOXRedisList = oxModifyRequestDtoList.stream()
+    public List<OXResponseDto> modify(List<OXModifyRequestDto> oxModifyRequestDtoList){
+        List<OXResponseDto> OXResponseDtoList = oxModifyRequestDtoList.stream()
                 .map(oxModifyRequestDto -> {
                     OXRedis findOXRedis = findById(oxModifyRequestDto.getId());
                     findOXRedis.update(oxModifyRequestDto.getContent(), oxModifyRequestDto.isAnswer());
-                    return oxRedisRepository.save(findOXRedis);
+                    OXRedis oxRedis = oxRedisRepository.save(findOXRedis);
+                    return new OXResponseDto(oxRedis.getId(),
+                            oxRedis.getContent(),
+                            oxRedis.getAnswer());
                 }).toList();
 
-        return ModifiedOXRedisList;
+        return OXResponseDtoList;
     }
 
-    public List<OXRedis> findAllByRoomId(RoomIdRequestDto roomIdRequestDto){
-        return oxRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+    public List<OXResponseDto> findAllByRoomId(RoomIdRequestDto roomIdRequestDto){
+        List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+
+        return oxRedisList.stream()
+                .map(oxRedis -> new OXResponseDto(oxRedis.getId(),
+                        oxRedis.getContent(),
+                        oxRedis.getAnswer()))
+                .toList();
     }
 
     @Transactional
