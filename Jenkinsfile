@@ -75,6 +75,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${GITLAB_CREDENTIALS_ID}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh '''
+                        cd backend
                         git config --global user.email "thswltjr11@gmail.com"
                         git config --global user.name "sonjiseokk"
                         git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@lab.ssafy.com/s11-webmobile1-sub2/S11P12C209.git
