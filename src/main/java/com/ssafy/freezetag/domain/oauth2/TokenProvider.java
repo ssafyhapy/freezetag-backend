@@ -9,12 +9,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,15 +20,22 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.crypto.SecretKey;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class TokenProvider {
 
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L; // 30 minutes
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
     private static final String KEY_ROLE = "role";
     private final TokenService tokenService;
 
@@ -45,10 +48,9 @@ public class TokenProvider {
         return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
-    // 1. refresh token 발급
-    public void generateRefreshToken(Authentication authentication, String accessToken) {
+    public void generateRefreshToken(Authentication authentication) {
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
-        tokenService.saveOrUpdate(authentication.getName(), refreshToken, accessToken); // redis에 저장
+        tokenService.saveOrUpdate(authentication.getName(), refreshToken);
     }
 
     private String generateToken(Authentication authentication, long expireTime) {
@@ -58,6 +60,8 @@ public class TokenProvider {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining());
+
+        log.info("authentication.getName() : {}", authentication.getName());
 
         return Jwts.builder()
                 .subject(authentication.getName())
@@ -72,7 +76,6 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-        // 2. security의 User 객체 생성
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
@@ -82,15 +85,13 @@ public class TokenProvider {
                 claims.get(KEY_ROLE).toString()));
     }
 
-    // 3. accessToken 재발급
-    public String reissueAccessToken(String accessToken) {
-        if (StringUtils.hasText(accessToken)) {
-            Token token = tokenService.findByAccessTokenOrThrow(accessToken);
-            String refreshToken = token.getRefreshToken();
+    public String reissueAccessToken(String refreshToken) {
+        if (StringUtils.hasText(refreshToken)) {
+            Token token = tokenService.findByRefreshTokenOrThrow(refreshToken);
 
             if (validateToken(refreshToken)) {
                 String reissueAccessToken = generateAccessToken(getAuthentication(refreshToken));
-                tokenService.updateToken(reissueAccessToken, token);
+                tokenService.saveOrUpdate(token.getId(), refreshToken); // refreshToken은 갱신하지 않음
                 return reissueAccessToken;
             }
         }

@@ -15,16 +15,16 @@ public class Token {
     private String id;
 
     private String refreshToken;
-
-    @Indexed
-    private String accessToken;
+//
+//    @Indexed
+//    private String accessToken;
 
     public Token updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         return this;
     }
-
-    public void updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
+//
+//    public void updateAccessToken(String accessToken) {
+//        this.accessToken = accessToken;
+//    }
 }
