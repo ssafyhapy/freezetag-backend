@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,13 @@
 </head>
 <body>
     <h1>Welcome!</h1>
-    <p>You are logged in.</p>
-    <a href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
+    {{#nickname}}
+        <p>You are logged in as {{nickname}}.</p>
+        <a href="/logout" class="btn btn-secondary">Logout</a>
+    {{/nickname}}
+    {{^nickname}}
+        <p>You are not logged in.</p>
+        <a href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
+    {{/nickname}}
 </body>
 </html>

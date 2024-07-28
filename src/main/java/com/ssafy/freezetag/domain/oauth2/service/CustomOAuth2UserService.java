@@ -39,13 +39,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         log.info("oauth2user: {}", oAuth2User);
         log.info("registration_id : {}", registrationId);
 
+        // 유저를 고유로 식별할 수 있는 키 (ex. kakao : id)
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
         OAuthAttributesDto attributes = OAuthAttributesDto.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         log.info("userNameAttributeName : {}", userNameAttributeName);
-        log.info("attributes : {}", attributes);
+        log.info("attributes : {}", attributes.toString());
 
         // 여기서 이제 attributes를  활용해서 DB에 회원가입 or login 진행
         Member member = saveOrUpdate(attributes);
