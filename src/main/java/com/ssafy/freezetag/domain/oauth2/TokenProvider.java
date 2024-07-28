@@ -35,10 +35,8 @@ public class TokenProvider {
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
-//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L; // 30 minutes
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 3L; // 1분
-    //    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 5L;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L; // 1시간
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7L; // 7일
     private static final String KEY_ROLE = "role";
     private final TokenService tokenService;
 
@@ -64,8 +62,6 @@ public class TokenProvider {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining());
 
-        log.info("authentication.getName() : {}", authentication.getName());
-
         return Jwts.builder()
                 .subject(authentication.getName())
                 .claim(KEY_ROLE, authorities)
@@ -88,13 +84,17 @@ public class TokenProvider {
                 claims.get(KEY_ROLE).toString()));
     }
 
-    public String reissueAccessToken(String refreshToken) {
-        if (StringUtils.hasText(refreshToken)) {
-            Token token = tokenService.findByRefreshTokenOrThrow(refreshToken);
+    public String reissueAccessToken(String memberId) {
+        // 만약 memberId가 존재한다면
+        if (StringUtils.hasText(memberId)) {
+            String refreshToken = tokenService.findByIdOrThrow(memberId).getRefreshToken();
 
+            // 정상적인 refreshToken이다면
+            // 만약 이미 만료된 accessToken으로 접근한다고 해도=> refreshToken이 없다면 => refreshToken 생성 안함!
             if (validateToken(refreshToken)) {
+                // 다시 accessToken재발급해줌
                 String reissueAccessToken = generateAccessToken(getAuthentication(refreshToken));
-                tokenService.saveOrUpdate(token.getId(), refreshToken); // refreshToken은 갱신하지 않음
+                tokenService.saveOrUpdate(memberId, refreshToken);
                 return reissueAccessToken;
             }
         }

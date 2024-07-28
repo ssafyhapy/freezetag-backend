@@ -32,7 +32,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         cookie.setHttpOnly(true); // 쿠키를 HTTP-only로 설정
         cookie.setSecure(true); // HTTPS에서만 쿠키를 전송하도록 설정
         cookie.setPath("/"); // 쿠키의 유효 범위를 설정
-        cookie.setMaxAge(60); // 쿠키의 유효 기간 설정 (지금은 1시간)
+        cookie.setMaxAge(3600); // 쿠키의 유효 기간 설정 (지금은 1시간)
 
         // 쿠키를 응답에 추가
         response.addCookie(cookie);
