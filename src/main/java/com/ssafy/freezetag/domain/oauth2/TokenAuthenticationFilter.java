@@ -1,8 +1,8 @@
-package com.ssafy.freezetag.domain.oauth2.service;
+package com.ssafy.freezetag.domain.oauth2;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import com.ssafy.freezetag.domain.common.TokenKey;
+import com.ssafy.freezetag.domain.common.constant.TokenKey;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +30,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         // accessToken 검증
         if (tokenProvider.validateToken(accessToken)) {
-            setAuthentication(accessToken);
+            setAuthentication(accessToken); // 토큰이 유효하므로 인증 정보 설정
         } else {
             // 만료되었을 경우 accessToken 재발급
             String reissueAccessToken = tokenProvider.reissueAccessToken(accessToken);
@@ -51,6 +51,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+    /*
+        요청 헤더에서 토큰 추출
+     */
     private String resolveToken(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION);
         if (ObjectUtils.isEmpty(token) || !token.startsWith(TokenKey.TOKEN_PREFIX)) {

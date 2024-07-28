@@ -1,4 +1,4 @@
-package com.ssafy.freezetag.domain.oauth2;
+package com.ssafy.freezetag.global.exception;
 
 public class TokenException extends RuntimeException {
 

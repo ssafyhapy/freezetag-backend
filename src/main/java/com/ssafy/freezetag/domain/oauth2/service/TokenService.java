@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2.service;
 //
-//import com.ssafy.freezetag.domain.oauth2.TokenException;
+//import com.ssafy.freezetag.global.exception.TokenException;
 //import com.ssafy.freezetag.domain.oauth2.entity.Token;
 //import com.ssafy.freezetag.domain.oauth2.repository.TokenRepository;
 //import jakarta.transaction.Transactional;
@@ -40,7 +40,7 @@ package com.ssafy.freezetag.domain.oauth2.service;
 //    }
 //}
 
-import com.ssafy.freezetag.domain.oauth2.TokenException;
+import com.ssafy.freezetag.global.exception.TokenException;
 import com.ssafy.freezetag.domain.oauth2.entity.Token;
 import com.ssafy.freezetag.domain.oauth2.repository.TokenRepository;
 import jakarta.transaction.Transactional;

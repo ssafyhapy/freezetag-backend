@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2;
 
+import com.ssafy.freezetag.global.exception.TokenException;
 import com.ssafy.freezetag.domain.oauth2.entity.Token;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import io.jsonwebtoken.Claims;
@@ -34,8 +35,10 @@ public class TokenProvider {
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L; // 30 minutes
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L; // 30 minutes
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 3L; // 1분
+    //    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 5L;
     private static final String KEY_ROLE = "role";
     private final TokenService tokenService;
 

@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2;
 
+import com.ssafy.freezetag.global.exception.TokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

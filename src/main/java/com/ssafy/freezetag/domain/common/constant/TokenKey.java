@@ -1,4 +1,4 @@
-package com.ssafy.freezetag.domain.common;
+package com.ssafy.freezetag.domain.common.constant;
 
 public final class TokenKey {
 

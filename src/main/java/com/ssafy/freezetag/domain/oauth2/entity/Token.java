@@ -6,6 +6,9 @@ import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
+/*
+    유저의 고유 id를 기준으로 refreshToken mapping
+ */
 @Getter
 @AllArgsConstructor
 @RedisHash(value = "jwt", timeToLive = 60 * 60 * 24 * 7)
@@ -15,16 +18,10 @@ public class Token {
     private String id;
 
     private String refreshToken;
-//
-//    @Indexed
-//    private String accessToken;
 
     public Token updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         return this;
     }
-//
-//    public void updateAccessToken(String accessToken) {
-//        this.accessToken = accessToken;
-//    }
+
 }
