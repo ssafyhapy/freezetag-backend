@@ -5,6 +5,7 @@ import com.ssafy.freezetag.domain.result.service.request.BalanceQuestionRequestD
 import com.ssafy.freezetag.domain.result.service.response.BalanceQuestionResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public class BalanceResultController {
     private final BalanceResultService balanceResultService;
 
     @GetMapping("/question")
-    public ResponseEntity<?> getBalanceQuestion(@RequestBody BalanceQuestionRequestDto balanceQuestionRequestDto) throws JSONException {
+    public ResponseEntity<?> getBalanceQuestion(@RequestBody BalanceQuestionRequestDto balanceQuestionRequestDto) {
         List<BalanceQuestionResponseDto> question = balanceResultService.getQuestion(balanceQuestionRequestDto);
         return ResponseEntity.ok(question);
     }
