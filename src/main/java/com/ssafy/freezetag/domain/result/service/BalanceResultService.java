@@ -23,9 +23,9 @@ public class BalanceResultService {
 
     private final OpenAiChatModel openAiChatModel;
 
-    private static final String OPENAIMODEL = "gpt-4o";
-    private static final Float OPENAITEMPERATURE = 0.4F;
-    private static final String DEFAULTPROMPT = "1. 당신은 밸런스 게임 주제를 받을거야 " +
+    private static final String OPEN_AI_MODEL = "gpt-4o";
+    private static final Float OPEN_AI_TEMPERATURE = 0.4F;
+    private static final String DEFAULT_PROMPT = "1. 당신은 밸런스 게임 주제를 받을거야 " +
             "2. 주제는 그룹이 모이는 목적이 될거야 " +
             "3. 주어지는 예시 그룹 목적과 예시 선택지를 참고해서 7개 선택지를 만들어줘 " +
             "4. 예시 그룹 목적: 우리는 개발자 신입으로 회사에 첫 출근하는 주니어 개발자들이야 " +
@@ -37,13 +37,13 @@ public class BalanceResultService {
 
     public List<BalanceQuestionResponseDto> getQuestion(BalanceQuestionRequestDto balanceQuestionRequestDto) {
 
-        String prompt = DEFAULTPROMPT + balanceQuestionRequestDto.getPurpose();
+        String prompt = DEFAULT_PROMPT + balanceQuestionRequestDto.getPurpose();
 
         ChatResponse chatResponse = openAiChatModel.call(
                 new Prompt(prompt,
                         OpenAiChatOptions.builder()
-                                .withModel(OPENAIMODEL)
-                                .withTemperature(OPENAITEMPERATURE)
+                                .withModel(OPEN_AI_MODEL)
+                                .withTemperature(OPEN_AI_TEMPERATURE)
                                 .build())
         );
         try {
