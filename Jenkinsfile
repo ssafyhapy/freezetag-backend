@@ -30,7 +30,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def app = docker.build("${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}", ".")
+                    def app = docker.build("${DOCKER_HUB_REPO}:latest", ".")
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        def app = docker.image("${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}")
+                        def app = docker.image("${DOCKER_HUB_REPO}:latest")
                         app.push()
                     }
                 }
@@ -55,13 +55,12 @@ pipeline {
                             sshTransfer(
                                 sourceFiles: '', // 파일 전송이 필요 없으므로 빈 문자열
                                 execCommand: """
-                                    docker pull ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
+                                    docker pull ${DOCKER_HUB_REPO}:latest
                                     docker stop myapp || true
                                     docker rm myapp || true
                                     docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker stop
                                     docker ps --filter "publish=8080" --format "{{.ID}}" | xargs -r docker rm
-                                    docker run -d --name myapp --network ${NETWORK_NAME} -p 8080:8080 ${DOCKER_HUB_REPO}:${env.BUILD_NUMBER}
-
+                                    docker run -d --name myapp --network ${NETWORK_NAME} -p 8080:8080 ${DOCKER_HUB_REPO}:latest
                                 """,
                                 remoteDirectory: '/home/ubuntu', // 원격 디렉토리
                                 removePrefix: ''
