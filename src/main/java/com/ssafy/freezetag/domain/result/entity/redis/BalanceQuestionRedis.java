@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@RedisHash(value = "balance", timeToLive = 600)
+@RedisHash(value = "balance_question", timeToLive = 600)
 @NoArgsConstructor
 public class BalanceQuestionRedis {
     @Id
@@ -19,4 +19,10 @@ public class BalanceQuestionRedis {
     private String optionFirst;
 
     private String optionSecond;
+
+    public BalanceQuestionRedis(Long roomId, String optionFirst, String optionSecond) {
+        this.roomId = roomId;
+        this.optionFirst = optionFirst;
+        this.optionSecond = optionSecond;
+    }
 }
