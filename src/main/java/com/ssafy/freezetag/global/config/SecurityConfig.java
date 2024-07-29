@@ -51,22 +51,22 @@ public class SecurityConfig {
                                 )
                                 .successHandler(oAuth2SuccessHandler)
                 )
-                .logout(logout ->
-                        logout
-                                .logoutUrl("/logout") // 로그아웃 요청 URL
-                                .logoutSuccessUrl("/")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("JSESSIONID")
-                                .addLogoutHandler(new LogoutHandler() { // 익명 클래스
-                                    @Override
-                                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-                                        if (authentication != null) {
-                                            String username = authentication.getName();
-                                            tokenService.deleteRefreshToken(username); // Redis에서 토큰 삭제
-                                        }
-                                    }
-                                })
-                )
+//                .logout(logout ->
+//                        logout
+//                                .logoutUrl("/logout") // 로그아웃 요청 URL
+//                                .logoutSuccessUrl("/")
+//                                .invalidateHttpSession(true)
+//                                .deleteCookies("JSESSIONID")
+//                                .addLogoutHandler(new LogoutHandler() { // 익명 클래스
+//                                    @Override
+//                                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+//                                        if (authentication != null) {
+//                                            String username = authentication.getName();
+//                                            tokenService.deleteRefreshToken(username); // Redis에서 토큰 삭제
+//                                        }
+//                                    }
+//                                })
+//                )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass()) // 토큰 예외 핸들링
         ;

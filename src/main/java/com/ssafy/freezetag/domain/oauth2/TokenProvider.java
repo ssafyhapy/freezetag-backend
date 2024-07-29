@@ -1,7 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2;
 
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
-import com.ssafy.freezetag.domain.oauth2.entity.Token;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -108,8 +107,19 @@ public class TokenProvider {
         }
 
         Claims claims = parseClaims(token);
-        // 토큰의 만료 여부 확인하는 코
+        // 토큰의 만료 여부 확인하는 코드
         return claims.getExpiration().after(new Date());
+    }
+
+    /*
+        access와 refresh token의 id가 정말 같은지 확인
+     */
+    public boolean validateSameTokens(String accessToken, String refreshToken) {
+        if (!validateToken(accessToken) || !validateToken(refreshToken)) {
+            return false;
+        }
+        return getAuthentication(accessToken).getName()
+                .equals(getAuthentication(refreshToken).getName());
     }
 
     private Claims parseClaims(String token) {
