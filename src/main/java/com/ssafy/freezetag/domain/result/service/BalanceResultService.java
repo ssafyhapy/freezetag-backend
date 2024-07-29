@@ -58,19 +58,15 @@ public class BalanceResultService {
     }
 
     private BalanceQuestionResponseDto getOption(ChatResponse chatResponse) {
-        // JSON 형식의 문자열 추출
         String contentString = chatResponse.getResult()
                 .getOutput()
                 .getContent();
 
-        // JSON 객체로 변환
         JSONObject jsonObject = new JSONObject(contentString);
 
-        // 옵션 값 추출
         String optionFirst = jsonObject.optString("optionFirst");
         String optionSecond = jsonObject.optString("optionSecond");
 
-        // BalanceQuestionResponseDto 객체 생성
         return new BalanceQuestionResponseDto(optionFirst, optionSecond);
     }
 
