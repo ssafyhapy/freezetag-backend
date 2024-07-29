@@ -3,7 +3,7 @@ package com.ssafy.freezetag.global.filter;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import com.ssafy.freezetag.domain.common.constant.TokenKey;
-리import com.ssafy.freezetag.domain.oauth2.TokenProvider;
+import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
