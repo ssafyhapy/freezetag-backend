@@ -1,12 +1,15 @@
 package com.ssafy.freezetag.domain.result.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
-import com.ssafy.freezetag.domain.room.entity.MemberRoom;
+import com.ssafy.freezetag.domain.member.entity.Member;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BalanceResult extends BaseEntity {
     @Id
     @GeneratedValue
@@ -14,13 +17,19 @@ public class BalanceResult extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_room_id")
-    private MemberRoom memberRoom;
+    @JoinColumn(name = "balance_question_id")
+    private BalanceQuestion balanceQuestion;
 
-    private String balanceResultOptionFirst;
-
-    private String balanceResultOptionSecond;
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Enumerated(EnumType.STRING)
-    private SelectedOption selectedOption;
+    private SelectedOption balanceResultSelectedOption;
+
+    public BalanceResult(BalanceQuestion balanceQuestion, Member member, SelectedOption balanceResultSelectedOption) {
+        this.balanceQuestion = balanceQuestion;
+        this.member = member;
+        this.balanceResultSelectedOption = balanceResultSelectedOption;
+    }
 }
