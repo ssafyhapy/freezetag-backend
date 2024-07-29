@@ -3,6 +3,7 @@ package com.ssafy.freezetag.global.filter;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import com.ssafy.freezetag.domain.common.constant.TokenKey;
+import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +30,29 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-//        String accessToken = resolveToken(request);
+        String accessToken = resolveToken(request);
+        log.info("accesstoken: {}", accessToken);
+        // 1. 우선 filter을 통해 accessToken에 이상이 없을 경우
+        if (tokenProvider.validateToken(accessToken)) {
+            log.info("AccessToken is valid!!");
+            setAuthentication(accessToken); // 토큰이 유효하므로 인증 정보 설정
+        } else {
+            // 2. accesstoken에 이상 있을 경우
+            // 우선 에러 발생
+            if (StringUtils.hasText(accessToken)) {
+                log.info("adf");
+                throw new TokenException("Access Token이 유효하지 않습니다.");
+            }
+        }
+
+            // 401 Exception 발생
+
+
+
+        // 2. accessToken이 이상이 있을 경우
+        // 2.1 401에러를 통해서 refreshToken
+
+        //        String accessToken = resolveToken(request);
 //
 //        // accessToken 검증
 //        if (tokenProvider.validateToken(accessToken)) {
@@ -60,6 +83,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /*
+        인증정보 설정하는 메소드
+     */
     private void setAuthentication(String accessToken) {
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
