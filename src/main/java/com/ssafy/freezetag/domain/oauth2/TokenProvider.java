@@ -1,7 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2;
 
-import com.ssafy.freezetag.global.exception.TokenException;
-import com.ssafy.freezetag.domain.oauth2.entity.Token;
+import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -49,9 +48,10 @@ public class TokenProvider {
         return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
-    public void generateRefreshToken(Authentication authentication) {
+    public String generateRefreshToken(Authentication authentication) {
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
         tokenService.saveOrUpdate(authentication.getName(), refreshToken);
+        return refreshToken;
     }
 
     private String generateToken(Authentication authentication, long expireTime) {

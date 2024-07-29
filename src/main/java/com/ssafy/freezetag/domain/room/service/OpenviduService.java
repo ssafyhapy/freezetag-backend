@@ -1,7 +1,7 @@
 package com.ssafy.freezetag.domain.room.service;
 
 import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
-import com.ssafy.freezetag.global.exception.OpenviduTokenException;
+import com.ssafy.freezetag.domain.exception.custom.OpenviduTokenException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
