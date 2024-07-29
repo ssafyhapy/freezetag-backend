@@ -1,8 +1,6 @@
 package com.ssafy.freezetag.domain.result.controller;
 
-import com.ssafy.freezetag.domain.result.entity.redis.IntroRedis;
 import com.ssafy.freezetag.domain.result.service.IntroResultService;
-import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.response.IntroResponseDto;
@@ -39,17 +37,17 @@ public class IntroResultController {
                 .body(new Result<>(true,introResponseDto));
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getIntros(@RequestBody RoomIdRequestDto roomIdRequestDto) {
-        List<IntroResponseDto> introResponseDtoList = introResultService.findAllByRoomId(roomIdRequestDto);
+    @GetMapping("/{roomId}")
+    public ResponseEntity<?> getIntros(@PathVariable Long roomId) {
+        List<IntroResponseDto> introResponseDtoList = introResultService.findAllByRoomId(roomId);
 
         return ResponseEntity.ok()
                 .body(new Result<>(true, introResponseDtoList));
     }
 
-    @DeleteMapping()
-    public ResponseEntity<?> deleteIntros(@RequestBody RoomIdRequestDto roomIdRequestDto) {
-        introResultService.deleteAll(roomIdRequestDto);
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<?> deleteIntros(@PathVariable Long roomId) {
+        introResultService.deleteAll(roomId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }

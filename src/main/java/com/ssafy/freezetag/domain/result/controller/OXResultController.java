@@ -1,6 +1,5 @@
 package com.ssafy.freezetag.domain.result.controller;
 
-import com.ssafy.freezetag.domain.result.entity.redis.OXRedis;
 import com.ssafy.freezetag.domain.result.service.OXResultService;
 import com.ssafy.freezetag.domain.result.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.OXSaveRequestDto;
@@ -37,16 +36,16 @@ public class OXResultController {
                 .body(new Result<>(true, oxResponseDtoList));
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getOXs(@RequestBody RoomIdRequestDto roomIdRequestDto){
-        List<OXResponseDto> oxResponseDtoList = oxResultService.findAllByRoomId(roomIdRequestDto);
+    @GetMapping("/{roomId}")
+    public ResponseEntity<?> getOXs(@PathVariable Long roomId){
+        List<OXResponseDto> oxResponseDtoList = oxResultService.findAllByRoomId(roomId);
         return ResponseEntity.ok()
                 .body(new Result<>(true, oxResponseDtoList));
     }
 
-    @DeleteMapping()
-    public ResponseEntity<?> deleteOXs(@RequestBody RoomIdRequestDto roomIdRequestDto){
-        oxResultService.deleteAll(roomIdRequestDto);
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<?> deleteOXs(@PathVariable Long roomId){
+        oxResultService.deleteAll(roomId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
