@@ -1,6 +1,7 @@
 package com.ssafy.freezetag.domain.room.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
+import com.ssafy.freezetag.domain.result.entity.BalanceQuestion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,9 @@ public class Room extends BaseEntity {
 
     @OneToMany(mappedBy = "room")
     private List<MemberRoom> memberRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<BalanceQuestion> balanceQuestions = new ArrayList<>();
 
     public Room(final String roomName, final String roomCode, final Integer roomPersonCount) {
         this.roomName = roomName;
