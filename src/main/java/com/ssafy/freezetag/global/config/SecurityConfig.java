@@ -1,10 +1,11 @@
 package com.ssafy.freezetag.global.config;
 
-import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
+//import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
 import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
 import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
+import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

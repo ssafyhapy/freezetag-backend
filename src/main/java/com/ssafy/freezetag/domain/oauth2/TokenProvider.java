@@ -1,6 +1,7 @@
 package com.ssafy.freezetag.domain.oauth2;
 
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
+import com.ssafy.freezetag.domain.oauth2.entity.Token;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -107,6 +108,7 @@ public class TokenProvider {
         }
 
         Claims claims = parseClaims(token);
+        // 토큰의 만료 여부 확인하는 코
         return claims.getExpiration().after(new Date());
     }
 
@@ -115,11 +117,11 @@ public class TokenProvider {
             return Jwts.parser().verifyWith(secretKey).build()
                     .parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new TokenException("Access Token이 만료되었습니다.");
         } catch (MalformedJwtException e) {
-            throw new TokenException("INVALID_TOKEN");
+            throw new TokenException("Access Token 형식이 잘못되었습니다.");
         } catch (SecurityException e) {
-            throw new TokenException("INVALID_JWT_SIGNATURE");
+            throw new TokenException("Access Token이 손상되었습니다.");
         }
     }
 }

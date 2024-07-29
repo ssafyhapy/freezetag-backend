@@ -3,11 +3,9 @@ package com.ssafy.freezetag.global.filter;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import com.ssafy.freezetag.domain.common.constant.TokenKey;
-import com.ssafy.freezetag.domain.exception.custom.TokenException;
-import com.ssafy.freezetag.domain.oauth2.TokenProvider;
+리import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -36,14 +33,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (tokenProvider.validateToken(accessToken)) {
             log.info("AccessToken is valid!!");
             setAuthentication(accessToken); // 토큰이 유효하므로 인증 정보 설정
-        } else {
-            // 2. accesstoken에 이상 있을 경우
-            // 우선 에러 발생
-            if (StringUtils.hasText(accessToken)) {
-                log.info("adf");
-                throw new TokenException("Access Token이 유효하지 않습니다.");
-            }
         }
+
 
             // 401 Exception 발생
 
