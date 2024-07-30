@@ -16,7 +16,6 @@ public class HomeController {
     public String homePage(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            System.out.println(authentication);
 
             if (authentication.getPrincipal() instanceof OAuth2User) {
                 OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();

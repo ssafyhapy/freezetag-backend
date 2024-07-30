@@ -9,11 +9,16 @@
     <h1>Welcome!</h1>
     {{#nickname}}
         <p>You are logged in as {{nickname}}.</p>
-        <a href="/logout" class="btn btn-secondary">Logout</a>
+        <form action="/member/logout" method="POST">
+        <button type="submit" class="btn btn-secondary active">logout</button>
+        </form>
     {{/nickname}}
     {{^nickname}}
         <p>You are not logged in.</p>
-        <a href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
-    {{/nickname}}
+        <form action="/member/login" method="POST">
+            <input type="hidden" name="providerId" value="kakao">
+            <button type="submit" class="btn btn-secondary active">Kakao Login</button>
+        </form>
+        {{/nickname}}
 </body>
 </html>

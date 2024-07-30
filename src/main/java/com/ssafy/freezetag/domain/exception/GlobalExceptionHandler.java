@@ -1,7 +1,9 @@
 package com.ssafy.freezetag.domain.exception;
 
+import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +33,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleOAuth2AuthenticationException(final OAuth2AuthenticationException e) {
         log.warn("OAuth2 authentication error: {}", e.getMessage());
         return ResponseEntity.status(401)
+                .body(new ErrorResponse(false, e.getMessage()));
+
+    }
+
+    /*
+        토큰 관련 에러
+     */
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ErrorResponse> handleTokenException(final TokenException e) {
+        log.warn("Token error: {}", e.getMessage());
+        return ResponseEntity.status(400)
                 .body(new ErrorResponse(false, e.getMessage()));
 
     }

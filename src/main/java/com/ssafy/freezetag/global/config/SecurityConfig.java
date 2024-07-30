@@ -1,10 +1,11 @@
 package com.ssafy.freezetag.global.config;
 
-import com.ssafy.freezetag.domain.oauth2.TokenExceptionFilter;
+//import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
 import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
-import com.ssafy.freezetag.domain.oauth2.TokenAuthenticationFilter;
+import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
+import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -49,22 +50,6 @@ public class SecurityConfig {
                                         // 로그인 성공 시 핸들러
                                 )
                                 .successHandler(oAuth2SuccessHandler)
-                )
-                .logout(logout ->
-                        logout
-                                .logoutUrl("/logout") // 로그아웃 요청 URL
-                                .logoutSuccessUrl("/")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("JSESSIONID")
-                                .addLogoutHandler(new LogoutHandler() { // 익명 클래스
-                                    @Override
-                                    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-                                        if (authentication != null) {
-                                            String username = authentication.getName();
-                                            tokenService.deleteRefreshToken(username); // Redis에서 토큰 삭제
-                                        }
-                                    }
-                                })
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass()) // 토큰 예외 핸들링
