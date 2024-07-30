@@ -104,7 +104,7 @@ public class BalanceResultService {
         balanceQuestionRepository.saveAll(balanceQuestionList);
 
         // TODO : Member 구현 완료되면 1L 대신 request에서 memberId 가져오기
-        Member findMember = memberRepository.findById(1L).orElseThrow(() -> new RuntimeException("임시 에러 메세지 : 해당 Id에 일치하는 멤버가 없습니다."));
+        Member findMember = memberRepository.findById(1L).orElseThrow(() -> new EntityNotFoundException("해당 Id에 일치하는 멤버가 없습니다."));
         deleteAndSaveBalanceResult(balanceQuestionRedisList, balanceQuestionList, findMember);
 
         balanceQuestionRedisRepository.deleteAll(balanceQuestionRedisList);
