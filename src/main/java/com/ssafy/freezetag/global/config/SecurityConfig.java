@@ -28,7 +28,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final TokenService tokenService; // 추가
 
@@ -44,14 +43,6 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile", "/public/**").permitAll() // added "/public/**"
                                 .anyRequest().permitAll()
-                )
-                .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                .userInfoEndpoint(userInfoEndpoint ->
-                                                userInfoEndpoint.userService(customOAuth2UserService)
-                                        // 로그인 성공 시 핸들러
-                                )
-                                .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass()) // 토큰 예외 핸들링

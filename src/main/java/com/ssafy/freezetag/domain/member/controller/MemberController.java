@@ -20,7 +20,7 @@ public class MemberController {
     private final TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam String providerId) {
+    public ResponseEntity<?> login(@RequestParam String providerId) {
 
         // 우선 정상적인 provider인지 확인하고 리디렉션 URL을 가져옴
         // TODO : redirectUrl 관리하는 법 처리

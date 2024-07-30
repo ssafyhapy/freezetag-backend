@@ -3,9 +3,7 @@ package com.ssafy.freezetag.domain.oauth2.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,25 +11,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 
 import java.io.IOException;
 import java.util.Map;
 
 import static com.ssafy.freezetag.domain.common.constant.TokenKey.TOKEN_PREFIX;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2SuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 직렬화를 위한 ObjectMapper
 
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+    public void handleSuccess(Authentication authentication, HttpServletResponse response) throws IOException {
+        // OAuth2User를 가져옴
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
         // accessToken, refreshToken 발급
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication);
@@ -55,11 +54,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // 응답 본문에 JSON 형태로 토큰 정보를 포함
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
-        // TODO : 이름 수정
-        // LoginResponseDto 생성
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        // LoginResponseDto 생성
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         // 'properties' 객체에서 'nickname'을 가져오는 과정
@@ -69,6 +65,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
 
+
         // Result 객체 생성
         Result<LoginResponseDto> result = new Result<>(true, loginResponseDto);
 
@@ -77,6 +74,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // 응답에 JSON 작성
         response.getWriter().write(jsonResponse);
+
     }
 
     @Data
@@ -84,5 +82,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     static class Result<T> {
         private boolean success;
         private T data;
+
     }
 }
