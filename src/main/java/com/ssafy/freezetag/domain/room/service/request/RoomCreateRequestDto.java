@@ -7,6 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoomCreateRequestDto {
     private final String roomName;
-    private final String roomCode;
     private final Integer roomPersonCount;
 }
