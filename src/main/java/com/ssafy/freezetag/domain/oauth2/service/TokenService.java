@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2.service;
 //
-//import com.ssafy.freezetag.global.exception.TokenException;
+//import com.ssafy.freezetag.domain.exception.custom.TokenException;
 //import com.ssafy.freezetag.domain.oauth2.entity.Token;
 //import com.ssafy.freezetag.domain.oauth2.repository.TokenRepository;
 //import jakarta.transaction.Transactional;
@@ -40,7 +40,7 @@ package com.ssafy.freezetag.domain.oauth2.service;
 //    }
 //}
 
-import com.ssafy.freezetag.global.exception.TokenException;
+import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.oauth2.entity.Token;
 import com.ssafy.freezetag.domain.oauth2.repository.TokenRepository;
 import jakarta.transaction.Transactional;
@@ -59,6 +59,9 @@ public class TokenService {
         tokenRepository.deleteById(memberKey);
     }
 
+    /*
+        refreshToken update
+     */
     @Transactional
     public void saveOrUpdate(String memberKey, String refreshToken) {
         Token token = tokenRepository.findById(memberKey)
@@ -68,8 +71,11 @@ public class TokenService {
         tokenRepository.save(token);
     }
 
-    public Token findByRefreshTokenOrThrow(String refreshToken) {
-        return tokenRepository.findByRefreshToken(refreshToken)
+    /*
+        memberId를 활용해서 refreshToken 찾는 것
+     */
+    public Token findByIdOrThrow(String memberKey) {
+        return tokenRepository.findById(memberKey)
                 .orElseThrow(() -> new TokenException("TOKEN_EXPIRED"));
     }
 }
