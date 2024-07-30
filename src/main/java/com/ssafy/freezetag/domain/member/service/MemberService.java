@@ -45,7 +45,7 @@ public class MemberService {
 
         // 쿠키가 아예 존재하지 않나 확인
         if(cookies == null) {
-            throw new TokenException("쿠키가 존재하지 않습니다.");
+            throw new RuntimeException("쿠키가 존재하지 않습니다.");
         }
 
         // 쿠키 조회
@@ -70,7 +70,6 @@ public class MemberService {
             throw new TokenException("Access Token과 Refresh Token 사용자 정보 불일치합니다.");
         }
 
-        System.out.println(memberId);
         // 현재 시큐리티 세션의 id랑 accessToken 불일치 발생하면 오류
         if(!tokenProvider.getAuthentication((accessToken)).getName().equals(memberId)) {
             throw new TokenException("유저와 사용자 정보가 불일치합니다.");
