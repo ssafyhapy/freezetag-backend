@@ -16,6 +16,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -58,7 +59,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         
         // TODO : 이름 수정
         // LoginResponseDto 생성
-        LoginResponseDto loginResponseDto = new LoginResponseDto(authentication.getName());
+
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
+        // 'properties' 객체에서 'nickname'을 가져오는 과정
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+        String memberName = (String) properties.get("nickname");
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
 
         // Result 객체 생성
         Result<LoginResponseDto> result = new Result<>(true, loginResponseDto);
