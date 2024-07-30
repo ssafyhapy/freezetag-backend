@@ -1,41 +1,50 @@
 package com.ssafy.freezetag.domain.result.service;
 
+import com.ssafy.freezetag.domain.member.entity.Member;
+import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.result.entity.BalanceQuestion;
+import com.ssafy.freezetag.domain.result.entity.BalanceResult;
+import com.ssafy.freezetag.domain.result.entity.redis.BalanceQuestionRedis;
+import com.ssafy.freezetag.domain.result.entity.redis.BalanceResultRedis;
 import com.ssafy.freezetag.domain.result.repository.BalanceQuestionRedisRepository;
+import com.ssafy.freezetag.domain.result.repository.BalanceQuestionRepository;
+import com.ssafy.freezetag.domain.result.repository.BalanceResultRedisRepository;
+import com.ssafy.freezetag.domain.result.repository.BalanceResultRepository;
 import com.ssafy.freezetag.domain.result.service.request.BalanceQuestionRequestDto;
+import com.ssafy.freezetag.domain.result.service.request.BalanceQuestionSaveRequestDto;
+import com.ssafy.freezetag.domain.result.service.request.BalanceResultSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.response.BalanceQuestionResponseDto;
+import com.ssafy.freezetag.domain.room.entity.Room;
+import com.ssafy.freezetag.domain.room.repository.RoomRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
+import static com.ssafy.freezetag.domain.common.constant.OpenAiConstant.*;
+
+
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Service
 public class BalanceResultService {
 
     private final OpenAiChatModel openAiChatModel;
+    private final BalanceQuestionRedisRepository balanceQuestionRedisRepository;
+    private final BalanceQuestionRepository balanceQuestionRepository;
+    private final BalanceResultRedisRepository balanceResultRedisRepository;
+    private final BalanceResultRepository balanceResultRepository;
+    private final RoomRepository roomRepository;
+    private final MemberRepository memberRepository;
 
-    private static final String OPEN_AI_MODEL = "gpt-4o";
-    private static final Float OPEN_AI_TEMPERATURE = 0.4F;
-    private static final String DEFAULT_PROMPT = "1. 당신은 밸런스 게임 주제를 받을거야 " +
-            "2. 주제는 그룹이 모이는 목적이 될거야 " +
-            "3. 주어지는 예시 그룹 목적과 예시 선택지를 참고해서 7개 선택지를 만들어줘 " +
-            "4. 예시 그룹 목적: 우리는 개발자 신입으로 회사에 첫 출근하는 주니어 개발자들이야 " +
-            "5. 예시 선택지: 말 안통하는 외국인 기획자와 협업 vs 말 안통하는 외국인 개발 팀장 " +
-            "6. 너는 정해진 JSON 형식으로만 응답해야돼  " +
-            "7. JSON 형식은 다음과 같아 optionFirst:산 optionSecond:바다 " +
-            "8. 우리의 웹서비스는 처음 만나는 사람들이 밸런스게임을 하며 서로 알아가고 친해지는 서비스야";
-
-
-    public List<BalanceQuestionResponseDto> getQuestion(BalanceQuestionRequestDto balanceQuestionRequestDto) {
+    public BalanceQuestionResponseDto getQuestion(BalanceQuestionRequestDto balanceQuestionRequestDto) {
 
         String prompt = DEFAULT_PROMPT + balanceQuestionRequestDto.getPurpose();
 
@@ -46,40 +55,78 @@ public class BalanceResultService {
                                 .withTemperature(OPEN_AI_TEMPERATURE)
                                 .build())
         );
-        try {
-            String jsonResponse = extractJsonResponse(chatResponse);
-            return parseJsonResponse(jsonResponse);
-        } catch (JSONException e){
-            throw new JSONException("주제를 정확하게 입력해주세요");
-        }
-
+        return getOption(chatResponse);
     }
 
-    private String extractJsonResponse(ChatResponse chatResponse) {
-        // JSON 형식의 응답을 포함한 내용 추출
-        String content = chatResponse.getResults().get(0).getOutput().getContent();
-        // JSON 응답 내용에서 JSON 부분만 추출
-        int startIdx = content.indexOf("[");
-        int endIdx = content.lastIndexOf("]") + 1;
-        if (startIdx >= 0 && endIdx > startIdx) {
-            return content.substring(startIdx, endIdx);
-        }
-        throw new JSONException("JSON 파싱 중 오류 발생");
+    private BalanceQuestionResponseDto getOption(ChatResponse chatResponse) {
+        String contentString = chatResponse.getResult()
+                .getOutput()
+                .getContent();
+
+        JSONObject jsonObject = new JSONObject(contentString);
+
+        String optionFirst = jsonObject.optString("optionFirst");
+        String optionSecond = jsonObject.optString("optionSecond");
+
+        return new BalanceQuestionResponseDto(optionFirst, optionSecond);
     }
 
-    private List<BalanceQuestionResponseDto> parseJsonResponse(String jsonResponse) {
-        List<BalanceQuestionResponseDto> responseList = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(jsonResponse);
+    @Transactional
+    public BalanceQuestionRedis saveBalanceQuestion(BalanceQuestionSaveRequestDto balanceQuestionSaveRequestDto){
+        BalanceQuestionRedis balanceQuestionRedis = new BalanceQuestionRedis(balanceQuestionSaveRequestDto.getRoomId(),
+                balanceQuestionSaveRequestDto.getOptionFirst(),
+                balanceQuestionSaveRequestDto.getOptionSecond());
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            String firstOption = jsonObject.getString("optionFirst");
-            String secondOption = jsonObject.getString("optionSecond");
-
-            BalanceQuestionResponseDto responseDto = new BalanceQuestionResponseDto(firstOption, secondOption);
-            responseList.add(responseDto);
-        }
-
-        return responseList;
+        return balanceQuestionRedisRepository.save(balanceQuestionRedis);
     }
+
+    @Transactional
+    public BalanceResultRedis saveBalanceResult(BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+        BalanceResultRedis balanceResultRedis = new BalanceResultRedis(balanceResultSaveRequestDto.getBalanceQuestionId(),
+                balanceResultSaveRequestDto.getMemberId(),
+                balanceResultSaveRequestDto.getBalanceResultSelectedOption());
+
+        return balanceResultRedisRepository.save(balanceResultRedis);
+    }
+
+    @Transactional
+    public void deleteBalanceQuestion(Long roomId){
+        List<BalanceQuestionRedis> balanceQuestionRedisList = balanceQuestionRedisRepository.findAllByRoomId(roomId);
+
+        Room findRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("방을 찾을 수 없습니다."));
+
+        List<BalanceQuestion> balanceQuestionList = balanceQuestionRedisList.stream()
+                .map(balanceQuestionRedis -> {
+                    return new BalanceQuestion(findRoom, balanceQuestionRedis.getOptionFirst(), balanceQuestionRedis.getOptionSecond());
+                }).toList();
+
+        balanceQuestionRepository.saveAll(balanceQuestionList);
+
+        // TODO : Member 구현 완료되면 1L 대신 request에서 memberId 가져오기
+        Member findMember = memberRepository.findById(1L).orElseThrow(() -> new EntityNotFoundException("해당 Id에 일치하는 멤버가 없습니다."));
+        deleteAndSaveBalanceResult(balanceQuestionRedisList, balanceQuestionList, findMember);
+
+        balanceQuestionRedisRepository.deleteAll(balanceQuestionRedisList);
+    }
+
+    private void deleteAndSaveBalanceResult(List<BalanceQuestionRedis> balanceQuestionRedisList, List<BalanceQuestion> balanceQuestionList, Member findMember) {
+        for (BalanceQuestionRedis balanceQuestionRedis : balanceQuestionRedisList) {
+            List<BalanceResultRedis> balanceResultRedisList = balanceResultRedisRepository.findAllByBalanceQuestionId(balanceQuestionRedis.getId());
+
+            List<BalanceResult> balanceResultList = balanceResultRedisList.stream()
+                    .map(balanceResultRedis -> {
+                        BalanceQuestion balanceQuestion = balanceQuestionList.stream()
+                                .filter(bq -> bq.getBalanceQuestionOptionFirst().equals(balanceQuestionRedis.getOptionFirst()) && bq.getBalanceQuestionOptionSecond().equals(balanceQuestionRedis.getOptionSecond()))
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("매칭되는 질문을 찾을 수 없습니다."));
+                        return new BalanceResult(balanceQuestion, findMember, balanceResultRedis.getBalanceResultSelectedOption());
+                    })
+                    .toList();
+
+            balanceResultRepository.saveAll(balanceResultList);
+            balanceResultRedisRepository.deleteAll(balanceResultRedisList);
+        }
+    }
+
 }

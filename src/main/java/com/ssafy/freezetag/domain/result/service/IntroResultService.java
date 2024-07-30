@@ -4,7 +4,6 @@ import com.ssafy.freezetag.domain.result.entity.IntroResult;
 import com.ssafy.freezetag.domain.result.entity.redis.IntroRedis;
 import com.ssafy.freezetag.domain.result.repository.IntroRedisRepository;
 import com.ssafy.freezetag.domain.result.repository.IntroResultRepository;
-import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.IntroSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.response.IntroResponseDto;
@@ -53,8 +52,8 @@ public class IntroResultService {
         return new IntroResponseDto(savedIntroRedis.getId(), savedIntroRedis.getContent());
     }
 
-    public List<IntroResponseDto> findAllByRoomId(RoomIdRequestDto roomIdRequestDto) {
-        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+    public List<IntroResponseDto> findAllByRoomId(Long roomId) {
+        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomId);
 
         return introRedisList.stream()
                 .map(introRedis -> new IntroResponseDto(introRedis.getId(), introRedis.getContent()))
@@ -62,9 +61,9 @@ public class IntroResultService {
     }
 
     @Transactional
-    public void deleteAll(RoomIdRequestDto roomIdRequestDto) {
+    public void deleteAll(Long roomId) {
         // DB 저장하기
-        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+        List<IntroRedis> introRedisList = introRedisRepository.findAllByRoomId(roomId);
 
         List<IntroResult> introResultList = introRedisList.stream()
                 .map(introRedis -> {

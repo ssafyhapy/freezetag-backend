@@ -1,29 +1,61 @@
 package com.ssafy.freezetag.domain.result.controller;
 
+import com.ssafy.freezetag.domain.result.entity.redis.BalanceQuestionRedis;
+import com.ssafy.freezetag.domain.result.entity.redis.BalanceResultRedis;
+import com.ssafy.freezetag.domain.result.service.request.BalanceResultSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.BalanceResultService;
 import com.ssafy.freezetag.domain.result.service.request.BalanceQuestionRequestDto;
+import com.ssafy.freezetag.domain.result.service.request.BalanceQuestionSaveRequestDto;
 import com.ssafy.freezetag.domain.result.service.response.BalanceQuestionResponseDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
-import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/result/balance")
 @RequiredArgsConstructor
+@RequestMapping("/result/balance")
+@RestController
 public class BalanceResultController {
 
     private final BalanceResultService balanceResultService;
 
     @GetMapping("/question")
     public ResponseEntity<?> getBalanceQuestion(@RequestBody BalanceQuestionRequestDto balanceQuestionRequestDto) {
-        List<BalanceQuestionResponseDto> question = balanceResultService.getQuestion(balanceQuestionRequestDto);
-        return ResponseEntity.ok(question);
+        BalanceQuestionResponseDto question = balanceResultService.getQuestion(balanceQuestionRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new Result<>(true, question));
+    }
+
+    @PostMapping("/question")
+    public ResponseEntity<?> saveBalanceQuestion(@RequestBody BalanceQuestionSaveRequestDto balanceQuestionSaveRequestDto){
+        BalanceQuestionRedis savedBalanceQuestion = balanceResultService.saveBalanceQuestion(balanceQuestionSaveRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Result<>(true, savedBalanceQuestion));
+    }
+
+    // 타이머 종료시 사용자들의 선택 저장하기
+    @PostMapping("/selection")
+    public ResponseEntity<?> saveBalanceResult(@RequestBody BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+        BalanceResultRedis savedBalanceResult = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new Result<>(true, savedBalanceResult));
+    }
+
+    @DeleteMapping("/question/{roomId}")
+    public ResponseEntity<?> deleteBalanceQuestion(@PathVariable Long roomId){
+        balanceResultService.deleteBalanceQuestion(roomId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private boolean success;
+        private T data;
     }
 }

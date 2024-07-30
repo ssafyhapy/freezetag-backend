@@ -6,7 +6,6 @@ import com.ssafy.freezetag.domain.result.repository.OXRedisRepository;
 import com.ssafy.freezetag.domain.result.repository.OXResultRepository;
 import com.ssafy.freezetag.domain.result.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.result.service.request.OXSaveRequestDto;
-import com.ssafy.freezetag.domain.result.service.request.RoomIdRequestDto;
 import com.ssafy.freezetag.domain.result.service.response.OXResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
@@ -62,8 +61,8 @@ public class OXResultService {
         return OXResponseDtoList;
     }
 
-    public List<OXResponseDto> findAllByRoomId(RoomIdRequestDto roomIdRequestDto){
-        List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+    public List<OXResponseDto> findAllByRoomId(Long roomId){
+        List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomId);
 
         return oxRedisList.stream()
                 .map(oxRedis -> new OXResponseDto(oxRedis.getId(),
@@ -73,9 +72,9 @@ public class OXResultService {
     }
 
     @Transactional
-    public void deleteAll(RoomIdRequestDto roomIdRequestDto){
+    public void deleteAll(Long roomId){
         // DB 저장하기
-        List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomIdRequestDto.getRoomId());
+        List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomId);
 
         List<OXResult> oxResultList = oxRedisList.stream()
                 .map(oxRedis -> {
