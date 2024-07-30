@@ -16,6 +16,7 @@ import com.ssafy.freezetag.domain.result.service.request.BalanceResultSaveReques
 import com.ssafy.freezetag.domain.result.service.response.BalanceQuestionResponseDto;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -27,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.ssafy.freezetag.domain.common.constant.OpenAi.*;
+import static com.ssafy.freezetag.domain.common.constant.OpenAiConstant.*;
 
 
 @RequiredArgsConstructor
@@ -93,7 +94,7 @@ public class BalanceResultService {
         List<BalanceQuestionRedis> balanceQuestionRedisList = balanceQuestionRedisRepository.findAllByRoomId(roomId);
 
         Room findRoom = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("방을 찾을 수 없습니다."));
 
         List<BalanceQuestion> balanceQuestionList = balanceQuestionRedisList.stream()
                 .map(balanceQuestionRedis -> {
