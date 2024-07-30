@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.oauth2.service;
 
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.oauth2.entity.CustomOAuth2User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -50,12 +50,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 여기서 이제 attributes를  활용해서 DB에 회원가입 or login 진행
         Member member = saveOrUpdate(attributes);
-        httpSession.setAttribute("member", new SessionMemberDto(member));
+        //httpSession.setAttribute("member", new SessionMemberDto(member));
 
-        return new DefaultOAuth2User(
+        return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes.getAttributes(),
-                attributes.getNameAttributeKey());
+                attributes.getNameAttributeKey(),
+                member.getId());
     }
 
     /*
