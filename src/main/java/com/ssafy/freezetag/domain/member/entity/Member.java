@@ -1,7 +1,7 @@
 package com.ssafy.freezetag.domain.member.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
-import com.ssafy.freezetag.domain.result.entity.BalanceResult;
+import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResult;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
