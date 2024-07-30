@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.common.constant;
 
-public class OpenAi {
+public class OpenAiConstant {
     public static final String OPEN_AI_MODEL = "gpt-4o";
     public static final Float OPEN_AI_TEMPERATURE = 0.8F;
     public static final String DEFAULT_PROMPT = "1. 당신은 밸런스 게임 주제를 받을거야" +
