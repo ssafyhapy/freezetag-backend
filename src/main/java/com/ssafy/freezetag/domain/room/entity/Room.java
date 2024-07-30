@@ -1,7 +1,7 @@
 package com.ssafy.freezetag.domain.room.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
-import com.ssafy.freezetag.domain.result.entity.BalanceQuestion;
+import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
