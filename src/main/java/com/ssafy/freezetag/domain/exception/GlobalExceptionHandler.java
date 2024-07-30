@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.exception;
 
+ㄹㄷㅁimport jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -33,5 +34,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401)
                 .body(new ErrorResponse(false, e.getMessage()));
 
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(final EntityNotFoundException e){
+        log.warn(e.getMessage());
+        return ResponseEntity.status(404)
+                .body(new ErrorResponse(false, e.getMessage()));
     }
 }
