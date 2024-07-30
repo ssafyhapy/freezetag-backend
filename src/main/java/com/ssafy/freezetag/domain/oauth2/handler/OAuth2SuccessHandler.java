@@ -22,6 +22,7 @@ import static com.ssafy.freezetag.domain.common.constant.TokenKey.TOKEN_PREFIX;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+// TODO : 이제 Handler 안 사용하고 controller로 동작하므로 삭제해야 함
 public class OAuth2SuccessHandler {
 
     private final TokenProvider tokenProvider;

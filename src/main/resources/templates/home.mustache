@@ -10,16 +10,17 @@
     {{#nickname}}
         <p>You are logged in as {{nickname}}.</p>
         <form action="/member/logout" method="POST">
-        <button type="submit" class="btn btn-secondary active">logout</button>
+            <button type="submit" class="btn btn-secondary active">logout</button>
         </form>
     {{/nickname}}
     {{^nickname}}
         <p>You are not logged in.</p>
         <form action="/member/login" method="POST">
             <input type="hidden" name="providerId" value="kakao">
-            <button type="submit" class="btn btn-secondary active">Kakao Login</button>
+            <button type="submit" class="btn btn-secondary active">Kakao Login(안사용함)</button>
         </form>
         <a href="https://kauth.kakao.com/oauth/authorize?client_id=34935559ad5a5358e1cf4920274841c6&client_secret=TSYineaUAzjlec5hjj5DRySVwwcszUpx&redirect_uri=http://localhost:8080/login/oauth2/code/kakao&response_type=code">login</a>
-        {{/nickname}}
+    {{/nickname}}
+
 </body>
 </html>

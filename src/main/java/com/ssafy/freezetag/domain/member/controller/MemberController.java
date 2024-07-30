@@ -19,6 +19,8 @@ public class MemberController {
     private final MemberService memberService;
     private final TokenService tokenService;
 
+
+    // TODO : login방식 바뀌어서 삭제해야 함
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String providerId) {
 
