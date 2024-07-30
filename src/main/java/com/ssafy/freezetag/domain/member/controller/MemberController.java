@@ -40,8 +40,8 @@ public class MemberController {
         // 현재 로그인 인증정보 확인
         memberService.checkAuthentication(request);
 
-        // 로그아웃 후 세션 무효화 및 쿠키 삭제
-        memberService.deleteTokenAndSession(request, response);
+        // 로그아웃 후 세션 쿠키 삭제
+        memberService.deleteToken(request, response);
 
         // 응답 JSON 객체 생성
         var responseBody = new MemberController.ResponseBody(true);

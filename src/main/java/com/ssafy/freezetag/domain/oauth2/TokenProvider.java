@@ -10,7 +10,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TokenProvider {
 
-    private final HttpSession httpSession;
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
@@ -55,7 +53,7 @@ public class TokenProvider {
     public String generateRefreshToken(Authentication authentication) {
         Long memberId = getMemberId(authentication);
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, memberId);
-        tokenService.saveOrUpdate(authentication.getName(), refreshToken);
+        tokenService.saveOrUpdate(getMemberId(authentication).toString(), refreshToken);
         return refreshToken;
     }
 
