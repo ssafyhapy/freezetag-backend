@@ -1,6 +1,7 @@
 package com.ssafy.freezetag.domain.oauth2;
 
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
+import com.ssafy.freezetag.domain.oauth2.entity.CustomOAuth2User;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TokenProvider {
 
+    private final HttpSession httpSession;
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
@@ -45,16 +48,23 @@ public class TokenProvider {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+        Long memberId = getMemberId(authentication);
+        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME, memberId);
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
+        Long memberId = getMemberId(authentication);
+        String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, memberId);
         tokenService.saveOrUpdate(authentication.getName(), refreshToken);
         return refreshToken;
     }
 
-    private String generateToken(Authentication authentication, long expireTime) {
+    private static Long getMemberId(Authentication authentication) {
+        CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
+        return principal.getMemberId();
+    }
+
+    private String generateToken(Authentication authentication, long expireTime, Long memberId) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + expireTime);
 
@@ -65,11 +75,13 @@ public class TokenProvider {
         return Jwts.builder()
                 .subject(authentication.getName())
                 .claim(KEY_ROLE, authorities)
+                .claim("memberId", memberId)
                 .issuedAt(now)
                 .expiration(expiredDate)
                 .signWith(secretKey, Jwts.SIG.HS512)
                 .compact();
     }
+
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
@@ -133,5 +145,11 @@ public class TokenProvider {
         } catch (SecurityException e) {
             throw new TokenException("Access Token이 손상되었습니다.");
         }
+    }
+
+    public Long getMemberIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+        // memberId 클레임을 Long으로 변환
+        return claims.get("memberId", Long.class);
     }
 }

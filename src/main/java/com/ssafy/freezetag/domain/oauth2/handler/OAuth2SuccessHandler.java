@@ -3,14 +3,10 @@ package com.ssafy.freezetag.domain.oauth2.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
-import com.ssafy.freezetag.domain.oauth2.service.OAuthAttributesDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Map;
 
 import static com.ssafy.freezetag.domain.common.constant.TokenKey.TOKEN_PREFIX;
 
