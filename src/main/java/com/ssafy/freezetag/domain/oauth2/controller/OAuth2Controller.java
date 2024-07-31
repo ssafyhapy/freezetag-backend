@@ -1,11 +1,14 @@
 package com.ssafy.freezetag.domain.oauth2.controller;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.OAuth2Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +30,8 @@ public class OAuth2Controller {
 
     private final OAuth2Service oAuth2Service;
     private final TokenProvider tokenProvider;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 직렬화를 위한 ObjectMapper
 
-    /*
-        front로부터 authorization 받으면 유저 정보를 얻어와 accessToken, refreshToken 보내주는 코드
-     */
     @PostMapping("/login")
     public ResponseEntity<?> exchangeAuthorizationCode(@RequestBody Map<String, String> request, HttpServletResponse response) {
 
@@ -41,7 +42,6 @@ public class OAuth2Controller {
 
         // Create OAuth2AuthenticationToken
         Authentication authentication = new OAuth2AuthenticationToken(oAuth2User, oAuth2User.getAuthorities(), "authorization");
-
 
         // accessToken, refreshToken 발급
         String accessToken = tokenProvider.generateAccessToken(authentication);
@@ -58,18 +58,23 @@ public class OAuth2Controller {
         refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
         response.addCookie(refreshTokenCookie);
 
-        // 응답 JSON 객체 생성
-        var responseBody = new ResponseBody(true);
+        // 'properties' 객체에서 'nickname'을 가져오는 과정
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
+        String memberName = (String) properties.get("nickname");
+
+        // LoginResponseDto 생성
+        LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
+
+        // Result 객체 생성
+        Result<LoginResponseDto> result = new Result<>(true, loginResponseDto);
 
         // 응답 반환
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(responseBody);
+                .body(result);
     }
 
-    /*
-        만료된 토큰 재발급하는 메소드
-     */
     @GetMapping("/reissue-tokens")
     public ResponseEntity<?> reissueAllToken(HttpServletRequest request, HttpServletResponse response) {
         List<String> tokenList = oAuth2Service.reissueAllTokens(request);
@@ -89,7 +94,7 @@ public class OAuth2Controller {
         refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
         response.addCookie(refreshTokenCookie);
 
-        // 응답 JSON 객체 생성
+        // 응답 바디를 위한 객체 생성
         var responseBody = new ResponseBody(true);
 
         // 응답 반환
@@ -98,7 +103,6 @@ public class OAuth2Controller {
                 .body(responseBody);
     }
 
-    // 응답 바디를 위한 내부 클래스
     @Getter
     private static class ResponseBody {
         private final boolean success;
@@ -106,6 +110,12 @@ public class OAuth2Controller {
         public ResponseBody(boolean success) {
             this.success = success;
         }
+    }
 
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private boolean success;
+        private T data;
     }
 }

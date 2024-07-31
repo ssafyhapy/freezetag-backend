@@ -17,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -53,9 +52,10 @@ public class TokenProvider {
     public String generateRefreshToken(Authentication authentication) {
         Long memberId = getMemberId(authentication);
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, memberId);
-        tokenService.saveOrUpdate(getMemberId(authentication).toString(), refreshToken);
+        tokenService.saveOrUpdate(memberId.toString(), refreshToken);
         return refreshToken;
     }
+
 
     private static Long getMemberId(Authentication authentication) {
         CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
@@ -85,7 +85,7 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        CustomOAuth2User principal = new CustomOAuth2User(authorities, claims, "sub", claims.get("memberId", Long.class));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -101,21 +101,19 @@ public class TokenProvider {
 
             // 정상적인 refreshToken이다면
             // 만약 이미 만료된 accessToken으로 접근한다고 해도=> refreshToken이 없다면 => refreshToken 생성 안함!
-            if (validateToken(refreshToken)) {
+            if (validateRefreshToken(refreshToken)) {
                 // 다시 accessToken재발급해줌
                 String reissueAccessToken = generateAccessToken(getAuthentication(refreshToken));
-                tokenService.saveOrUpdate(memberId, refreshToken);
                 return reissueAccessToken;
             }
         }
         return null;
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateRefreshToken(String token) {
         if (!StringUtils.hasText(token)) {
             return false;
         }
-
         Claims claims = parseClaims(token);
         // 토큰의 만료 여부 확인하는 코드
         return claims.getExpiration().after(new Date());
@@ -125,11 +123,13 @@ public class TokenProvider {
         access와 refresh token의 id가 정말 같은지 확인
      */
     public boolean validateSameTokens(String accessToken, String refreshToken) {
-        if (!validateToken(accessToken) || !validateToken(refreshToken)) {
+        if (!validateAccessToken(accessToken) || !validateRefreshToken(refreshToken)) {
             return false;
         }
-        return getAuthentication(accessToken).getName()
-                .equals(getAuthentication(refreshToken).getName());
+        return true;
+//        return getMemberIdFromToken(accessToken).equals(getMemberIdFromToken(refreshToken));
+//        return getAuthentication(accessToken).getName()
+//                .equals(getAuthentication(refreshToken).getName());
     }
 
     private Claims parseClaims(String token) {
@@ -149,5 +149,21 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         // memberId 클레임을 Long으로 변환
         return claims.get("memberId", Long.class);
+    }
+
+    public boolean validateAccessToken(String token) {
+        token = stripBearerPrefix(token);
+        if (!StringUtils.hasText(token)) {
+            return false;
+        }
+        Claims claims = parseClaims(token);
+        return claims.getExpiration().after(new Date());
+    }
+
+    private String stripBearerPrefix(String token) {
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
     }
 }

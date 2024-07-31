@@ -61,7 +61,6 @@ public class MemberService {
         }
 
         Long memberId = tokenProvider.getMemberIdFromToken(refreshToken);
-        System.out.println(memberId);
         // 레디스에서 정보 삭제
         tokenService.deleteRefreshToken(memberId.toString());
 

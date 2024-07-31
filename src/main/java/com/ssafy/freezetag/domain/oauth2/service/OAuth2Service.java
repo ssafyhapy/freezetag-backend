@@ -43,7 +43,7 @@ public class OAuth2Service {
         if (clientRegistration == null) {
             throw new IllegalArgumentException("Invalid provider ID");
         }
-        System.out.println("request Completed");
+        System.out.println("dfdfdf");
         // Prepare the request to the token endpoint
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
@@ -56,13 +56,11 @@ public class OAuth2Service {
 
         // Make the request and extract the access token from the response
         Map<String, String> response = restTemplate.postForObject(uriBuilder.toUriString(), null, Map.class);
-        System.out.println(response);
         String accessToken = response.get("access_token");
 
         if (accessToken == null) {
             throw new RuntimeException("Failed to obtain access token");
         }
-        System.out.println("Access token: " + accessToken);
         return accessToken;
     }
 
@@ -140,14 +138,16 @@ public class OAuth2Service {
         }
 
         // Token 유효성 검증
-        tokenProvider.validateToken(refreshToken);
+        tokenProvider.validateRefreshToken(refreshToken);
 
         // memberId 추출
         Authentication authentication = tokenProvider.getAuthentication(refreshToken);
-        String memberId = authentication.getName();
-        accessToken = tokenProvider.reissueAccessToken(memberId);
-        refreshToken = tokenProvider.generateRefreshToken(authentication);
+        Long memberId = tokenProvider.getMemberIdFromToken(refreshToken);
+        //accessToken = tokenProvider.reissueAccessToken(memberId);
 
+        // 토큰 재발급
+        accessToken = tokenProvider.reissueAccessToken(memberId.toString());
+        refreshToken = tokenProvider.generateRefreshToken(authentication);
         tokenList.add(accessToken);
         tokenList.add(refreshToken);
         return tokenList;
