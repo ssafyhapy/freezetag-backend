@@ -34,7 +34,6 @@ public class OAuth2Controller {
 
     @PostMapping("/login")
     public ResponseEntity<?> exchangeAuthorizationCode(@RequestBody Map<String, String> request, HttpServletResponse response) {
-
         // accessToken 발급
         String oAuthaccessToken = oAuth2Service.getAccessToken(request);
         // Retrieve user info using access token

@@ -37,7 +37,7 @@ public class OAuth2Service {
      */
     public String getAccessToken(Map<String, String> request) {
         String registrationId = request.get("registrationId");
-        String authorizationCode = request.get("authorizationCode");
+        String authorizationCode = request.get("authorization");
 
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {
@@ -53,7 +53,7 @@ public class OAuth2Service {
                 .queryParam("redirect_uri", clientRegistration.getRedirectUri())
                 .queryParam("client_id", clientRegistration.getClientId())
                 .queryParam("client_secret", clientRegistration.getClientSecret());
-
+        System.out.println(uriBuilder.toUriString());
         // Make the request and extract the access token from the response
         Map<String, String> response = restTemplate.postForObject(uriBuilder.toUriString(), null, Map.class);
         String accessToken = response.get("access_token");
