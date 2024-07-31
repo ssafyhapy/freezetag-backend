@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/result/intro")
 @RequiredArgsConstructor
-public class IntroResultController {
+public class IntroResultController implements IntroResultControllerSwagger{
 
     private final IntroResultService introResultService;
 
