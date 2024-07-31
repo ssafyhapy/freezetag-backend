@@ -1,13 +1,17 @@
 package com.ssafy.freezetag.domain.room.service;
 
+import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
+import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
+import com.ssafy.freezetag.domain.room.entity.RoomRedis;
+import com.ssafy.freezetag.domain.room.repository.RoomRedisRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
-import com.ssafy.freezetag.domain.room.service.response.RoomCreateResponseDto;
+import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoDto;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,9 +30,10 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final OpenviduService openviduService;
+    private final RoomRedisRepository roomRedisRepository;
 
     @Transactional
-    public RoomCreateResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
+    public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
         // 접속코드 생성
         String enterCode = CodeGenerator.generateCode();
 
@@ -65,7 +70,7 @@ public class RoomService {
         // Openvidu 로부터 토큰 및 세션 ID 반환
         OpenviduResponseDto webrtcDto = openviduService.createRoom();
 
-        return new RoomCreateResponseDto(
+        return new RoomConnectResponseDto(
                 roomId,
                 enterCode,
                 dto.getRoomName(),
@@ -76,17 +81,42 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomCreateResponseDto enterRoom(String roomCode, Long memberId) {
+    public RoomConnectResponseDto enterRoom(String enterCode, Long memberId) {
         // memberId 유효성 검증
+        Member member = memberRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
 
-        // roomCode로 방 조회
+        // 레디스에서 roomCode로 openvidu 세션, 방 ID 조회
+        RoomRedis roomRedis = roomRedisRepository.findById(enterCode).orElseThrow(() -> new SessionNotFoundException(enterCode));
+        String sessionId = roomRedis.getSessionId();
+        Long roomId = roomRedis.getRoomId();
 
         // 방 인원수 확인 (초과 시 예외 처리)
+        Room fetchJoinedRoom = roomRepository.findRoomWithMembers(roomId);
+        if (fetchJoinedRoom.getMemberRooms().size() >= 6) {
+            throw new RoomFullException();
+        }
 
         // 방 입장 처리 (memberRooms 리스트에 업데이트)
+        fetchJoinedRoom.getMemberRooms().add(new MemberRoom(member, fetchJoinedRoom));
+
+        // RoomMemberInfoDto (memberId, memberName) 형태로 변환
+        List<RoomMemberInfoDto> memberInfoDtos = fetchJoinedRoom.getMemberRooms().stream()
+                .map(memberRoom -> new RoomMemberInfoDto(memberRoom.getId(), memberRoom.getMember().getMemberName()))
+                .toList();
 
         // OpenVidu 토큰 반환
+        OpenviduResponseDto webrtcDto = openviduService.enterRoom(sessionId);
 
-        // 기존 사용자에게 입장된 유저 띄워주기? (보류)
+        // 기존 사용자에게 입장된 유저 알림 (신규 유저 정보만을 넘겨줌)
+
+        // 현재 방 정보 반환
+        return new RoomConnectResponseDto(
+                roomId,
+                enterCode,
+                fetchJoinedRoom.getRoomName(),
+                fetchJoinedRoom.getRoomPersonCount(),
+                memberInfoDtos,
+                fetchJoinedRoom.getHost().getId(),
+                webrtcDto);
     }
 }
