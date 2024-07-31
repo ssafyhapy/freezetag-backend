@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class RoomCreateResponseDto {
+public class RoomConnectResponseDto {
     private final Long roomId;
     private final String roomCode;
     private final String roomName;
