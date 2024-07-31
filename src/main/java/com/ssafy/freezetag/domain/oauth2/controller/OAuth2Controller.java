@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.OAuth2Service;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -13,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -51,11 +51,14 @@ public class OAuth2Controller {
         headers.set("Authorization", "Bearer " + accessToken);
 
         // refreshToken을 HTTP Only 쿠키로 설정
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true); // HTTPS에서만 사용 가능하도록 설정
-        refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
-        response.addCookie(refreshTokenCookie);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true) // HTTPS에서만 사용 가능하도록 설정
+                .path("/") // 쿠키가 유효한 경로 설정
+                .sameSite("Strict")
+                .maxAge(7 * 24 * 60 * 60) // 쿠키 만료 시간 설정 (예: 7일)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         // 'properties' 객체에서 'nickname'을 가져오는 과정
         @SuppressWarnings("unchecked")
@@ -87,11 +90,14 @@ public class OAuth2Controller {
         headers.set("Authorization", "Bearer " + accessToken);
 
         // refreshToken을 HTTP Only 쿠키로 설정
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true); // HTTPS에서만 사용 가능하도록 설정
-        refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
-        response.addCookie(refreshTokenCookie);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true) // HTTPS에서만 사용 가능하도록 설정
+                .path("/") // 쿠키가 유효한 경로 설정
+                .sameSite("Strict")
+                .maxAge(7 * 24 * 60 * 60) // 쿠키 만료 시간 설정 (예: 7일)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         // 응답 바디를 위한 객체 생성
         var responseBody = new ResponseBody(true);

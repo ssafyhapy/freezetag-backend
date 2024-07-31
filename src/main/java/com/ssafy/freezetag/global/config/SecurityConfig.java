@@ -1,8 +1,5 @@
 package com.ssafy.freezetag.global.config;
 
-//import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
-
-//import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
 import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
@@ -32,28 +29,24 @@ public class SecurityConfig {
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final TokenService tokenService; // 추가
 
-    // TODO : 나중에 전역 Pattern 지우기
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors
-                        .configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions().disable())
-                .authorizeRequests(authorizeRequests ->
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**",
                                         "/h2-console/**", "/profile", "/public/**", "/login/**", "/oauth/login",
-                                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll() // added "/public/**"
+                                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass()) // 토큰 예외 핸들링
-        ;
+                .addFilterBefore(new TokenExceptionFilter(), TokenAuthenticationFilter.class); // 수정됨
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,7 +59,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.addExposedHeader("*");
+        configuration.addExposedHeader("Authorization"); // 필요한 헤더 추가
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
