@@ -1,11 +1,14 @@
 package com.ssafy.freezetag.domain.room.entity;
 
-import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @RedisHash(value = "room")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoomRedis {
     @Id
     private String enterCode;
