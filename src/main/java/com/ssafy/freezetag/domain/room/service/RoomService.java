@@ -1,5 +1,7 @@
 package com.ssafy.freezetag.domain.room.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
 import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
@@ -7,16 +9,19 @@ import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
+import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRedisRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoDto;
+import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,9 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final OpenviduService openviduService;
     private final RoomRedisRepository roomRedisRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MemberRoomRepository memberRoomRepository;
 
     @Transactional
     public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
@@ -50,6 +58,8 @@ public class RoomService {
 
         // 방장 설정
         MemberRoom host = new MemberRoom(member, unfinishedRoom);
+
+        memberRoomRepository.save(host);
         unfinishedRoom.assignHost(host);
 
         // 완성된 방 정보 저장
@@ -57,7 +67,7 @@ public class RoomService {
 
         // room Id로 연관된 멤버들 다 조인해오는 메소드
         // 현재 엔티티가 LAZY로 설정되어 있어서 이렇게 페치 조인해오지 않으면 쿼리가 여러번 나간다.
-        Room room = roomRepository.findRoomWithMembers(unfinishedRoom.getId());
+        Room room = roomRepository.findById(unfinishedRoom.getId()).orElseThrow();
 
         // RoomMemberInfoDto (memberId, memberName) 형태로 변환
         List<RoomMemberInfoDto> memberInfoDtos = room.getMemberRooms().stream()
@@ -70,6 +80,10 @@ public class RoomService {
         // Openvidu 로부터 토큰 및 세션 ID 반환
         OpenviduResponseDto webrtcDto = openviduService.createRoom();
 
+        // Redis에 세션 및 방 정보 저장
+        RoomRedis roomRedis = new RoomRedis(enterCode, webrtcDto.getSessionId(), roomId);
+        roomRedisRepository.save(roomRedis);
+
         return new RoomConnectResponseDto(
                 roomId,
                 enterCode,
@@ -81,7 +95,8 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomConnectResponseDto enterRoom(String enterCode, Long memberId) {
+    public RoomConnectResponseDto enterRoom(String enterCode, Long memberId) throws JsonProcessingException {
+        log.info("enterRoom(enterCode={}, memberId={})", enterCode, memberId);
         // memberId 유효성 검증
         Member member = memberRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
 
@@ -91,23 +106,32 @@ public class RoomService {
         Long roomId = roomRedis.getRoomId();
 
         // 방 인원수 확인 (초과 시 예외 처리)
-        Room fetchJoinedRoom = roomRepository.findRoomWithMembers(roomId);
-        if (fetchJoinedRoom.getMemberRooms().size() >= 6) {
+        Room fetchJoinedRoom = roomRepository.findById(roomId).orElseThrow();
+        if (fetchJoinedRoom.getMemberRooms().size() == fetchJoinedRoom.getRoomPersonCount()) {
             throw new RoomFullException();
         }
 
         // 방 입장 처리 (memberRooms 리스트에 업데이트)
-        fetchJoinedRoom.getMemberRooms().add(new MemberRoom(member, fetchJoinedRoom));
+        MemberRoom nowMemberRoom = new MemberRoom(member, fetchJoinedRoom);
+        memberRoomRepository.save(nowMemberRoom);
+        fetchJoinedRoom.getMemberRooms().add(nowMemberRoom);
 
         // RoomMemberInfoDto (memberId, memberName) 형태로 변환
         List<RoomMemberInfoDto> memberInfoDtos = fetchJoinedRoom.getMemberRooms().stream()
-                .map(memberRoom -> new RoomMemberInfoDto(memberRoom.getId(), memberRoom.getMember().getMemberName()))
+                .map(memberRoom -> new RoomMemberInfoDto(memberRoom.getMember().getId(), memberRoom.getMember().getMemberName()))
                 .toList();
 
         // OpenVidu 토큰 반환
         OpenviduResponseDto webrtcDto = openviduService.enterRoom(sessionId);
 
-        // 기존 사용자에게 입장된 유저 알림 (신규 유저 정보만을 넘겨줌)
+        // 신규 회원 정보를 event 형태로 저장
+        RoomMemberInfoDto newMemberInfo = new RoomMemberInfoDto(memberId, member.getMemberName());
+        RoomUserJoinEvent roomUserJoinEvent = new RoomUserJoinEvent("NEW_USER_JOINED", roomId, newMemberInfo);
+
+        // 기존 사용자에게 새로 입장된 유저 알림
+        String joinEvent = objectMapper.writeValueAsString(roomUserJoinEvent);
+        messagingTemplate.convertAndSend("/sub/room/" + roomId, joinEvent);
+
 
         // 현재 방 정보 반환
         return new RoomConnectResponseDto(
@@ -119,4 +143,5 @@ public class RoomService {
                 fetchJoinedRoom.getHost().getId(),
                 webrtcDto);
     }
+
 }

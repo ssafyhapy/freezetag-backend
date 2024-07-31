@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.room.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.freezetag.domain.room.service.RoomService;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
@@ -26,9 +27,9 @@ public class RoomController {
     }
 
     @PostMapping("/enter")
-    public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam String roomCode) {
-
-        return ResponseEntity.ok(new Result<>(true, null));
+    public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam String roomCode) throws JsonProcessingException {
+        RoomConnectResponseDto responseDto = roomService.enterRoom(roomCode, memberId);
+        return ResponseEntity.ok(new Result<>(true, responseDto));
     }
 
     @Data
