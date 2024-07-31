@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/result/ox")
 @RequiredArgsConstructor
-public class OXResultController {
+public class OXResultController implements OXResultControllerSwagger{
 
     private final OXResultService oxResultService;
 
