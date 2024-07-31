@@ -30,7 +30,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = resolveToken(request);
         log.info("accesstoken: {}", accessToken);
         // 1. 우선 filter을 통해 accessToken에 이상이 없을 경우
-        if (tokenProvider.validateToken(accessToken)) {
+        if (tokenProvider.validateAccessToken(accessToken)) {
             log.info("AccessToken is valid!!");
             setAuthentication(accessToken); // 토큰이 유효하므로 인증 정보 설정
         }

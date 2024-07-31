@@ -19,8 +19,10 @@ public class MemberController {
     private final MemberService memberService;
     private final TokenService tokenService;
 
+
+    // TODO : login방식 바뀌어서 삭제해야 함
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam String providerId) {
+    public ResponseEntity<?> login(@RequestParam String providerId) {
 
         // 우선 정상적인 provider인지 확인하고 리디렉션 URL을 가져옴
         // TODO : redirectUrl 관리하는 법 처리
@@ -38,8 +40,8 @@ public class MemberController {
         // 현재 로그인 인증정보 확인
         memberService.checkAuthentication(request);
 
-        // 로그아웃 후 세션 무효화 및 쿠키 삭제
-        memberService.deleteTokenAndSession(request, response);
+        // 로그아웃 후 세션 쿠키 삭제
+        memberService.deleteToken(request, response);
 
         // 응답 JSON 객체 생성
         var responseBody = new MemberController.ResponseBody(true);

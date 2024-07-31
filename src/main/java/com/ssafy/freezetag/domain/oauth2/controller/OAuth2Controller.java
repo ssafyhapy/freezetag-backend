@@ -1,23 +1,79 @@
 package com.ssafy.freezetag.domain.oauth2.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
+import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.OAuth2Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/oauth")
 public class OAuth2Controller {
 
     private final OAuth2Service oAuth2Service;
+    private final TokenProvider tokenProvider;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 직렬화를 위한 ObjectMapper
+
+    @PostMapping("/login")
+    public ResponseEntity<?> exchangeAuthorizationCode(@RequestBody Map<String, String> request, HttpServletResponse response) {
+
+        // accessToken 발급
+        String oAuthaccessToken = oAuth2Service.getAccessToken(request);
+        // Retrieve user info using access token
+        OAuth2User oAuth2User = oAuth2Service.loadUserByAccessToken(oAuthaccessToken, request);
+
+        // Create OAuth2AuthenticationToken
+        Authentication authentication = new OAuth2AuthenticationToken(oAuth2User, oAuth2User.getAuthorities(), "authorization");
+
+        // accessToken, refreshToken 발급
+        String accessToken = tokenProvider.generateAccessToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+
+        // accessToken을 HTTP 헤더에 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        // refreshToken을 HTTP Only 쿠키로 설정
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // HTTPS에서만 사용 가능하도록 설정
+        refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
+        response.addCookie(refreshTokenCookie);
+
+        // 'properties' 객체에서 'nickname'을 가져오는 과정
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
+        String memberName = (String) properties.get("nickname");
+
+        // LoginResponseDto 생성
+        LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
+
+        // Result 객체 생성
+        Result<LoginResponseDto> result = new Result<>(true, loginResponseDto);
+
+        // 응답 반환
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(result);
+    }
 
     @GetMapping("/reissue-tokens")
     public ResponseEntity<?> reissueAllToken(HttpServletRequest request, HttpServletResponse response) {
@@ -38,7 +94,7 @@ public class OAuth2Controller {
         refreshTokenCookie.setPath("/"); // 쿠키가 유효한 경로 설정
         response.addCookie(refreshTokenCookie);
 
-        // 응답 JSON 객체 생성
+        // 응답 바디를 위한 객체 생성
         var responseBody = new ResponseBody(true);
 
         // 응답 반환
@@ -47,16 +103,19 @@ public class OAuth2Controller {
                 .body(responseBody);
     }
 
-    // 응답 바디를 위한 내부 클래스
+    @Getter
     private static class ResponseBody {
         private final boolean success;
 
         public ResponseBody(boolean success) {
             this.success = success;
         }
+    }
 
-        public boolean isSuccess() {
-            return success;
-        }
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private boolean success;
+        private T data;
     }
 }
