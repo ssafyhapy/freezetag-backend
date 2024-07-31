@@ -27,6 +27,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        if (requestURI.equals("/oauth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String accessToken = resolveToken(request);
         log.info("accesstoken: {}", accessToken);
         // 1. 우선 filter을 통해 accessToken에 이상이 없을 경우
