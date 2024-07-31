@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/result/balance")
 @RestController
-public class BalanceResultController {
+public class BalanceResultController implements BalanceResultControllerSwagger{
 
     private final BalanceResultService balanceResultService;
 
