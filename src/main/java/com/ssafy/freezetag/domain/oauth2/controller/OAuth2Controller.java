@@ -55,7 +55,7 @@ public class OAuth2Controller {
                 .httpOnly(true)
                 .secure(true) // HTTPS에서만 사용 가능하도록 설정
                 .path("/") // 쿠키가 유효한 경로 설정
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(7 * 24 * 60 * 60) // 쿠키 만료 시간 설정 (예: 7일)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
@@ -94,7 +94,7 @@ public class OAuth2Controller {
                 .httpOnly(true)
                 .secure(true) // HTTPS에서만 사용 가능하도록 설정
                 .path("/") // 쿠키가 유효한 경로 설정
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(7 * 24 * 60 * 60) // 쿠키 만료 시간 설정 (예: 7일)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
