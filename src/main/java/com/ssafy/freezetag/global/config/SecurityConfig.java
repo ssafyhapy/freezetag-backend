@@ -2,7 +2,7 @@ package com.ssafy.freezetag.global.config;
 
 //import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 
-import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
+//import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
 import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**",
-                                        "/h2-console/**", "/profile", "/public/**",
+                                        "/h2-console/**", "/profile", "/public/**", "/login/**", "/oauth/login",
                                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll() // added "/public/**"
                                 .anyRequest().authenticated()
                 )
