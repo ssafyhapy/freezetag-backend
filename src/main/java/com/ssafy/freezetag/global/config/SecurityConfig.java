@@ -2,7 +2,7 @@ package com.ssafy.freezetag.global.config;
 
 //import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 
-import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
+//import com.ssafy.freezetag.domain.oauth2.handler.OAuth2SuccessHandler;
 import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
@@ -28,7 +28,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final TokenService tokenService; // 추가
 
@@ -43,17 +42,9 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**",
-                                        "/h2-console/**", "/profile", "/public/**",
+                                        "/h2-console/**", "/profile", "/public/**", "/login/**", "/oauth/login",
                                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll() // added "/public/**"
                                 .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                .userInfoEndpoint(userInfoEndpoint ->
-                                                userInfoEndpoint.userService(customOAuth2UserService)
-                                        // 로그인 성공 시 핸들러
-                                )
-                                .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), tokenAuthenticationFilter.getClass()) // 토큰 예외 핸들링

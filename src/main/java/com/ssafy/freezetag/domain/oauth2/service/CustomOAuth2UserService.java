@@ -3,7 +3,6 @@ package com.ssafy.freezetag.domain.oauth2.service;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.oauth2.entity.CustomOAuth2User;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +24,6 @@ import java.util.Collections;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
-    private final HttpSession httpSession;
 
     /*
         OAuth 로그인 요청이 오면 인가 코드부터 회원정보까지 볼 수 있는 코드
@@ -50,7 +48,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 여기서 이제 attributes를  활용해서 DB에 회원가입 or login 진행
         Member member = saveOrUpdate(attributes);
-        //httpSession.setAttribute("member", new SessionMemberDto(member));
 
         return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

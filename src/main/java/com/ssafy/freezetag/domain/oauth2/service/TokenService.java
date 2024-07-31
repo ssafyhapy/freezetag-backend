@@ -67,7 +67,6 @@ public class TokenService {
         Token token = tokenRepository.findById(memberKey)
                 .map(existingToken -> existingToken.updateRefreshToken(refreshToken))
                 .orElseGet(() -> new Token(memberKey, refreshToken));
-
         tokenRepository.save(token);
     }
 
