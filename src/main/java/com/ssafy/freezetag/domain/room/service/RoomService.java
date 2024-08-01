@@ -104,6 +104,7 @@ public class RoomService {
         RoomRedis roomRedis = roomRedisRepository.findById(enterCode).orElseThrow(() -> new SessionNotFoundException(enterCode));
         String sessionId = roomRedis.getSessionId();
         Long roomId = roomRedis.getRoomId();
+        log.info("roomRedisRepository 조회 = [{}, {}]", sessionId, roomId);
 
         // 방 인원수 확인 (초과 시 예외 처리)
         Room fetchJoinedRoom = roomRepository.findById(roomId).orElseThrow();

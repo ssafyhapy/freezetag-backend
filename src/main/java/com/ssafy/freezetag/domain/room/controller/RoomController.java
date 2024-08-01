@@ -19,7 +19,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) {
+    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) throws Exception {
         // 생성된 방 정보 (방 제목, 접속 코드 등) 을 DB에 엔티티로 저장
         RoomConnectResponseDto roomConnectResponseDto = roomService.createRoom(createRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
