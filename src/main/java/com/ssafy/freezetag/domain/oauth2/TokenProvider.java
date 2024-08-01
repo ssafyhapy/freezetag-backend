@@ -52,7 +52,7 @@ public class TokenProvider {
     public String generateRefreshToken(Authentication authentication) {
         Long memberId = getMemberId(authentication);
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, memberId);
-        tokenService.saveOrUpdate(memberId.toString(), refreshToken);
+//        tokenService.saveOrUpdate(memberId.toString(), refreshToken);
         return refreshToken;
     }
 
