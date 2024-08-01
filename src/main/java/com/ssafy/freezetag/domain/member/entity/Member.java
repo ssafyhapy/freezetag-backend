@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -42,6 +43,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<BalanceResult> balanceResults = new ArrayList<>();
+
+    @ColumnDefault("true")
+    private boolean memberVisibility;
 
     // MemberBuilder
     @Builder
