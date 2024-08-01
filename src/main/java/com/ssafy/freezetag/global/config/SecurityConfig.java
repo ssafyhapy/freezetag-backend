@@ -37,10 +37,10 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions().disable())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/", "/home", "/login", "/css/**", "/images/**", "/js/**",
-                                        "/h2-console/**", "/profile", "/public/**", "/login/**", "/oauth/login",
+                                .requestMatchers("/", "api/home", "api/login", "/css/**", "/images/**", "/js/**",
+                                        "/h2-console/**", "api/profile", "api/public/**", "api/login/**", "api/oauth/login",
                                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new TokenExceptionFilter(), TokenAuthenticationFilter.class); // 수정됨
