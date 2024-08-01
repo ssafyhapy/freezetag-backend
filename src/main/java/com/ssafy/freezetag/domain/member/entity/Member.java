@@ -38,12 +38,6 @@ public class Member extends BaseEntity {
     private List<MemberHistory> memberHistories = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<MemberHobby> memberHobbies = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<MemberInterest> memberInterests = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
