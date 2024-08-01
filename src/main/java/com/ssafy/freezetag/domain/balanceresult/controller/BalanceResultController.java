@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/result/balance")
+@RequestMapping("/api/result/balance")
 @RestController
 public class BalanceResultController implements BalanceResultControllerSwagger{
 

@@ -46,8 +46,6 @@ public class Room extends BaseEntity {
     // Room 생성 후 의존관계 주입
     public void assignHost(final MemberRoom host) {
         this.host = host;
-        memberRooms.add(host);
-
         // 양방향 관계 설정
         host.setRoom(this);
     }
