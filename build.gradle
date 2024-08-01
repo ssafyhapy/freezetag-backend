@@ -50,7 +50,6 @@ dependencies {
 
     // Spring AI 의존성
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    implementation 'org.springframework.ai:spring-ai-openai'
     implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 
     // JSON
