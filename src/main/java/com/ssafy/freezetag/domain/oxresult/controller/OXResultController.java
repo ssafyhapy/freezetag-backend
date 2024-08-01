@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/result/ox")
+@RequestMapping("/api/result/ox")
 @RequiredArgsConstructor
 public class OXResultController implements OXResultControllerSwagger{
 

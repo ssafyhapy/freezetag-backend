@@ -13,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/room")
+@RequestMapping("/api/room")
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) throws Exception {
+    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto){
         // 생성된 방 정보 (방 제목, 접속 코드 등) 을 DB에 엔티티로 저장
         RoomConnectResponseDto roomConnectResponseDto = roomService.createRoom(createRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)

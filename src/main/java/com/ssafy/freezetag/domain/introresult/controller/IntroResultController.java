@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/result/intro")
+@RequestMapping("/api/result/intro")
 @RequiredArgsConstructor
 public class IntroResultController implements IntroResultControllerSwagger{
 
