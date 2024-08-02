@@ -3,12 +3,13 @@ package com.ssafy.freezetag.domain.member.service.response;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
+@RequiredArgsConstructor
 public class MemberMemoryboxDto {
-    private LocalDate memberHistoryDate;
-    private String memberHistoryContent;
-    private String thumbnail;
-    private String photo;
+    private final LocalDate memberHistoryDate;
+    private final String memberHistoryContent;
+    private final String thumbnailUrl;
+//    private final String photo;
 }

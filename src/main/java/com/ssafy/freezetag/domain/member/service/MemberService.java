@@ -5,6 +5,7 @@ import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.entity.MemberHistory;
+import com.ssafy.freezetag.domain.member.entity.Visibility;
 import com.ssafy.freezetag.domain.member.repository.MemberHistoryRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberMemoryboxRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
@@ -55,53 +56,47 @@ public class MemberService {
         Member member = findMember(memberId);
 
         List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
-                .map(history -> MemberHistoryDto.builder()
-                        .memberHistoryId(history.getId())
-                        .memberHistoryDate(history.getMemberHistoryDate())
-                        .memberHistoryContent(history.getMemberHistoryContent())
-                        .build()).toList();
+                .map(history -> new MemberHistoryDto(
+                        history.getId(),
+                        history.getMemberHistoryDate(),
+                        history.getMemberHistoryContent()
+                        )).toList();
 
         List<MemberMemoryboxDto> memberMemoryboxList = memberMemoryboxRepository.findByMemberId(memberId).stream()
-                .map(memorybox -> MemberMemoryboxDto.builder()
-                        .memberHistoryDate(memorybox.getMemberHistoryDate())
-                        .memberHistoryContent(memorybox.getMemberHistoryContent())
-                        .thumbnail(memorybox.getThumbnailUrl())
-//                        .photo(memorybox.getPhoto())
-                        .build()).toList();
+                .map(memorybox -> new MemberMemoryboxDto(
+                        memorybox.getMemberHistoryDate(),
+                        memorybox.getMemberHistoryContent(),
+                        memorybox.getThumbnailUrl()
+                        )).toList();
 
 
-        return MypageResponseDto.builder()
-                .memberName(member.getMemberName())
-                .memberProviderEmail(member.getMemberProviderEmail())
-                .memberProfileImageUrl(member.getMemberProfileImageUrl())
-                .memberIntroduction(member.getMemberIntroduction())
-                .memberHistoryList(memberHistoryList)
-                .memberMemoryboxList(memberMemoryboxList)
-                .build();
+        return new MypageResponseDto(
+                member.getMemberName(),
+                member.getMemberProviderEmail(),
+                member.getMemberProfileImageUrl(),
+                member.getMemberIntroduction(),
+                memberHistoryList,
+                memberMemoryboxList
+        );
+
     }
 
     /*
         memberId를 통해서 마이페이지 프로필 공개, 비공개 설정
      */
     @Transactional
-    public MypageVisibilityResponseDto setMypageVisibility(Long memberId, Boolean requestVisibility) {
-
-        // DB에 있는 visibility 정보 로드
+    public MypageVisibilityResponseDto setMypageVisibility(Long memberId, Visibility requestVisibility) {
         Member member = findMember(memberId);
-        Boolean memberVisibility = member.isMemberVisibility();
+        Visibility memberVisibility = member.getMemberVisibility();
 
-        // 만약 DB에 있는 정보랑 요청한 정보가 일치하다면
-        if (!memberVisibility.equals(requestVisibility)) {
+        if (memberVisibility != requestVisibility) {
             throw new InvalidMemberVisibilityException("멤버 공개 정보가 일치하지 않습니다.");
         }
 
-        // DB 반영
         member.updateMemberVisibility();
 
-        // Toggle 느낌으로 구현
-        return MypageVisibilityResponseDto.builder()
-                .visibility(member.isMemberVisibility())
-                .build();
+        return new MypageVisibilityResponseDto(
+                member.getMemberVisibility());
     }
 
     @Transactional

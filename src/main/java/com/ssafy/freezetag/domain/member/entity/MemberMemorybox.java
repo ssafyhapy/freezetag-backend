@@ -31,7 +31,7 @@ public class MemberMemorybox extends BaseEntity {
     private Room room;
 
     private String memberHistoryContent;
-
+    // TODO : 후에 room_id의 BaseEntity 활용하기
     private LocalDate memberHistoryDate;
 
     private String thumbnailUrl;

@@ -30,7 +30,6 @@ public class MemberHistory extends BaseEntity {
 
     private String memberHistoryContent;
 
-    @Builder
     public MemberHistory(Member member, LocalDate memberHistoryDate, String memberHistoryContent) {
         this.member = member;
         this.memberHistoryDate = memberHistoryDate;

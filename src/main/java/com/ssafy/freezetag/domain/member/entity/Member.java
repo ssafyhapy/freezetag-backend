@@ -20,16 +20,13 @@ public class Member extends BaseEntity {
     private Long id;
 
     private String memberName;
-
     private String memberProviderEmail;
-
     private String memberProvider;
 
     @Enumerated(EnumType.STRING)
     private Age memberAge;
 
     private String memberProfileImageUrl;
-
     private String memberIntroduction;
 
     @OneToMany(mappedBy = "member")
@@ -41,27 +38,25 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<BalanceResult> balanceResults = new ArrayList<>();
 
-    @ColumnDefault("true")
-    private boolean memberVisibility;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'PUBLIC'")
+    private Visibility memberVisibility = Visibility.PUBLIC;
 
-    // MemberBuilder
-    @Builder
     public Member(String memberName, String memberProvider, String memberProviderEmail, String memberProfileImageUrl) {
         this.memberName = memberName;
         this.memberProvider = memberProvider;
-        this.memberProviderEmail =memberProviderEmail;
+        this.memberProviderEmail = memberProviderEmail;
         this.memberProfileImageUrl = memberProfileImageUrl;
     }
 
-    // memberVisibility 상태를 토글하는 메소드 추가
+    // MemberVisibility 상태를 토글하는 메소드 추가
     public void updateMemberVisibility() {
-        this.memberVisibility = !this.memberVisibility;
+        this.memberVisibility = this.memberVisibility == Visibility.PUBLIC ? Visibility.PRIVATE : Visibility.PUBLIC;
     }
 
     // MemberUpdate
     public Member updateMemberName(String memberName) {
         this.memberName = memberName;
-
         return this;
     }
 }

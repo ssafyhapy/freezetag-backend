@@ -3,11 +3,12 @@ package com.ssafy.freezetag.domain.member.service.response;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
+@RequiredArgsConstructor
 public class MemberHistoryDto {
-    private Long memberHistoryId;
-    private LocalDate memberHistoryDate;
-    private String memberHistoryContent;
+    private final Long memberHistoryId;
+    private final LocalDate memberHistoryDate;
+    private final String memberHistoryContent;
 }

@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.member.controller;
 
+import com.ssafy.freezetag.domain.member.entity.Visibility;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
+import static com.ssafy.freezetag.domain.common.CommonResponse.successWithNoContent;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +35,8 @@ public class MemberController {
         MypageResponseDto mypageResponseDto = memberService.getMypage(memberId);
         log.info("response: {}", mypageResponseDto.toString());
 
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.ok()
+                .body(success(mypageResponseDto));
     }
 
     @PatchMapping("/mypage")
@@ -44,12 +46,12 @@ public class MemberController {
         log.info("수정 완료!");
 
         return ResponseEntity.ok()
-                .body(success(null));
+                .body(successWithNoContent());
     }
 
     @PutMapping("/mypage/visibility")
     public ResponseEntity<?> visibility(@Login Long memberId, @RequestBody MypageVisibilityRequestDto requestDto) {
-        Boolean requestVisibility = requestDto.getVisibility();
+        Visibility requestVisibility = requestDto.getVisibility();
         MypageVisibilityResponseDto mypageVisibilityResponseDto = memberService.setMypageVisibility(memberId, requestVisibility);
         return ResponseEntity.ok()
                 .body(success(mypageVisibilityResponseDto));

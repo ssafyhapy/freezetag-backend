@@ -6,15 +6,16 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
+@RequiredArgsConstructor
 public class MypageModifyRequestDto {
-    private String memberName;
-    private String memberProviderEmail;
-    private String memberProfileImageUrl;
-    private String memberIntroduction;
-    private List<MemberHistoryDto> memberHistoryList;
-    private List<MemberMemoryboxDto> memberMemoryboxList;
-    private List<Long> deletedHistoryList; // 삭제될 번호 제거
+    private final String memberName;
+    private final String memberProviderEmail;
+    private final String memberProfileImageUrl;
+    private final String memberIntroduction;
+    private final List<MemberHistoryDto> memberHistoryList;
+    private final List<MemberMemoryboxDto> memberMemoryboxList;
+    private final List<Long> deletedHistoryList; // 삭제될 번호 제거
 }

@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
+@RequiredArgsConstructor
 public class MypageResponseDto {
-    private String memberName;
-    private String memberProviderEmail;
-    private String memberProfileImageUrl;
-    private String memberIntroduction;
-    private List<MemberHistoryDto> memberHistoryList;
-    private List<MemberMemoryboxDto> memberMemoryboxList;
+    private final String memberName;
+    private final String memberProviderEmail;
+    private final String memberProfileImageUrl;
+    private final String memberIntroduction;
+    private final List<MemberHistoryDto> memberHistoryList;
+    private final List<MemberMemoryboxDto> memberMemoryboxList;
 }
