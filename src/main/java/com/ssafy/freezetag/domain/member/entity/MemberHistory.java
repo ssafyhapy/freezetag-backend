@@ -2,7 +2,10 @@ package com.ssafy.freezetag.domain.member.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +14,8 @@ import static jakarta.persistence.FetchType.*;
 
 @Getter
 @Entity
+@Setter
+@NoArgsConstructor
 public class MemberHistory extends BaseEntity {
     @Id
     @GeneratedValue
@@ -24,4 +29,10 @@ public class MemberHistory extends BaseEntity {
     private LocalDate memberHistoryDate;
 
     private String memberHistoryContent;
+
+    public MemberHistory(Member member, LocalDate memberHistoryDate, String memberHistoryContent) {
+        this.member = member;
+        this.memberHistoryDate = memberHistoryDate;
+        this.memberHistoryContent = memberHistoryContent;
+    }
 }

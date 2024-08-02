@@ -1,7 +1,6 @@
 package com.ssafy.freezetag.domain.oauth2.service;
 
 import com.ssafy.freezetag.domain.member.entity.Member;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Map;
@@ -11,21 +10,19 @@ import java.util.Map;
  */
 @Getter
 public class OAuthAttributesDto {
-    private Map<String, Object> attributes;
-    private String nameAttributeKey;
-    private String memberName;
-    private String memberProvider;
-    private String memberProviderEmail;
-    private String memberProfileImageUrl;
+    private final Map<String, Object> attributes;
+    private final String nameAttributeKey;
+    private final String memberName;
+    private final String memberProvider;
+    private final String memberProviderEmail;
+    private final String memberProfileImageUrl;
 
-    @Builder
     public OAuthAttributesDto(Map<String, Object> attributes,
                               String nameAttributeKey,
                               String memberName,
                               String memberProvider,
                               String memberProviderEmail,
                               String memberProfileImageUrl) {
-
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.memberName = memberName;
@@ -38,23 +35,24 @@ public class OAuthAttributesDto {
         OAuth가 여러 개이면 후에 분기하는 코드
      */
     public static OAuthAttributesDto of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        if("kakao".equals(registrationId)) {
+        if ("kakao".equals(registrationId)) {
             return ofKakao("id", registrationId, attributes);
         }
 
-        // TODO : 나중에 삭제
+        // TODO: 나중에 삭제
         return ofGoogle(userNameAttributeName, attributes);
     }
 
-    // TODO : 나중에 삭제
+    // TODO: 나중에 삭제
     private static OAuthAttributesDto ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributesDto.builder()
-                .memberName((String) attributes.get("name"))
-                .memberProviderEmail((String) attributes.get("email"))
-                .memberProfileImageUrl((String) attributes.get("picture"))
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        return new OAuthAttributesDto(
+                attributes,
+                userNameAttributeName,
+                (String) attributes.get("name"),
+                "google",
+                (String) attributes.get("email"),
+                (String) attributes.get("picture")
+        );
     }
 
     private static OAuthAttributesDto ofKakao(String userNameAttributeName, String registrationId, Map<String, Object> attributes) {
@@ -69,24 +67,23 @@ public class OAuthAttributesDto {
         String profileImageUrl = (String) profile.get("profile_image_url");
         String providerEmail = (String) kakaoAccount.get("email");
 
-        // 빌드 후 OAuthAttributes object 반환
-        return OAuthAttributesDto.builder()
-                .memberName(nickname)
-                .memberProfileImageUrl(profileImageUrl)
-                .memberProviderEmail(providerEmail)
-                .memberProvider(registrationId)
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        // 생성자를 통해 OAuthAttributesDto 객체 반환
+        return new OAuthAttributesDto(
+                attributes,
+                userNameAttributeName,
+                nickname,
+                registrationId,
+                providerEmail,
+                profileImageUrl
+        );
     }
 
-
     public Member toEntity() {
-        return Member.builder()
-                .memberName(memberName)
-                .memberProviderEmail(memberProviderEmail)
-                .memberProvider(memberProvider)
-                .memberProfileImageUrl(memberProfileImageUrl)
-                .build();
+        return new Member(
+                memberName,
+                memberProviderEmail,
+                memberProvider,
+                memberProfileImageUrl
+        );
     }
 }

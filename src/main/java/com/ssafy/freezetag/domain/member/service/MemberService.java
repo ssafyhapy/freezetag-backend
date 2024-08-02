@@ -1,13 +1,33 @@
 package com.ssafy.freezetag.domain.member.service;
 
+import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
+import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
+import com.ssafy.freezetag.domain.member.entity.Member;
+import com.ssafy.freezetag.domain.member.entity.MemberHistory;
+import com.ssafy.freezetag.domain.member.entity.Visibility;
+import com.ssafy.freezetag.domain.member.repository.MemberHistoryRepository;
+import com.ssafy.freezetag.domain.member.repository.MemberMemoryboxRepository;
+import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
+import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
+import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
+import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -16,21 +36,121 @@ public class MemberService {
 
     private final TokenProvider tokenProvider;
     private final TokenService tokenService;
+    private final MemberRepository memberRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
+    private final MemberMemoryboxRepository memberMemoryboxRepository;
 
-    public String checkProvider(String providerId) {
-
-        // provider id가 null이거나, providerId가 비었을 경우
-        if (providerId == null || providerId.isEmpty()) {
-            throw new RuntimeException("provider 값이 존재하지 않습니다.");
-        }
-
-        // 현재 어플리케이션에서 지원하는 provider인지 분기
-        if (providerId.equals("kakao")) {
-            return "/oauth2/authorization/kakao";
-        }
-
-        throw new RuntimeException("올바른 provider가 아닙니다.");
+    /*
+        member 찾는 부분 메소드화
+     */
+    private Member findMember(Long memberId) {
+        return memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("멤버가 존재하지 않습니다."));
     }
+
+    /*
+        memberId를 통해서 ResponseDto 생성
+     */
+    public MypageResponseDto getMypage(Long memberId) {
+        Member member = findMember(memberId);
+
+        List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
+                .map(history -> new MemberHistoryDto(
+                        history.getId(),
+                        history.getMemberHistoryDate(),
+                        history.getMemberHistoryContent()
+                        )).toList();
+
+        List<MemberMemoryboxDto> memberMemoryboxList = memberMemoryboxRepository.findByMemberId(memberId).stream()
+                .map(memorybox -> new MemberMemoryboxDto(
+                        memorybox.getMemberHistoryDate(),
+                        memorybox.getMemberHistoryContent(),
+                        memorybox.getThumbnailUrl()
+                        )).toList();
+
+
+        return new MypageResponseDto(
+                member.getMemberName(),
+                member.getMemberProviderEmail(),
+                member.getMemberProfileImageUrl(),
+                member.getMemberIntroduction(),
+                memberHistoryList,
+                memberMemoryboxList
+        );
+
+    }
+
+    /*
+        memberId를 통해서 마이페이지 프로필 공개, 비공개 설정
+     */
+    @Transactional
+    public MypageVisibilityResponseDto setMypageVisibility(Long memberId, Visibility requestVisibility) {
+        Member member = findMember(memberId);
+        Visibility memberVisibility = member.getMemberVisibility();
+
+        if (memberVisibility != requestVisibility) {
+            throw new InvalidMemberVisibilityException("멤버 공개 정보가 일치하지 않습니다.");
+        }
+
+        member.updateMemberVisibility();
+
+        return new MypageVisibilityResponseDto(
+                member.getMemberVisibility());
+    }
+
+    @Transactional
+    public void updateMemberHistory(Long memberId, MypageModifyRequestDto requestDto) {
+
+        // 필요한 데이터 로드
+        Member member = findMember(memberId);
+        List<MemberHistoryDto> memberHistoryDtos = requestDto.getMemberHistoryList();
+        // TODO : 추억상자 나중 구현
+        List<MemberMemoryboxDto> memberMemoryboxDtos = requestDto.getMemberMemoryboxList();
+        List<Long> deletedHistoryList = requestDto.getDeletedHistoryList();
+
+        // 삭제 대상 지움
+        if (deletedHistoryList != null && !deletedHistoryList.isEmpty()) {
+            List<MemberHistory> historiesToDelete = memberHistoryRepository.findAllById(deletedHistoryList);
+            memberHistoryRepository.deleteAll(historiesToDelete);
+            member.getMemberHistories().removeAll(historiesToDelete);
+        }
+        // TODO : 한 번에 반복문 돌도록 진행하기!
+        // 먼저 추가할 항목을 가져온다.
+        List<MemberHistoryDto> addList = memberHistoryDtos.stream()
+                .filter(dto -> dto.getMemberHistoryId() == -1) // 추가할 항목 ID
+                .toList();
+
+        for (MemberHistoryDto memberHistoryDto : addList) {
+            MemberHistory newMemberHistory = new MemberHistory(
+                    member,
+                    memberHistoryDto.getMemberHistoryDate(),
+                    memberHistoryDto.getMemberHistoryContent()
+            );
+
+            memberHistoryRepository.save(newMemberHistory);
+            member.getMemberHistories().add(newMemberHistory);
+        }
+
+        // 현재의 모든 히스토리를 가져와서 업데이트합니다.
+        for (MemberHistoryDto dto : memberHistoryDtos) {
+            Long dtoId = dto.getMemberHistoryId();
+
+            if (dtoId != -1) {
+                Optional<MemberHistory> existingHistoryOpt = memberHistoryRepository.findById(dtoId);
+                if (existingHistoryOpt.isPresent()) {
+                    MemberHistory existingHistory = existingHistoryOpt.get();
+                    existingHistory.setMemberHistoryDate(dto.getMemberHistoryDate());
+                    existingHistory.setMemberHistoryContent(dto.getMemberHistoryContent());
+                }
+            }
+        }
+
+        // 변경된 엔티티를 저장합니다.
+        memberRepository.save(member);
+    }
+
+
 
     /*
         로그아웃 => token redis에서 삭제
@@ -40,13 +160,13 @@ public class MemberService {
         Cookie[] cookies = request.getCookies();
 
         // 쿠키가 아예 존재하지 않나 확인
-        if(cookies == null) {
+        if (cookies == null) {
             throw new RuntimeException("쿠키가 존재하지 않습니다.");
         }
 
         // 쿠키 조회
         String refreshToken = getRefreshToken(cookies);
-        if(!StringUtils.hasText(refreshToken)) {
+        if (!StringUtils.hasText(refreshToken)) {
             throw new TokenException("Refresh Token이 존재하지 않습니다.");
         }
 
@@ -54,9 +174,8 @@ public class MemberService {
         String accessToken = request.getHeader("Authorization");
 
 
-
         // 그리고 access, refresh간 id 불일치 발생하면 처리
-        if(!tokenProvider.validateSameTokens(accessToken, refreshToken)) {
+        if (!tokenProvider.validateSameTokens(accessToken, refreshToken)) {
             throw new TokenException("Access Token과 Refresh Token 사용자 정보 불일치합니다.");
         }
 

@@ -17,6 +17,10 @@ public class CommonResponse<T> {
         return new CommonResponse<>(true, data, null);
     }
 
+    public static <T> CommonResponse<T> successWithNoContent() {
+        return new CommonResponse<>(true, null, null);
+    }
+
     public static <T> CommonResponse<T> failure(String error) {
         return new CommonResponse<>(false, null, error);
     }
