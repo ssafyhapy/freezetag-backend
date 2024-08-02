@@ -29,6 +29,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
+    private final TokenExceptionFilter tokenExceptionFilter;
     private final TokenService tokenService; // 추가
 
     @Bean
@@ -45,7 +46,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new TokenExceptionFilter(), TokenAuthenticationFilter.class); // 수정됨
+                .addFilterBefore(tokenExceptionFilter, TokenAuthenticationFilter.class); // 수정됨
 
         return http.build();
     }
