@@ -44,7 +44,7 @@ public class MemberController {
         log.info("수정 완료!");
 
         return ResponseEntity.ok()
-                .body("12");
+                .body(success(null));
     }
 
     @PutMapping("/mypage/visibility")

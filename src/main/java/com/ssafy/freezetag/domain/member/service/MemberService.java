@@ -62,6 +62,7 @@ public class MemberService {
 
         List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
                 .map(history -> MemberHistoryDto.builder()
+                        .memberHistoryId(history.getId())
                         .memberHistoryDate(history.getMemberHistoryDate())
                         .memberHistoryContent(history.getMemberHistoryContent())
                         .build())
