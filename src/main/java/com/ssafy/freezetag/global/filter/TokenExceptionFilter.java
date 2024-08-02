@@ -1,14 +1,15 @@
 package com.ssafy.freezetag.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.freezetag.domain.exception.ErrorResponse;
+import com.ssafy.freezetag.domain.common.CommonResponse;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 public class TokenExceptionFilter extends OncePerRequestFilter {
 
@@ -28,8 +29,7 @@ public class TokenExceptionFilter extends OncePerRequestFilter {
     private void handleTokenException(HttpServletResponse response, TokenException e) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
         response.setContentType("application/json");
-        ErrorResponse errorResponse = new ErrorResponse(false, e.getMessage());
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        String jsonResponse = objectMapper.writeValueAsString(CommonResponse.failure(e.getMessage()));
         response.getWriter().write(jsonResponse);
     }
 

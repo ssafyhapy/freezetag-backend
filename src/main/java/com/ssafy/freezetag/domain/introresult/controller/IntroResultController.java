@@ -5,8 +5,6 @@ import com.ssafy.freezetag.domain.introresult.service.request.IntroModifyRequest
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSaveRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroResponseDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSaveResponseDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.ssafy.freezetag.domain.common.CommonResponse.success;
+
 @RestController
 @RequestMapping("/api/result/intro")
 @RequiredArgsConstructor
-public class IntroResultController implements IntroResultControllerSwagger{
+public class IntroResultController implements IntroResultControllerSwagger {
 
     private final IntroResultService introResultService;
 
@@ -26,7 +26,7 @@ public class IntroResultController implements IntroResultControllerSwagger{
         IntroSaveResponseDto introSaveResponseDto = introResultService.save(introSaveRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Result<>(true, introSaveResponseDto));
+                .body(success(introSaveResponseDto));
     }
 
     @PostMapping("/modify")
@@ -34,7 +34,7 @@ public class IntroResultController implements IntroResultControllerSwagger{
         IntroResponseDto introResponseDto = introResultService.modify(introModifyRequestDto);
 
         return ResponseEntity.ok()
-                .body(new Result<>(true,introResponseDto));
+                .body(success(introResponseDto));
     }
 
     @GetMapping("/{roomId}")
@@ -42,20 +42,12 @@ public class IntroResultController implements IntroResultControllerSwagger{
         List<IntroResponseDto> introResponseDtoList = introResultService.findAllByRoomId(roomId);
 
         return ResponseEntity.ok()
-                .body(new Result<>(true, introResponseDtoList));
+                .body(success(introResponseDtoList));
     }
 
     @DeleteMapping("/{roomId}")
     public ResponseEntity<?> deleteIntros(@PathVariable Long roomId) {
         introResultService.deleteAll(roomId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .build();
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private boolean success;
-        private T data;
+        return ResponseEntity.noContent().build();
     }
 }
