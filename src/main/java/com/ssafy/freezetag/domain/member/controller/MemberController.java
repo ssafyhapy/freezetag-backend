@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.member.controller;
 
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.MemberService;
+import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
 import com.ssafy.freezetag.domain.member.service.request.MypageVisibilityRequestDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
@@ -29,16 +30,26 @@ public class MemberController {
     @GetMapping("/mypage")
     public ResponseEntity<?> mypage(@Login Long memberId) {
 
-        MypageResponseDto mypageResponseDto = memberService.getmypage(memberId);
+        MypageResponseDto mypageResponseDto = memberService.getMypage(memberId);
         log.info("response: {}", mypageResponseDto.toString());
 
         return ResponseEntity.ok()
                 .body(success(mypageResponseDto));
     }
 
+    @PatchMapping("/mypage")
+    public ResponseEntity<?> modifyMypage(@Login Long memberId, @RequestBody MypageModifyRequestDto requestDto) {
+
+        memberService.updateMemberHistory(memberId, requestDto);
+        log.info("수정 완료!");
+
+        return ResponseEntity.ok()
+                .body("12");
+    }
+
     @PutMapping("/mypage/visibility")
-    public ResponseEntity<?> visibility(@Login Long memberId, @RequestBody MypageVisibilityRequestDto mypageVisibilityRequestDto) {
-        Boolean requestVisibility = mypageVisibilityRequestDto.getVisibility();
+    public ResponseEntity<?> visibility(@Login Long memberId, @RequestBody MypageVisibilityRequestDto requestDto) {
+        Boolean requestVisibility = requestDto.getVisibility();
         MypageVisibilityResponseDto mypageVisibilityResponseDto = memberService.setMypageVisibility(memberId, requestVisibility);
         return ResponseEntity.ok()
                 .body(success(mypageVisibilityResponseDto));

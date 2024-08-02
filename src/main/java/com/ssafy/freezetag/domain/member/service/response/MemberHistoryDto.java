@@ -7,6 +7,7 @@ import lombok.Builder;
 @Getter
 @Builder
 public class MemberHistoryDto {
+    private Long memberHistoryId;
     private LocalDate memberHistoryDate;
     private String memberHistoryContent;
 }
