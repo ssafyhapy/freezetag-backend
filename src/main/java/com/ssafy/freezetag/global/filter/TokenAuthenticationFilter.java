@@ -3,6 +3,7 @@ package com.ssafy.freezetag.global.filter;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 import com.ssafy.freezetag.domain.common.constant.TokenKey;
+import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +57,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION);
         if (ObjectUtils.isEmpty(token) || !token.startsWith(TokenKey.TOKEN_PREFIX)) {
-            return null;
+            throw new TokenException("Access Token이 존재하지 않습니다.");
         }
         return token.substring(TokenKey.TOKEN_PREFIX.length());
     }
