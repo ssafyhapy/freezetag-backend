@@ -5,6 +5,7 @@ import com.ssafy.freezetag.domain.introresult.service.request.IntroModifyRequest
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSaveRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroResponseDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSaveResponseDto;
+import com.ssafy.freezetag.global.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class IntroResultController implements IntroResultControllerSwagger {
     private final IntroResultService introResultService;
 
     @PostMapping()
-    public ResponseEntity<?> saveIntro(@RequestBody IntroSaveRequestDto introSaveRequestDto) {
-        IntroSaveResponseDto introSaveResponseDto = introResultService.save(introSaveRequestDto);
+    public ResponseEntity<?> saveIntro(@Login Long memberId,  @RequestBody IntroSaveRequestDto introSaveRequestDto) {
+        IntroSaveResponseDto introSaveResponseDto = introResultService.save(memberId, introSaveRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(introSaveResponseDto));

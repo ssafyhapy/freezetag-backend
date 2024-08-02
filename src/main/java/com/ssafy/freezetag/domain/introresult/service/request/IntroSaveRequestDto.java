@@ -8,7 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class IntroSaveRequestDto {
     private final Long roomId;
 
-    private final Long memberRoomId;
-
     private final String content;
 }
