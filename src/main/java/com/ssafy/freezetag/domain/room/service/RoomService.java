@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.freezetag.domain.exception.custom.DuplicateRoomMemberException;
 import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
 import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
@@ -118,6 +119,13 @@ public class RoomService {
         Room fetchJoinedRoom = roomRepository.findById(roomId).orElseThrow();
         if (fetchJoinedRoom.getMemberRooms().size() == fetchJoinedRoom.getRoomPersonCount()) {
             throw new RoomFullException();
+        }
+        
+        // 이미 입장된 회원이 접속을 시도한 경우 처리
+        List<MemberRoom> existMemberRooms = fetchJoinedRoom.getMemberRooms();
+        if (existMemberRooms.stream()
+                .anyMatch(memberRoom -> memberRoom.getMember().getId() == memberId)) {
+            throw new DuplicateRoomMemberException();
         }
 
         // 방 입장 처리 (memberRooms 리스트에 업데이트)
