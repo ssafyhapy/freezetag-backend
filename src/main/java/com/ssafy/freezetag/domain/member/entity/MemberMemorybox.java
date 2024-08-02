@@ -34,9 +34,9 @@ public class MemberMemorybox extends BaseEntity {
 
     private LocalDate memberHistoryDate;
 
-    private String thumbnail;
+    private String thumbnailUrl;
 
-    private String photo;
+//    private String photoUrl;
 
 
 

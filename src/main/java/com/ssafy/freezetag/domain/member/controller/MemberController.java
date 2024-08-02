@@ -33,8 +33,8 @@ public class MemberController {
         MypageResponseDto mypageResponseDto = memberService.getMypage(memberId);
         log.info("response: {}", mypageResponseDto.toString());
 
-        return ResponseEntity.ok()
-                .body(success(mypageResponseDto));
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @PatchMapping("/mypage")

@@ -19,7 +19,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,14 +35,9 @@ public class MemberService {
 
     private final TokenProvider tokenProvider;
     private final TokenService tokenService;
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private MemberHistoryRepository memberHistoryRepository;
-
-    @Autowired
-    private MemberMemoryboxRepository memberMemoryboxRepository;
+    private final MemberRepository memberRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
+    private final MemberMemoryboxRepository memberMemoryboxRepository;
 
     /*
         member 찾는 부분 메소드화
@@ -65,17 +59,16 @@ public class MemberService {
                         .memberHistoryId(history.getId())
                         .memberHistoryDate(history.getMemberHistoryDate())
                         .memberHistoryContent(history.getMemberHistoryContent())
-                        .build())
-                .collect(Collectors.toList());
+                        .build()).toList();
 
         List<MemberMemoryboxDto> memberMemoryboxList = memberMemoryboxRepository.findByMemberId(memberId).stream()
                 .map(memorybox -> MemberMemoryboxDto.builder()
                         .memberHistoryDate(memorybox.getMemberHistoryDate())
                         .memberHistoryContent(memorybox.getMemberHistoryContent())
-                        .thumbnail(memorybox.getThumbnail())
-                        .photo(memorybox.getPhoto())
-                        .build())
-                .collect(Collectors.toList());
+                        .thumbnail(memorybox.getThumbnailUrl())
+//                        .photo(memorybox.getPhoto())
+                        .build()).toList();
+
 
         return MypageResponseDto.builder()
                 .memberName(member.getMemberName())
