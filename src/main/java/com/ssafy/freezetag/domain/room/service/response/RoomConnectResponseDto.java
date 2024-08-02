@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.room.service.response;
 
+import com.ssafy.freezetag.domain.message.entity.MessageRedis;
 import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,4 +17,5 @@ public class RoomConnectResponseDto {
     private final List<RoomMemberInfoDto> members;
     private final Long hostId;
     private final OpenviduResponseDto webrtc;
+    private final List<MessageRedis> messages;
 }
