@@ -10,7 +10,7 @@ public class IntroSaveResponseDto {
 
     private final Long roomId;
 
-    private final Long memberRoomId;
+    private final Long memberId;
 
     private final String content;
 }

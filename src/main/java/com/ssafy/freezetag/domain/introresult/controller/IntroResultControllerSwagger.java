@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.introresult.controller;
 
 import com.ssafy.freezetag.domain.introresult.service.request.IntroModifyRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSaveRequestDto;
+import com.ssafy.freezetag.global.argumentresolver.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,7 +20,7 @@ public interface IntroResultControllerSwagger {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
     @PostMapping()
-    ResponseEntity<?> saveIntro(@RequestBody IntroSaveRequestDto introSaveRequestDto);
+    ResponseEntity<?> saveIntro(@Login Long memberId, @RequestBody IntroSaveRequestDto introSaveRequestDto);
 
     @Operation(summary = "한 줄 자기소개 수정")
     @ApiResponses(value = {

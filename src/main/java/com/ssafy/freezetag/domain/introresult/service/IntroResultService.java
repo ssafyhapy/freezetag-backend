@@ -25,16 +25,16 @@ public class IntroResultService {
     private final IntroResultRepository introResultRepository;
     private final MemberRoomRepository memberRoomRepository;
 
-    public IntroSaveResponseDto save(IntroSaveRequestDto introSaveRequestDto) {
+    public IntroSaveResponseDto save(Long memberId, IntroSaveRequestDto introSaveRequestDto) {
         IntroRedis introRedis = new IntroRedis(introSaveRequestDto.getRoomId(),
-                                                introSaveRequestDto.getMemberRoomId(),
+                                                memberId,
                                                 introSaveRequestDto.getContent());
 
         IntroRedis savedIntroRedis = introRedisRepository.save(introRedis);
 
         return new IntroSaveResponseDto(savedIntroRedis.getId(),
                 savedIntroRedis.getRoomId(),
-                savedIntroRedis.getMemberRoomId(),
+                savedIntroRedis.getMemberId(),
                 savedIntroRedis.getContent());
     }
 
@@ -67,8 +67,8 @@ public class IntroResultService {
 
         List<IntroResult> introResultList = introRedisList.stream()
                 .map(introRedis -> {
-                    MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
-                        .orElseThrow(() -> new IllegalArgumentException("해당 memberRoomId가 존재하지 않습니다. " + introRedis.getMemberRoomId()));
+                    MemberRoom memberRoom = memberRoomRepository.findByMemberIdAndRoomId(introRedis.getMemberId(), introRedis.getRoomId())
+                        .orElseThrow(() -> new IllegalArgumentException("해당 memberRoom이 존재하지 않습니다. "));
 
                     return new IntroResult(memberRoom, introRedis.getContent());
         }).toList();
