@@ -47,7 +47,7 @@ public class IntroResultService {
 
     private IntroRedis findIntroRedisByMemberIdAndRoomId(Long memberId, Long roomId){
         MemberRoom memberRoom = memberRoomRepository.findByMemberIdAndRoomId(memberId, roomId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 memberRoom이 존재하지 않습니다. "));
+                .orElseThrow(() -> new IllegalArgumentException("해당 memberRoom이 존재하지 않습니다."));
 
         return introRedisRepository.findByMemberRoomId(memberRoom.getId())
                 .orElseThrow(() -> new RuntimeException("해당 방에서 회원이 작성한 한 줄 자기소개가 없습니다."));
