@@ -2,7 +2,9 @@ package com.ssafy.freezetag.domain.member.controller;
 
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.MemberService;
+import com.ssafy.freezetag.domain.member.service.request.MypageVisibilityRequestDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.argumentresolver.Login;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,10 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,14 +26,22 @@ public class MemberController {
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
 
-    @GetMapping("/")
-    public ResponseEntity<?> example(@Login Long memberId) {
+    @GetMapping("/mypage")
+    public ResponseEntity<?> mypage(@Login Long memberId) {
 
-        MypageResponseDto mypageResponseDto = memberService.getMyPage(memberId);
+        MypageResponseDto mypageResponseDto = memberService.getmypage(memberId);
         log.info("response: {}", mypageResponseDto.toString());
 
         return ResponseEntity.ok()
-                .body(mypageResponseDto);
+                .body(success(mypageResponseDto));
+    }
+
+    @PutMapping("/mypage/visibility")
+    public ResponseEntity<?> visibility(@Login Long memberId, @RequestBody MypageVisibilityRequestDto mypageVisibilityRequestDto) {
+        Boolean requestVisibility = mypageVisibilityRequestDto.getVisibility();
+        MypageVisibilityResponseDto mypageVisibilityResponseDto = memberService.setMypageVisibility(memberId, requestVisibility);
+        return ResponseEntity.ok()
+                .body(success(mypageVisibilityResponseDto));
     }
 
     @PostMapping("/logout")

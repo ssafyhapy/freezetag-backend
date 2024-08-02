@@ -1,25 +1,28 @@
 package com.ssafy.freezetag.domain.member.service;
 
+import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
+import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.member.entity.MemberHistory;
-import com.ssafy.freezetag.domain.member.entity.MemberMemorybox;
 import com.ssafy.freezetag.domain.member.repository.MemberHistoryRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberMemoryboxRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -38,11 +41,18 @@ public class MemberService {
     private MemberMemoryboxRepository memberMemoryboxRepository;
 
     /*
+        member 찾는 부분 메소드화
+     */
+    private Member findMember(Long memberId) {
+        return memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("멤버가 존재하지 않습니다."));
+    }
+    /*
         memberId를 통해서 ResponseDto 생성
      */
-    public MypageResponseDto getMyPage(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public MypageResponseDto getmypage(Long memberId) {
+        Member member = findMember(memberId);
 
         List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
                 .map(history -> MemberHistoryDto.builder()
@@ -70,19 +80,28 @@ public class MemberService {
                 .build();
     }
 
-    public String checkProvider(String providerId) {
+    /*
+        memberId를 통해서 마이페이지 프로필 공개, 비공개 설정
+     */
+    @Transactional
+    public MypageVisibilityResponseDto setMypageVisibility(Long memberId, Boolean requestVisibility) {
 
-        // provider id가 null이거나, providerId가 비었을 경우
-        if (providerId == null || providerId.isEmpty()) {
-            throw new RuntimeException("provider 값이 존재하지 않습니다.");
+        // DB에 있는 visibility 정보 로드
+        Member member = findMember(memberId);
+        Boolean memberVisibility = member.isMemberVisibility();
+
+        // 만약 DB에 있는 정보랑 요청한 정보가 일치하다면
+        if(!memberVisibility.equals(requestVisibility)) {
+            throw new InvalidMemberVisibilityException("멤버 공개 정보가 일치하지 않습니다.");
         }
 
-        // 현재 어플리케이션에서 지원하는 provider인지 분기
-        if (providerId.equals("kakao")) {
-            return "/oauth2/authorization/kakao";
-        }
+        // DB 반영
+        member.setMemberVisibility(!memberVisibility);
 
-        throw new RuntimeException("올바른 provider가 아닙니다.");
+        // Toggle 느낌으로 구현
+        return MypageVisibilityResponseDto.builder()
+                .visibility(!memberVisibility)
+                .build();
     }
 
     /*

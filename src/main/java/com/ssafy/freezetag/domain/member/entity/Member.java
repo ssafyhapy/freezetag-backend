@@ -4,10 +4,7 @@ import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResult;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +41,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<BalanceResult> balanceResults = new ArrayList<>();
 
+    @Setter
     @ColumnDefault("true")
     private boolean memberVisibility;
 
