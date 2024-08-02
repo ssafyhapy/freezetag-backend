@@ -1,12 +1,13 @@
 package com.ssafy.freezetag.domain.exception;
 
-import com.ssafy.freezetag.domain.common.CommonResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static com.ssafy.freezetag.domain.common.CommonResponse.failure;
 
 @Slf4j
 @RestControllerAdvice
@@ -16,14 +17,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleBusinessException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(CommonResponse.failure(e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.badRequest()
-                .body(CommonResponse.failure(e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     /*
@@ -33,13 +34,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleOAuth2AuthenticationException(final OAuth2AuthenticationException e) {
         log.warn("OAuth2 authentication error: {}", e.getMessage());
         return ResponseEntity.status(401)
-                .body(CommonResponse.failure(e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.status(404)
-                .body(CommonResponse.failure(e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 }

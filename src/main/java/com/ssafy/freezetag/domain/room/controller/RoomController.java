@@ -32,10 +32,4 @@ public class RoomController {
         return ResponseEntity.ok(success(responseDto));
     }
 
-//    @Data
-//    @AllArgsConstructor
-//    static class Result<T> {
-//        private boolean success;
-//        private T data;
-//    }
 }
