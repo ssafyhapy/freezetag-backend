@@ -6,6 +6,8 @@ import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
 import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.message.entity.MessageRedis;
+import com.ssafy.freezetag.domain.message.service.MessageService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
@@ -39,6 +41,7 @@ public class RoomService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MemberRoomRepository memberRoomRepository;
+    private final MessageService messageService;
 
     @Transactional
     public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
@@ -84,6 +87,10 @@ public class RoomService {
         RoomRedis roomRedis = new RoomRedis(enterCode, webrtcDto.getSessionId(), roomId);
         roomRedisRepository.save(roomRedis);
 
+        // Redis에서 채팅(메세지) 정보 불러오기
+        List<MessageRedis> messages = messageService.getMessages(roomId);
+
+
         return new RoomConnectResponseDto(
                 roomId,
                 enterCode,
@@ -91,7 +98,8 @@ public class RoomService {
                 dto.getRoomPersonCount(),
                 memberInfoDtos,
                 room.getHost().getId(),
-                webrtcDto);
+                webrtcDto,
+                messages);
     }
 
     @Transactional
@@ -133,6 +141,8 @@ public class RoomService {
         String joinEvent = objectMapper.writeValueAsString(roomUserJoinEvent);
         messagingTemplate.convertAndSend("/sub/room/" + roomId, joinEvent);
 
+        // Redis에서 채팅(메세지) 정보 불러오기
+        List<MessageRedis> messages = messageService.getMessages(roomId);
 
         // 현재 방 정보 반환
         return new RoomConnectResponseDto(
@@ -142,7 +152,8 @@ public class RoomService {
                 fetchJoinedRoom.getRoomPersonCount(),
                 memberInfoDtos,
                 fetchJoinedRoom.getHost().getId(),
-                webrtcDto);
+                webrtcDto,
+                messages);
     }
 
 }
