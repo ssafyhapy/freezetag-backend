@@ -18,14 +18,19 @@ public class IntroRedis {
     @Indexed
     private Long roomId;
 
+    @Indexed
     private Long memberId;
+
+    @Indexed
+    private Long memberRoomId;
 
     private String content;
 
-    public IntroRedis(Long roomId, Long memberId, String content) {
+    public IntroRedis(Long roomId, Long memberId, Long memberRoomId, String content) {
         this.id = UUID.randomUUID().toString();
         this.roomId = roomId;
         this.memberId = memberId;
+        this.memberRoomId = memberRoomId;
         this.content = content;
     }
 

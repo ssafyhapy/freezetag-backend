@@ -8,5 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class IntroResponseDto {
     private final String id;
 
+    private final Long memberId;
+
     private final String content;
 }

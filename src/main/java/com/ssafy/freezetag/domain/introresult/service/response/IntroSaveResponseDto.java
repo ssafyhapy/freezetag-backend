@@ -12,5 +12,7 @@ public class IntroSaveResponseDto {
 
     private final Long memberId;
 
+    private final Long memberRoomId;
+
     private final String content;
 }

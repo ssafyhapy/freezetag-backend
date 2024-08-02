@@ -7,6 +7,7 @@ import com.ssafy.freezetag.domain.introresult.service.response.IntroResponseDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSaveResponseDto;
 import com.ssafy.freezetag.global.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/result/intro")
 @RequiredArgsConstructor
@@ -30,15 +32,23 @@ public class IntroResultController implements IntroResultControllerSwagger {
                 .body(success(introSaveResponseDto));
     }
 
-    @PostMapping("/modify")
-    public ResponseEntity<?> modifyIntro(@RequestBody IntroModifyRequestDto introModifyRequestDto) {
-        IntroResponseDto introResponseDto = introResultService.modify(introModifyRequestDto);
+    @PostMapping("/{roomId}/modify")
+    public ResponseEntity<?> modifyIntro(@Login Long memberId, @PathVariable Long roomId, @RequestBody IntroModifyRequestDto introModifyRequestDto) {
+        IntroResponseDto introResponseDto = introResultService.modify(memberId, roomId, introModifyRequestDto);
 
         return ResponseEntity.ok()
                 .body(success(introResponseDto));
     }
 
     @GetMapping("/{roomId}")
+    public ResponseEntity<?> getIntro(@Login Long memberId, @PathVariable Long roomId){
+        IntroResponseDto introResponseDto = introResultService.getMyIntro(memberId, roomId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(success(introResponseDto));
+    }
+
+    @GetMapping("/{roomId}/all")
     public ResponseEntity<?> getIntros(@PathVariable Long roomId) {
         List<IntroResponseDto> introResponseDtoList = introResultService.findAllByRoomId(roomId);
 

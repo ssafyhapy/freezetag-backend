@@ -1,12 +1,14 @@
 package com.ssafy.freezetag.domain.introresult.service.request;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class IntroModifyRequestDto {
-    private final String id;    // redis 식별키
+    private String content;
 
-    private final String content;
+    public IntroModifyRequestDto(String content) {
+        this.content = content;
+    }
 }
