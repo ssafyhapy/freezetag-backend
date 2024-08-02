@@ -20,22 +20,31 @@ public interface IntroResultControllerSwagger {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
     @PostMapping()
-    ResponseEntity<?> saveIntro(@Login Long memberId, @RequestBody IntroSaveRequestDto introSaveRequestDto);
+    ResponseEntity<?> saveIntro(@Login Long memberId,  @RequestBody IntroSaveRequestDto introSaveRequestDto);
 
     @Operation(summary = "한 줄 자기소개 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "수정 완료", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
-    @PostMapping("/modify")
-    ResponseEntity<?> modifyIntro(@RequestBody IntroModifyRequestDto introModifyRequestDto);
+    @PostMapping("/{roomId}/modify")
+    ResponseEntity<?> modifyIntro(@Login Long memberId, @PathVariable Long roomId, @RequestBody IntroModifyRequestDto introModifyRequestDto);
 
+    @Operation(summary = "한 줄 자기소개 단건 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/{roomId}")
+    ResponseEntity<?> getIntro(@Login Long memberId, @PathVariable Long roomId);
+
+    
     @Operation(summary = "한 줄 자기소개 전체조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전체 조회 성공", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
-    @GetMapping("/{roomId}")
+    @GetMapping("/{roomId}/all")
     ResponseEntity<?> getIntros(@PathVariable Long roomId);
 
     @Operation(summary = "한 줄 자기소개 삭제(다음게임)")
