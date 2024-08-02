@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
-import static com.ssafy.freezetag.domain.common.CommonResponse.successWithNoContent;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,8 +44,8 @@ public class MemberController {
         memberService.updateMemberHistory(memberId, requestDto);
         log.info("수정 완료!");
 
-        return ResponseEntity.ok()
-                .body(successWithNoContent());
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @PutMapping("/mypage/visibility")

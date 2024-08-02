@@ -43,7 +43,7 @@ public class OAuth2Service {
         if (clientRegistration == null) {
             throw new IllegalArgumentException("Invalid provider ID");
         }
-        System.out.println("dfdfdf");
+
         // Prepare the request to the token endpoint
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
