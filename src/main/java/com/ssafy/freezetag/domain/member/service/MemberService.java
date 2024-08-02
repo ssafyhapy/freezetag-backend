@@ -96,11 +96,11 @@ public class MemberService {
         }
 
         // DB 반영
-        member.setMemberVisibility(!memberVisibility);
+        member.updateMemberVisibility();
 
         // Toggle 느낌으로 구현
         return MypageVisibilityResponseDto.builder()
-                .visibility(!memberVisibility)
+                .visibility(member.isMemberVisibility())
                 .build();
     }
 

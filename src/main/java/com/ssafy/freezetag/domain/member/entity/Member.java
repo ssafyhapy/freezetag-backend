@@ -41,7 +41,6 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<BalanceResult> balanceResults = new ArrayList<>();
 
-    @Setter
     @ColumnDefault("true")
     private boolean memberVisibility;
 
@@ -52,6 +51,11 @@ public class Member extends BaseEntity {
         this.memberProvider = memberProvider;
         this.memberProviderEmail =memberProviderEmail;
         this.memberProfileImageUrl = memberProfileImageUrl;
+    }
+
+    // memberVisibility 상태를 토글하는 메소드 추가
+    public void updateMemberVisibility() {
+        this.memberVisibility = !this.memberVisibility;
     }
 
     // MemberUpdate
