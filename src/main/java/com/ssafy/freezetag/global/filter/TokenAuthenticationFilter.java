@@ -29,7 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/oauth/login")) {
+        if (requestURI.equals("/api/oauth/login")) {
             filterChain.doFilter(request, response);
             return;
         }
