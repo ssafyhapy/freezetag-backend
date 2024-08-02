@@ -6,9 +6,6 @@ import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.OAuth2Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -68,13 +65,10 @@ public class OAuth2Controller {
         // LoginResponseDto 생성
         LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
 
-        // Result 객체 생성
-        Result<LoginResponseDto> result = new Result<>(true, loginResponseDto);
-
         // 응답 반환
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(result);
+                .body(loginResponseDto);
     }
 
     @GetMapping("/reissue-tokens")
@@ -100,27 +94,10 @@ public class OAuth2Controller {
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         // 응답 바디를 위한 객체 생성
-        var responseBody = new ResponseBody(true);
-
         // 응답 반환
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .headers(headers)
-                .body(responseBody);
+                .build();
     }
 
-    @Getter
-    private static class ResponseBody {
-        private final boolean success;
-
-        public ResponseBody(boolean success) {
-            this.success = success;
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private boolean success;
-        private T data;
-    }
 }

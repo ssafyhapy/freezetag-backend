@@ -7,38 +7,40 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.ssafy.freezetag.domain.common.CommonResponse.failure;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(final RuntimeException e) {
+    public ResponseEntity<?> handleBusinessException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse(false, e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final RuntimeException e) {
+    public ResponseEntity<?> handleIllegalArgumentException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse(false, e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     /*
         OAuth2 과정에서 인증 에러가 발생하면 에러 처리하는 로직
      */
     @ExceptionHandler(OAuth2AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleOAuth2AuthenticationException(final OAuth2AuthenticationException e) {
+    public ResponseEntity<?> handleOAuth2AuthenticationException(final OAuth2AuthenticationException e) {
         log.warn("OAuth2 authentication error: {}", e.getMessage());
         return ResponseEntity.status(401)
-                .body(new ErrorResponse(false, e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(final RuntimeException e) {
+    public ResponseEntity<?> handleEntityNotFoundException(final RuntimeException e) {
         log.warn(e.getMessage());
         return ResponseEntity.status(404)
-                .body(new ErrorResponse(false, e.getMessage()));
+                .body(failure(e.getMessage()));
     }
 }

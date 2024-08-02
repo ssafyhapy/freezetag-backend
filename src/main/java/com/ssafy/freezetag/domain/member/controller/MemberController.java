@@ -10,7 +10,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,24 +44,8 @@ public class MemberController {
         memberService.deleteToken(request, response);
 
         // 응답 JSON 객체 생성
-        var responseBody = new MemberController.ResponseBody(true);
-
-        // 응답 반환
-        return ResponseEntity.ok()
-                .body(responseBody);
-    }
-
-    // 응답 바디를 위한 내부 클래스
-    private static class ResponseBody {
-        private final boolean success;
-
-        public ResponseBody(boolean success) {
-            this.success = success;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
+        return ResponseEntity.noContent()
+                .build();
     }
 }
 
