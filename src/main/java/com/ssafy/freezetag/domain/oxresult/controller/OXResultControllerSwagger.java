@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.oxresult.controller;
 
 import com.ssafy.freezetag.domain.oxresult.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSaveRequestDto;
+import com.ssafy.freezetag.global.argumentresolver.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,23 +22,34 @@ public interface OXResultControllerSwagger {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
     @PostMapping()
-    ResponseEntity<?> saveOX(@RequestBody List<OXSaveRequestDto> oxSaveRequestDtoList);
+    ResponseEntity<?> saveOX(@Login Long memberId, @RequestBody List<OXSaveRequestDto> oxSaveRequestDtoList);
 
-    @Operation(summary = "OX게임 수정")
+
+    @Operation(summary = "OX게임 단건 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "수정 완료", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "단건 조회 완료", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
-    @PatchMapping("/modify")
-    ResponseEntity<?> modifyOX(@RequestBody List<OXModifyRequestDto> oxModifyRequestDtoList);
-
+    @GetMapping("/{roomId}")
+    ResponseEntity<?> getOX(@Login Long memberId, @PathVariable Long roomId);
+    
+    
     @Operation(summary = "OX게임 전체 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전체 조회 완료", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
-    @GetMapping("/{roomId}")
+    @GetMapping("/{roomId}/all")
     ResponseEntity<?> getOXs(@PathVariable Long roomId);
+    
+    
+    @Operation(summary = "OX게임 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 완료", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
+    })
+    @PatchMapping("/{roomId}/modify")
+    ResponseEntity<?> modifyOX(@Login Long memberId, @PathVariable Long roomId, @RequestBody List<OXModifyRequestDto> oxModifyRequestDtoList);
 
     @Operation(summary = "OX게임 삭제(다음게임)")
     @ApiResponses(value = {

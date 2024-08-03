@@ -10,6 +10,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -25,11 +28,28 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
 
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/api/oauth/login",
+            "/v3/api-docs",
+            "/swagger-ui",
+            "/swagger-ui.html",
+            "/swagger-resources",
+            "/webjars",
+            "/css",
+            "/images",
+            "/js",
+            "/h2-console",
+            "/api/public",
+            "/api/login",
+            "/api/home",
+            "/websocket"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/api/oauth/login")) {
+        if (isExcludedPath(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -60,5 +80,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throw new TokenException("Access Token이 존재하지 않습니다.");
         }
         return token.substring(TokenKey.TOKEN_PREFIX.length());
+    }
+
+    private boolean isExcludedPath(String requestURI) {
+        return EXCLUDED_PATHS.stream().anyMatch(requestURI::startsWith);
     }
 }

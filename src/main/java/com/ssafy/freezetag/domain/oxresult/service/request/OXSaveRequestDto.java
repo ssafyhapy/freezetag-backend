@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class OXSaveRequestDto {
     private final Long roomId;
 
-    private final Long memberRoomId;
-
     private final String content;
 
     private final boolean answer;

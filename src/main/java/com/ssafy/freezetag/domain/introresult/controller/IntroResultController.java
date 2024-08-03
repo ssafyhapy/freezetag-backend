@@ -25,19 +25,11 @@ public class IntroResultController implements IntroResultControllerSwagger {
     private final IntroResultService introResultService;
 
     @PostMapping()
-    public ResponseEntity<?> saveIntro(@Login Long memberId,  @RequestBody IntroSaveRequestDto introSaveRequestDto) {
+    public ResponseEntity<?> saveIntro(@Login Long memberId, @RequestBody IntroSaveRequestDto introSaveRequestDto) {
         IntroSaveResponseDto introSaveResponseDto = introResultService.save(memberId, introSaveRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(introSaveResponseDto));
-    }
-
-    @PostMapping("/{roomId}/modify")
-    public ResponseEntity<?> modifyIntro(@Login Long memberId, @PathVariable Long roomId, @RequestBody IntroModifyRequestDto introModifyRequestDto) {
-        IntroResponseDto introResponseDto = introResultService.modify(memberId, roomId, introModifyRequestDto);
-
-        return ResponseEntity.ok()
-                .body(success(introResponseDto));
     }
 
     @GetMapping("/{roomId}")
@@ -56,9 +48,18 @@ public class IntroResultController implements IntroResultControllerSwagger {
                 .body(success(introResponseDtoList));
     }
 
+    @PostMapping("/{roomId}/modify")
+    public ResponseEntity<?> modifyIntro(@Login Long memberId, @PathVariable Long roomId, @RequestBody IntroModifyRequestDto introModifyRequestDto) {
+        IntroResponseDto introResponseDto = introResultService.modify(memberId, roomId, introModifyRequestDto);
+
+        return ResponseEntity.ok()
+                .body(success(introResponseDto));
+    }
+
     @DeleteMapping("/{roomId}")
     public ResponseEntity<?> deleteIntros(@PathVariable Long roomId) {
         introResultService.deleteAll(roomId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
