@@ -59,4 +59,9 @@ public class Member extends BaseEntity {
         this.memberName = memberName;
         return this;
     }
+
+    public Member updateMemberIntroduction(String memberIntroduction) {
+        this.memberIntroduction = memberIntroduction;
+        return this;
+    }
 }
