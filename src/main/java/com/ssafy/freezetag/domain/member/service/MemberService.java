@@ -104,6 +104,10 @@ public class MemberService {
 
         // 필요한 데이터 로드
         Member member = findMember(memberId);
+
+        // 멤버 소개 페이지 업데이트
+        member.updateMemberIntroduction(requestDto.getMemberIntroduction());
+
         List<MemberHistoryDto> memberHistoryDtos = requestDto.getMemberHistoryList();
         // TODO : 추억상자 나중 구현
         List<MemberMemoryboxDto> memberMemoryboxDtos = requestDto.getMemberMemoryboxList();
