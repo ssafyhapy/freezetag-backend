@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
-import static com.ssafy.freezetag.domain.common.CommonResponse.successWithNoContent;
 
 @Slf4j
 @RestController
@@ -61,6 +60,6 @@ public class IntroResultController implements IntroResultControllerSwagger {
     public ResponseEntity<?> deleteIntros(@PathVariable Long roomId) {
         introResultService.deleteAll(roomId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(successWithNoContent());
+                .build();
     }
 }

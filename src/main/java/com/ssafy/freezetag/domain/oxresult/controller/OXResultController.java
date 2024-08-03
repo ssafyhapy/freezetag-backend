@@ -13,12 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
-import static com.ssafy.freezetag.domain.common.CommonResponse.successWithNoContent;
 
 @RestController
 @RequestMapping("/api/result/ox")
 @RequiredArgsConstructor
-public class OXResultController{
+public class OXResultController implements OXResultControllerSwagger{
 
     private final OXResultService oxResultService;
 
@@ -57,7 +56,7 @@ public class OXResultController{
     public ResponseEntity<?> deleteOXs(@PathVariable Long roomId){
         oxResultService.deleteAll(roomId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(successWithNoContent());
+                .build();
     }
 
 }
