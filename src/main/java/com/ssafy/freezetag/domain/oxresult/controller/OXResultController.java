@@ -4,6 +4,7 @@ import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSaveRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXResponseDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXsResponseDto;
 import com.ssafy.freezetag.global.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class OXResultController implements OXResultControllerSwagger{
 
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getOX(@Login Long memberId, @PathVariable Long roomId){
-        List<OXResponseDto> oxResponseDtoList = oxResultService.getOx(memberId, roomId);
+        List<OXResponseDto> oxResponseDtoList = oxResultService.getOX(memberId, roomId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(success(oxResponseDtoList));
@@ -40,9 +41,9 @@ public class OXResultController implements OXResultControllerSwagger{
 
     @GetMapping("/{roomId}/all")
     public ResponseEntity<?> getOXs(@PathVariable Long roomId){
-        List<List<OXResponseDto>> oxResponseDtoLists = oxResultService.getOXs(roomId);
+        List<OXsResponseDto> oxsResponseDtoList = oxResultService.getOXs(roomId);
         return ResponseEntity.ok()
-                .body(success(oxResponseDtoLists));
+                .body(success(oxsResponseDtoList));
     }
 
     @PatchMapping("/{roomId}/modify")

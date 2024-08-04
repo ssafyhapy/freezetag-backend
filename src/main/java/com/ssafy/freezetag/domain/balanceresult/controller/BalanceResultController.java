@@ -7,6 +7,7 @@ import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionR
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceResultSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceQuestionResponseDto;
+import com.ssafy.freezetag.global.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,10 @@ public class BalanceResultController implements BalanceResultControllerSwagger{
 
     // 타이머 종료시 사용자들의 선택 저장하기
     @PostMapping("/selection")
-    public ResponseEntity<?> saveBalanceResult(@RequestBody BalanceResultSaveRequestDto balanceResultSaveRequestDto){
-        BalanceResultRedis savedBalanceResult = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
+    public ResponseEntity<?> saveBalanceResult(@Login Long memberId, @RequestBody BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+        BalanceResultRedis savedBalanceResult = balanceResultService.saveBalanceResult(memberId, balanceResultSaveRequestDto);
+        
+        // TODO : 어떤 값들을 반환해줄지 생각해보기
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(savedBalanceResult));
     }

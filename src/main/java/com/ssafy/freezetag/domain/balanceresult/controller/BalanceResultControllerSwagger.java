@@ -3,6 +3,7 @@ package com.ssafy.freezetag.domain.balanceresult.controller;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceResultSaveRequestDto;
+import com.ssafy.freezetag.global.argumentresolver.Login;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +37,7 @@ public interface BalanceResultControllerSwagger {
             @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
     })
     @PostMapping("/selection")
-    ResponseEntity<?> saveBalanceResult(@RequestBody BalanceResultSaveRequestDto balanceResultSaveRequestDto);
+    ResponseEntity<?> saveBalanceResult(@Login Long memberId, @RequestBody BalanceResultSaveRequestDto balanceResultSaveRequestDto);
 
     @Operation(summary = "질문 및 선택 삭제(다음게임)")
     @ApiResponses(value = {
