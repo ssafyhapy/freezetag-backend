@@ -1,13 +1,14 @@
 package com.ssafy.freezetag.domain.room.entity;
 
-import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestion;
+import com.ssafy.freezetag.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -50,7 +51,14 @@ public class Room extends BaseEntity {
         host.setRoom(this);
     }
 
-
+    public void assignRandomHost() {
+        List<MemberRoom> members = this.getMemberRooms();
+        if (!members.isEmpty()) {
+            Random random = new Random();
+            MemberRoom newHost = members.get(random.nextInt(members.size()));
+            this.assignHost(newHost);
+        }
+    }
 
 
 }
