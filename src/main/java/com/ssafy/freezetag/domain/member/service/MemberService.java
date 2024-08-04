@@ -19,16 +19,13 @@ import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +40,7 @@ public class MemberService {
     /*
         member 찾는 부분 메소드화
      */
-    private Member findMember(Long memberId) {
+    public Member findMember(Long memberId) {
         return memberRepository
                 .findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("멤버가 존재하지 않습니다."));
