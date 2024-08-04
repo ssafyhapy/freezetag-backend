@@ -5,10 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.exception.custom.DuplicateRoomMemberException;
 import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
 import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
+import com.ssafy.freezetag.domain.introresult.entity.IntroResult;
+import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
+import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.message.entity.MessageRedis;
 import com.ssafy.freezetag.domain.message.service.MessageService;
+import com.ssafy.freezetag.domain.oxresult.entity.OXResult;
+import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
@@ -19,6 +26,7 @@ import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoDto;
+import com.ssafy.freezetag.domain.room.service.response.RoomReportResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,6 +51,8 @@ public class RoomService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MemberRoomRepository memberRoomRepository;
     private final MessageService messageService;
+    private final IntroResultService introResultService;
+    private final OXResultService oxResultService;
 
     @Transactional
     public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
@@ -120,7 +130,7 @@ public class RoomService {
         if (fetchJoinedRoom.getMemberRooms().size() == fetchJoinedRoom.getRoomPersonCount()) {
             throw new RoomFullException();
         }
-        
+
         // 이미 입장된 회원이 접속을 시도한 경우 처리
         List<MemberRoom> existMemberRooms = fetchJoinedRoom.getMemberRooms();
         if (existMemberRooms.stream()
@@ -162,6 +172,34 @@ public class RoomService {
                 fetchJoinedRoom.getHost().getId(),
                 webrtcDto,
                 messages);
+    }
+
+    public RoomReportResponseDto getRoomReport(Long roomId) {
+
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByRoomId(roomId);
+
+        List<IntroReportResponseDto> introReportResponseDtos = memberRooms.stream()
+                .map(memberRoom -> {
+                    String memberName = memberRoom.getMember().getMemberName();
+                    IntroResult introResult = introResultService.getIntroResult(memberRoom.getId());
+                    return new IntroReportResponseDto(memberName, introResult.getContent());
+                }).toList();
+
+        List<OXReportResponseDto> oxReportResponseDtos = memberRooms.stream()
+                .map(memberRoom -> {
+                    String memberName = memberRoom.getMember().getMemberName();
+                    List<OXResult> oxResults = oxResultService.getOXResult(memberRoom.getId());
+
+                    List<OXResponseDto> oxResponseDtos = oxResults.stream()
+                            .map(oxResult -> new OXResponseDto(oxResult.getOxResultContent(), oxResult.getOxResultAnswer()))
+                            .toList();
+
+                    return new OXReportResponseDto(memberName, oxResponseDtos);
+                }).toList();
+
+        // TODO : 밸런스 게임 결과 조회
+
+        return new RoomReportResponseDto(introReportResponseDtos, oxReportResponseDtos);
     }
 
 }
