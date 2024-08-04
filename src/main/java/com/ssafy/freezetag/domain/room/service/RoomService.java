@@ -1,6 +1,7 @@
 package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ssafy.freezetag.domain.exception.custom.MemberNotInRoomException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
@@ -135,8 +136,47 @@ public class RoomService {
 
     }
 
+    @Transactional
+    public void exitRoom(Long roomId, Long memberId) {
+        log.info("exitRoom(roomId={}, memberId={})", roomId, memberId);
+
+        // 실제 회원이 맞는지 조회
+        Member member = memberService.findMember(memberId);
+
+        // 실제 회원이라면 MemberRoom 조회
+        MemberRoom memberRoom = getMemberRoom(roomId, memberId);
+
+        // 해당 방 멤버들 모두 조회
+        Room room = fetchRoomWithMemberRooms(roomId);
+
+        // 방장인지 확인
+        boolean isHost = room.getHost()
+                .getId()
+                .equals(memberRoom.getId());
+
+        // 방장 랜덤 설정
+        if (isHost) {
+            room.assignRandomHost();
+        }
+
+        // 방 테이블을 조회 후 멤버 룸을 삭제
+        room.getMemberRooms().remove(memberRoom);
+        memberRoomRepository.deleteByMemberIdAndRoomId(memberId, roomId);
+
+    }
+
+    private MemberRoom getMemberRoom(final Long roomId, final Long memberId) {
+        return memberRoomRepository.findByMemberIdAndRoomId(memberId, roomId)
+                .orElseThrow(MemberNotInRoomException::new);
+    }
+
     public Room fetchRoomWithMembers(Long roomId) {
-        return roomRepository.findById(roomId)
+        return roomRepository.findWithMembersById(roomId)
+                .orElseThrow(RoomNotFoundException::new);
+    }
+
+    public Room fetchRoomWithMemberRooms(Long roomId) {
+        return roomRepository.findWithMemberRoomsById(roomId)
                 .orElseThrow(RoomNotFoundException::new);
     }
 
