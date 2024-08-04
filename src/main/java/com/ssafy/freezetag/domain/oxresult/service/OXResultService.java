@@ -7,6 +7,7 @@ import com.ssafy.freezetag.domain.oxresult.repository.OXResultRepository;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXModifyRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSaveRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXResponseDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXsResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class OXResultService {
                 .orElseThrow(() -> new RuntimeException("해당 방에서 회원이 작성한 OX 질문 리스트가 없습니다."));
     }
 
-    public List<OXResponseDto> getOx(Long memberId, Long roomId) {
+    public List<OXResponseDto> getOX(Long memberId, Long roomId) {
         List<OXRedis> oxRedisList = findOxRedisByMemberIdAndRoomId(memberId, roomId);
 
         return oxRedisList.stream()
@@ -69,21 +70,24 @@ public class OXResultService {
                 .toList();
     }
 
-    public List<List<OXResponseDto>> getOXs(Long roomId) {
+    public List<OXsResponseDto> getOXs(Long roomId) {
         List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomId);
 
         Map<Long, List<OXRedis>> groupedByMemberRoomId = oxRedisList.stream()
                 .collect(Collectors.groupingBy(OXRedis::getMemberRoomId));
 
-        List<List<OXResponseDto>> response = new ArrayList<>();
+        List<OXsResponseDto> oXsResponseDtoList = new ArrayList<>();
+
         for (List<OXRedis> oxGroup : groupedByMemberRoomId.values()) {
             List<OXResponseDto> dtoList = oxGroup.stream()
                     .map(ox -> new OXResponseDto(ox.getId(), ox.getContent(), ox.getAnswer()))
                     .collect(Collectors.toList());
-            response.add(dtoList);
+
+            Long memberId = oxGroup.get(0).getMemberId();
+            oXsResponseDtoList.add(new OXsResponseDto(memberId, dtoList));
         }
 
-        return response;
+        return oXsResponseDtoList;
     }
 
     public List<OXResponseDto> modify(Long memberId, Long roomId, List<OXModifyRequestDto> oxModifyRequestDtoList) {
