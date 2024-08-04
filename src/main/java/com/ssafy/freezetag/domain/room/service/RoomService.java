@@ -2,18 +2,15 @@ package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.freezetag.domain.exception.custom.DuplicateRoomMemberException;
-import com.ssafy.freezetag.domain.exception.custom.RoomFullException;
-import com.ssafy.freezetag.domain.exception.custom.SessionNotFoundException;
+import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.message.entity.MessageRedis;
 import com.ssafy.freezetag.domain.message.service.MessageService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
-import com.ssafy.freezetag.domain.room.repository.RoomRedisRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
@@ -21,7 +18,6 @@ import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
 import com.ssafy.freezetag.global.util.CodeGenerator;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,15 +26,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.ssafy.freezetag.domain.room.service.helper.RoomConverter.convertToMemberInfoDtos;
+import static com.ssafy.freezetag.domain.room.service.helper.RoomValidationHelper.validateDuplicateMember;
+import static com.ssafy.freezetag.domain.room.service.helper.RoomValidationHelper.validateRoomCapacity;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class RoomService {
+    private final MemberService memberService;
+    private final RoomRedisService roomRedisService;
     private final RoomRepository roomRepository;
-    private final MemberRepository memberRepository;
     private final OpenviduService openviduService;
-    private final RoomRedisRepository roomRedisRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MemberRoomRepository memberRoomRepository;
@@ -58,7 +58,7 @@ public class RoomService {
         );
 
         // 실제 회원이 있는지 확인
-        Member member = memberRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
+        Member member = memberService.findMember(memberId);
 
         // 방장 설정
         MemberRoom host = new MemberRoom(member, unfinishedRoom);
@@ -71,29 +71,22 @@ public class RoomService {
 
         // room Id로 연관된 멤버들 다 조인해오는 메소드
         // 현재 엔티티가 LAZY로 설정되어 있어서 이렇게 페치 조인해오지 않으면 쿼리가 여러번 나간다.
-        Room room = roomRepository.findById(unfinishedRoom.getId()).orElseThrow();
+        Room room = fetchRoomWithMembers(unfinishedRoom.getId());
 
         // RoomMemberInfoDto (memberId, memberName) 형태로 변환
-        List<RoomMemberInfoDto> memberInfoDtos = room.getMemberRooms().stream()
-                .map(memberRoom -> new RoomMemberInfoDto(memberRoom.getId(), memberRoom.getMember().getMemberName()))
-                .toList();
-
-        // DB ID 조회
-        Long roomId = room.getId();
+        List<RoomMemberInfoDto> memberInfoDtos = convertToMemberInfoDtos(room.getMemberRooms());
 
         // Openvidu 로부터 토큰 및 세션 ID 반환
         OpenviduResponseDto webrtcDto = openviduService.createRoom();
 
         // Redis에 세션 및 방 정보 저장
-        RoomRedis roomRedis = new RoomRedis(enterCode, webrtcDto.getSessionId(), roomId);
-        roomRedisRepository.save(roomRedis);
+        roomRedisService.saveRoomInfo(enterCode, webrtcDto.getSessionId(), room.getId());
 
         // Redis에서 채팅(메세지) 정보 불러오기
-        List<MessageRedis> messages = messageService.getMessages(roomId);
-
+        List<MessageRedis> messages = messageService.getMessages(room.getId());
 
         return new RoomConnectResponseDto(
-                roomId,
+                room.getId(),
                 enterCode,
                 dto.getRoomName(),
                 dto.getRoomPersonCount(),
@@ -106,27 +99,25 @@ public class RoomService {
     @Transactional
     public RoomConnectResponseDto enterRoom(String enterCode, Long memberId) throws JsonProcessingException {
         log.info("enterRoom(enterCode={}, memberId={})", enterCode, memberId);
-        // memberId 유효성 검증
-        Member member = memberRepository.findById(memberId).orElseThrow(EntityNotFoundException::new);
 
-        // 레디스에서 roomCode로 openvidu 세션, 방 ID 조회
-        RoomRedis roomRedis = roomRedisRepository.findById(enterCode).orElseThrow(() -> new SessionNotFoundException(enterCode));
+        // memberId 유효성 검증
+        Member member = memberService.findMember(memberId);
+
+        // 레디스에서 enterCode로 openvidu 세션, 방 ID 조회
+        RoomRedis roomRedis = roomRedisService.fetchRoomInfo(enterCode);
+
         String sessionId = roomRedis.getSessionId();
         Long roomId = roomRedis.getRoomId();
         log.info("roomRedisRepository 조회 = [{}, {}]", sessionId, roomId);
 
+        // 방 조회 (패치 조인)
+        Room fetchJoinedRoom = fetchRoomWithMembers(roomId);
+
         // 방 인원수 확인 (초과 시 예외 처리)
-        Room fetchJoinedRoom = roomRepository.findById(roomId).orElseThrow();
-        if (fetchJoinedRoom.getMemberRooms().size() == fetchJoinedRoom.getRoomPersonCount()) {
-            throw new RoomFullException();
-        }
-        
+        validateRoomCapacity(fetchJoinedRoom);
+
         // 이미 입장된 회원이 접속을 시도한 경우 처리
-        List<MemberRoom> existMemberRooms = fetchJoinedRoom.getMemberRooms();
-        if (existMemberRooms.stream()
-                .anyMatch(memberRoom -> memberRoom.getMember().getId() == memberId)) {
-            throw new DuplicateRoomMemberException();
-        }
+        validateDuplicateMember(fetchJoinedRoom, memberId);
 
         // 방 입장 처리 (memberRooms 리스트에 업데이트)
         MemberRoom nowMemberRoom = new MemberRoom(member, fetchJoinedRoom);
@@ -134,9 +125,7 @@ public class RoomService {
         fetchJoinedRoom.getMemberRooms().add(nowMemberRoom);
 
         // RoomMemberInfoDto (memberId, memberName) 형태로 변환
-        List<RoomMemberInfoDto> memberInfoDtos = fetchJoinedRoom.getMemberRooms().stream()
-                .map(memberRoom -> new RoomMemberInfoDto(memberRoom.getMember().getId(), memberRoom.getMember().getMemberName()))
-                .toList();
+        List<RoomMemberInfoDto> memberInfoDtos = convertToMemberInfoDtos(fetchJoinedRoom.getMemberRooms());
 
         // OpenVidu 토큰 반환
         OpenviduResponseDto webrtcDto = openviduService.enterRoom(sessionId);
@@ -146,8 +135,7 @@ public class RoomService {
         RoomUserJoinEvent roomUserJoinEvent = new RoomUserJoinEvent("NEW_USER_JOINED", roomId, newMemberInfo);
 
         // 기존 사용자에게 새로 입장된 유저 알림
-        String joinEvent = objectMapper.writeValueAsString(roomUserJoinEvent);
-        messagingTemplate.convertAndSend("/sub/room/" + roomId, joinEvent);
+        messageService.sendUserJoinEvent(fetchJoinedRoom.getId(), roomUserJoinEvent);
 
         // Redis에서 채팅(메세지) 정보 불러오기
         List<MessageRedis> messages = messageService.getMessages(roomId);
@@ -162,6 +150,11 @@ public class RoomService {
                 fetchJoinedRoom.getHost().getId(),
                 webrtcDto,
                 messages);
+    }
+
+    public Room fetchRoomWithMembers(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(RoomNotFoundException::new);
     }
 
 }
