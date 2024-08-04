@@ -44,8 +44,7 @@ public class OXResultService {
                             oxSaveRequestDto.isAnswer()
                     );
                     oxRedisRepository.save(oxRedis);
-                    return new OXResponseDto(oxRedis.getId(),
-                            oxRedis.getContent(),
+                    return new OXResponseDto(oxRedis.getContent(),
                             oxRedis.getAnswer());
                 }).toList();
 
@@ -64,8 +63,7 @@ public class OXResultService {
         List<OXRedis> oxRedisList = findOxRedisByMemberIdAndRoomId(memberId, roomId);
 
         return oxRedisList.stream()
-                .map(oxRedis -> new OXResponseDto(oxRedis.getId(),
-                        oxRedis.getContent(),
+                .map(oxRedis -> new OXResponseDto(oxRedis.getContent(),
                         oxRedis.getAnswer()))
                 .toList();
     }
@@ -80,7 +78,7 @@ public class OXResultService {
 
         for (List<OXRedis> oxGroup : groupedByMemberRoomId.values()) {
             List<OXResponseDto> dtoList = oxGroup.stream()
-                    .map(ox -> new OXResponseDto(ox.getId(), ox.getContent(), ox.getAnswer()))
+                    .map(ox -> new OXResponseDto(ox.getContent(), ox.getAnswer()))
                     .collect(Collectors.toList());
 
             Long memberId = oxGroup.get(0).getMemberId();
@@ -102,7 +100,7 @@ public class OXResultService {
         oxRedisRepository.saveAll(oxRedisList);
 
         return oxRedisList.stream()
-                .map(ox -> new OXResponseDto(ox.getId(), ox.getContent(), ox.getAnswer()))
+                .map(ox -> new OXResponseDto(ox.getContent(), ox.getAnswer()))
                 .collect(Collectors.toList());
     }
 
@@ -124,5 +122,9 @@ public class OXResultService {
         oxRedisRepository.deleteAll(oxRedisList);
     }
 
+    // 최종 레포트 조회
+    public List<OXResult> getOXResult(Long memberRoomId){
+        return oxResultRepository.findAllByMemberRoomId(memberRoomId);
+    }
 
 }
