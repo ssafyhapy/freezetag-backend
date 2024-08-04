@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class RoomUserJoinEvent {
     private final String event;
     private final Long roomId;
-    private final RoomMemberInfoDto newMemberDto;
+    private final RoomMemberInfoResponseDto newMemberDto;
 }

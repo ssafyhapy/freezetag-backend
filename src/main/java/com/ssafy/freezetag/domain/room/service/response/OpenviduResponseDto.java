@@ -1,4 +1,4 @@
-package com.ssafy.freezetag.domain.room.service.request;
+package com.ssafy.freezetag.domain.room.service.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
