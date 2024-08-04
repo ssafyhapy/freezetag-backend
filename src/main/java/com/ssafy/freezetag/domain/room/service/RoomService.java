@@ -1,7 +1,6 @@
 package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
@@ -12,15 +11,14 @@ import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
-import com.ssafy.freezetag.domain.room.service.response.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
+import com.ssafy.freezetag.domain.room.service.response.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +38,6 @@ public class RoomService {
     private final RoomRedisService roomRedisService;
     private final RoomRepository roomRepository;
     private final OpenviduService openviduService;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final MemberRoomRepository memberRoomRepository;
     private final MessageService messageService;
 
