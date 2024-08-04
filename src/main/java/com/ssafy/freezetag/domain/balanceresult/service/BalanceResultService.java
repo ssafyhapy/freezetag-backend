@@ -55,10 +55,10 @@ public class BalanceResultService {
                                 .withTemperature(OPEN_AI_TEMPERATURE)
                                 .build())
         );
-        return getOption(chatResponse);
+        return parseChatResponse(chatResponse);
     }
 
-    private BalanceQuestionResponseDto getOption(ChatResponse chatResponse) {
+    private BalanceQuestionResponseDto parseChatResponse(ChatResponse chatResponse) {
         String contentString = chatResponse.getResult()
                 .getOutput()
                 .getContent();
@@ -81,9 +81,9 @@ public class BalanceResultService {
     }
 
     @Transactional
-    public BalanceResultRedis saveBalanceResult(BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+    public BalanceResultRedis saveBalanceResult(Long memberId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
         BalanceResultRedis balanceResultRedis = new BalanceResultRedis(balanceResultSaveRequestDto.getBalanceQuestionId(),
-                balanceResultSaveRequestDto.getMemberId(),
+                memberId,
                 balanceResultSaveRequestDto.getBalanceResultSelectedOption());
 
         return balanceResultRedisRepository.save(balanceResultRedis);
@@ -101,16 +101,16 @@ public class BalanceResultService {
                     return new BalanceQuestion(findRoom, balanceQuestionRedis.getOptionFirst(), balanceQuestionRedis.getOptionSecond());
                 }).toList();
 
+        // Redis 데이터 DBMS에 저장
         balanceQuestionRepository.saveAll(balanceQuestionList);
 
-        // TODO : Member 구현 완료되면 1L 대신 request에서 memberId 가져오기
-        Member findMember = memberRepository.findById(1L).orElseThrow(() -> new EntityNotFoundException("해당 Id에 일치하는 멤버가 없습니다."));
-        deleteAndSaveBalanceResult(balanceQuestionRedisList, balanceQuestionList, findMember);
+        // 질문(선택지)에 대한 선택들 DBMS에 저장하고 삭제하기
+        deleteAndSaveBalanceResult(balanceQuestionRedisList, balanceQuestionList);
 
         balanceQuestionRedisRepository.deleteAll(balanceQuestionRedisList);
     }
 
-    private void deleteAndSaveBalanceResult(List<BalanceQuestionRedis> balanceQuestionRedisList, List<BalanceQuestion> balanceQuestionList, Member findMember) {
+    private void deleteAndSaveBalanceResult(List<BalanceQuestionRedis> balanceQuestionRedisList, List<BalanceQuestion> balanceQuestionList) {
         for (BalanceQuestionRedis balanceQuestionRedis : balanceQuestionRedisList) {
             List<BalanceResultRedis> balanceResultRedisList = balanceResultRedisRepository.findAllByBalanceQuestionId(balanceQuestionRedis.getId());
 
@@ -120,7 +120,8 @@ public class BalanceResultService {
                                 .filter(bq -> bq.getBalanceQuestionOptionFirst().equals(balanceQuestionRedis.getOptionFirst()) && bq.getBalanceQuestionOptionSecond().equals(balanceQuestionRedis.getOptionSecond()))
                                 .findFirst()
                                 .orElseThrow(() -> new IllegalArgumentException("매칭되는 질문을 찾을 수 없습니다."));
-                        return new BalanceResult(balanceQuestion, findMember, balanceResultRedis.getBalanceResultSelectedOption());
+                        Member member = memberRepository.findById(balanceResultRedis.getMemberId()).orElseThrow(() -> new RuntimeException("해당 ID를 가진 회원을 찾을 수 없습니다."));
+                        return new BalanceResult(balanceQuestion, member, balanceResultRedis.getBalanceResultSelectedOption());
                     })
                     .toList();
 

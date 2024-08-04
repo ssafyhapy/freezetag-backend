@@ -11,7 +11,5 @@ public class BalanceResultSaveRequestDto {
     // BalanceQuestion id -> 식별키
     private final String balanceQuestionId;
 
-    private final Long memberId;
-
     private final SelectedOption balanceResultSelectedOption;
 }

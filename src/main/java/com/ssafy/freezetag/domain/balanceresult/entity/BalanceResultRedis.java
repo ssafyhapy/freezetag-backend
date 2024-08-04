@@ -16,7 +16,7 @@ public class BalanceResultRedis {
     @Id
     private String id;
 
-    // BalanceQuestion id -> 식별키
+    // BalanceQuestionRedis id -> 식별키
     @Indexed
     private String balanceQuestionId;
 
