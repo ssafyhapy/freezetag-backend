@@ -26,8 +26,8 @@ import java.util.List;
 
 import static com.ssafy.freezetag.domain.room.service.helper.RoomConverter.convertToMemberInfoDtos;
 import static com.ssafy.freezetag.domain.room.service.helper.RoomConverter.createRoomConnectResponseDto;
-import static com.ssafy.freezetag.domain.room.service.helper.RoomValidationHelper.validateDuplicateMember;
-import static com.ssafy.freezetag.domain.room.service.helper.RoomValidationHelper.validateRoomCapacity;
+import static com.ssafy.freezetag.domain.room.service.helper.RoomValidator.validateDuplicateMember;
+import static com.ssafy.freezetag.domain.room.service.helper.RoomValidator.validateRoomCapacity;
 
 @Service
 @RequiredArgsConstructor

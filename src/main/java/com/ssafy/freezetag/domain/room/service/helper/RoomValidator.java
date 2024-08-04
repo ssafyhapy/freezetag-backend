@@ -9,7 +9,7 @@ import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoResponseDt
 import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-public class RoomValidationHelper {
+public class RoomValidator {
     public static void validateRoomCapacity(Room room) {
         if (room.getMemberRooms().size() >= room.getRoomPersonCount()) {
             throw new RoomFullException();
