@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.room.service;
 
+import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.room.service.response.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.exception.custom.OpenviduTokenException;
 import io.openvidu.java.client.*;
@@ -26,7 +27,7 @@ public class OpenviduService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public OpenviduResponseDto createRoom() throws OpenviduTokenException {
+    public OpenviduResponseDto createRoom(final Member member) throws OpenviduTokenException {
         try {
             // 세션 생성
             SessionProperties properties = new SessionProperties.Builder().build();
@@ -34,6 +35,7 @@ public class OpenviduService {
             log.info("Session.getSessionId() = {}", session.getSessionId());
             // 연결 속성 설정
             ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+                    .data("{\"memberId\": \"" + member.getId() + "\", \"memberName\": \"" + member.getMemberName() + "\"}")
                     .type(ConnectionType.WEBRTC)
                     .build();
             // 토큰 생성
@@ -48,13 +50,14 @@ public class OpenviduService {
         }
     }
 
-    public OpenviduResponseDto enterRoom(String sessionId) throws OpenviduTokenException {
+    public OpenviduResponseDto enterRoom(String sessionId, Member member) throws OpenviduTokenException {
         try {
             // 세션 ID로 세션 접속
             Session session = openvidu.getActiveSession(sessionId);
 
             // 연결 속성 설정
             ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+                    .data("{\"memberId\": \"" + member.getId() + "\", \"memberName\": \"" + member.getMemberName() + "\"}")
                     .type(ConnectionType.WEBRTC)
                     .build();
 

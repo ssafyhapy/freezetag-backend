@@ -16,5 +16,11 @@ public class RoomValidator {
             throw new DuplicateRoomMemberException();
         }
     }
+
+    public static void validateMaxRoomPersonCount(Integer personCount) {
+        if (personCount > 6) {
+            throw new IllegalArgumentException("방 최대 인원은 6명입니다.");
+        }
+    }
 }
 
