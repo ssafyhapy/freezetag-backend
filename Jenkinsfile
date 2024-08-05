@@ -34,7 +34,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def app = docker.build("${DOCKER_HUB_REPO}:latest", "--build-arg OPEN_AI_KEY=${OPEN_AI_KEY} --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY} --build-arg S3_SECRET_KEY=${S3_SECRET_KEY} .")
+                    echo "OPEN_AI_KEY=${env.OPEN_AI_KEY}"
+                    echo "S3_ACCESS_KEY=${env.S3_ACCESS_KEY}"
+                    echo "S3_SECRET_KEY=${env.S3_SECRET_KEY}"
+                    def app = docker.build("${DOCKER_HUB_REPO}:latest", "--build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} --build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} --build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} .")
                 }
             }
         }
