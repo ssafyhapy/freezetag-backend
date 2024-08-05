@@ -22,7 +22,7 @@ public class MessageController {
     /**
      * "/pub/message/{roomId}" 경로로 클라이언트가 메시지를 보내면 해당 TOPIC을 구독 중인 사용자들에게 메시지 전달
      */
-    @MessageMapping("/message/{roomId}")
+    @MessageMapping("/api/message/{roomId}")
     public void message(@DestinationVariable Long roomId, MessageRequestDto messageRequestDto){
         MessageRedis messageRedis = messageService.saveMessage(roomId, messageRequestDto);
         MessageResponseDto messageResponseDto = new MessageResponseDto(messageRedis.getMemberName(), messageRedis.getContent(), messageRedis.getCreatedDate());
