@@ -16,18 +16,23 @@ import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
+import com.ssafy.freezetag.global.s3.S3UploadService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -36,6 +41,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberHistoryRepository memberHistoryRepository;
     private final MemberMemoryboxRepository memberMemoryboxRepository;
+    private final S3UploadService s3UploadService;
 
     /*
         member 찾는 부분 메소드화
@@ -97,13 +103,19 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMemberHistory(Long memberId, MypageModifyRequestDto requestDto) {
+    public void updateMemberHistory(Long memberId, MypageModifyRequestDto requestDto, final MultipartFile profileImage) throws IOException {
 
         // 필요한 데이터 로드
         Member member = findMember(memberId);
 
         // 멤버 소개 페이지 업데이트
         member.updateMemberIntroduction(requestDto.getMemberIntroduction());
+
+        if (profileImage != null) {
+            log.info("프로필 이미지 변경 감지");
+            String s3Url = s3UploadService.saveFile(profileImage);
+            member.updateMemberProfileImageUrl(s3Url);
+        }
 
         List<MemberHistoryDto> memberHistoryDtos = requestDto.getMemberHistoryList();
         // TODO : 추억상자 나중 구현
