@@ -93,7 +93,7 @@ public class BalanceResultService {
     public void deleteBalanceQuestion(Long roomId){
         List<BalanceQuestionRedis> balanceQuestionRedisList = balanceQuestionRedisRepository.findAllByRoomId(roomId);
 
-        Room findRoom = roomRepository.findById(roomId)
+        Room findRoom = roomRepository.findRoomWithMembers(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("방을 찾을 수 없습니다."));
 
         List<BalanceQuestion> balanceQuestionList = balanceQuestionRedisList.stream()
