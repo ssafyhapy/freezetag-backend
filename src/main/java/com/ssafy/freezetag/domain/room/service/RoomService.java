@@ -133,7 +133,7 @@ public class RoomService {
     }
 
     public Room fetchRoomWithMembers(Long roomId) {
-        return roomRepository.findRoomWithMembers(roomId)
+        return roomRepository.findById(roomId)
                 .orElseThrow(RoomNotFoundException::new);
     }
 
