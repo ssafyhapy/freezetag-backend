@@ -1,15 +1,17 @@
 package com.ssafy.freezetag.domain.balanceresult.service.request;
 
 import com.ssafy.freezetag.domain.oxresult.entity.SelectedOption;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class BalanceResultSaveRequestDto {
 
     // BalanceQuestion id -> 식별키
-    private final String balanceQuestionId;
+    private  String balanceQuestionId;
 
-    private final SelectedOption balanceResultSelectedOption;
+    private  SelectedOption balanceResultSelectedOption;
 }

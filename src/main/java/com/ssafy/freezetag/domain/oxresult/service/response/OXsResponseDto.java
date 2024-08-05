@@ -1,14 +1,16 @@
 package com.ssafy.freezetag.domain.oxresult.service.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class OXsResponseDto {
-    private final Long memberId;
+    private  Long memberId;
 
-    private final List<OXResponseDto> oxResponseDtos;
+    private  List<OXResponseDto> oxResponseDtos;
 }

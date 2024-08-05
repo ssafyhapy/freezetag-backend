@@ -1,13 +1,15 @@
 package com.ssafy.freezetag.domain.balanceresult.service.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class BalanceQuestionResponseDto {
 
-    private final String optionFirst;
+    private  String optionFirst;
 
-    private final String optionSecond;
+    private  String optionSecond;
 }
