@@ -19,7 +19,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto){
+    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) {
         // 생성된 방 정보 (방 제목, 접속 코드 등) 을 DB에 엔티티로 저장
         RoomConnectResponseDto roomConnectResponseDto = roomService.createRoom(createRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -30,6 +30,13 @@ public class RoomController {
     public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam String roomCode) throws JsonProcessingException {
         RoomConnectResponseDto responseDto = roomService.enterRoom(roomCode, memberId);
         return ResponseEntity.ok(success(responseDto));
+    }
+
+    @DeleteMapping("/exit")
+    public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam Long roomId) {
+        roomService.exitRoom(roomId, memberId);
+        return ResponseEntity.noContent()
+                .build();
     }
 
 }

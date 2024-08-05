@@ -139,6 +139,23 @@ public class RoomService {
 
     }
 
+    @Transactional
+    public void exitRoom(Long roomId, Long memberId) {
+        log.info("exitRoom(roomId={}, memberId={})", roomId, memberId);
+
+        // 실제 회원이 맞는지 조회
+        Member member = memberService.findMember(memberId);
+
+        MemberRoom memberRoom = memberRoomRepository.findByMemberIdAndRoomId(memberId, roomId).orElseThrow(() -> new MemberNotFoundException("멤버를 찾을 수 없습니다."));
+
+        // 실제 방 조회
+        Room fetchedRoom = fetchRoomWithMembers(roomId);
+
+        // 방 테이블을 조회 후 멤버 룸을 삭제
+        fetchedRoom.getMemberRooms().remove(memberRoom);
+        memberRoomRepository.deleteByMember_IdAndRoom_Id(memberId, roomId);
+    }
+
     public Room fetchRoomWithMembers(Long roomId) {
         return roomRepository.findById(roomId)
                 .orElseThrow(RoomNotFoundException::new);
