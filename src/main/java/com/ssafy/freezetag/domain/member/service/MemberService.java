@@ -103,7 +103,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMemberHistory(Long memberId, MypageModifyRequestDto requestDto, final MultipartFile profileImage) throws IOException {
+    public void updateMemberHistory(Long memberId, MypageModifyRequestDto requestDto, final MultipartFile memberProfileImage) throws IOException {
 
         // 필요한 데이터 로드
         Member member = findMember(memberId);
@@ -111,17 +111,17 @@ public class MemberService {
         // 멤버 소개 페이지 업데이트
         member.updateMemberIntroduction(requestDto.getMemberIntroduction());
 
-        if (profileImage != null) {
+        if (memberProfileImage != null) {
             log.info("프로필 이미지 변경 감지");
-            String s3Url = s3UploadService.saveFile(profileImage);
+            String s3Url = s3UploadService.saveFile(memberProfileImage);
             member.updateMemberProfileImageUrl(s3Url);
         }
 
         List<MemberHistoryDto> memberHistoryDtos = requestDto.getMemberHistoryList();
         // TODO : 추억상자 나중 구현
         List<MemberMemoryboxDto> memberMemoryboxDtos = requestDto.getMemberMemoryboxList();
-        List<Long> deletedHistoryList = requestDto.getDeletedHistoryList();
 
+        List<Long> deletedHistoryList = requestDto.getDeletedHistoryList();
         // 삭제 대상 지움
         if (deletedHistoryList != null && !deletedHistoryList.isEmpty()) {
             List<MemberHistory> historiesToDelete = memberHistoryRepository.findAllById(deletedHistoryList);
