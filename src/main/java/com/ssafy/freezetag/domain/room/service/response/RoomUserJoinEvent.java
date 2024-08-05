@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class RoomUserJoinEvent {
-    private final String event;
+    private final RoomEvent event;
     private final Long roomId;
     private final RoomMemberInfoResponseDto newMemberDto;
 }

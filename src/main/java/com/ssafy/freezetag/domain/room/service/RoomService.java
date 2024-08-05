@@ -12,10 +12,7 @@ import com.ssafy.freezetag.domain.room.entity.RoomRedis;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
-import com.ssafy.freezetag.domain.room.service.response.OpenviduResponseDto;
-import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
-import com.ssafy.freezetag.domain.room.service.response.RoomMemberInfoResponseDto;
-import com.ssafy.freezetag.domain.room.service.response.RoomUserJoinEvent;
+import com.ssafy.freezetag.domain.room.service.response.*;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +119,7 @@ public class RoomService {
 
         // 신규 회원 정보를 event 형태로 저장
         RoomMemberInfoResponseDto newMemberInfo = new RoomMemberInfoResponseDto(memberId, member.getMemberName());
-        RoomUserJoinEvent roomUserJoinEvent = new RoomUserJoinEvent("NEW_USER_JOINED", roomId, newMemberInfo);
+        RoomUserJoinEvent roomUserJoinEvent = new RoomUserJoinEvent(RoomEvent.JOIN, roomId, newMemberInfo);
 
         // 기존 사용자에게 새로 입장된 유저 알림
         messageService.sendUserJoinEvent(fetchJoinedRoom.getId(), roomUserJoinEvent);
@@ -136,7 +133,7 @@ public class RoomService {
     }
 
     public Room fetchRoomWithMembers(Long roomId) {
-        return roomRepository.findById(roomId)
+        return roomRepository.findRoomWithMembers(roomId)
                 .orElseThrow(RoomNotFoundException::new);
     }
 

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
     @EntityGraph(attributePaths = {"memberRooms", "memberRooms.member"})
-    Optional<Room> findById(Long id);
+    Optional<Room> findRoomWithMembers(Long id);
 }
