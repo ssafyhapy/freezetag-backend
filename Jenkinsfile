@@ -34,7 +34,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def app = docker.build("${DOCKER_HUB_REPO}:latest", ".")
+                    def app = docker.build("${DOCKER_HUB_REPO}:latest", "--build-arg OPEN_AI_KEY=${OPEN_AI_KEY} --build-arg S3_ACCESS_KEY=${S3_ACCESS_KEY} --build-arg S3_SECRET_KEY=${S3_SECRET_KEY} .")
                 }
             }
         }
