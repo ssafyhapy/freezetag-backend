@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@RedisHash(value = "message")
+@RedisHash(value = "message", timeToLive = 600)
 public class MessageRedis {
     @Id
     private String id;

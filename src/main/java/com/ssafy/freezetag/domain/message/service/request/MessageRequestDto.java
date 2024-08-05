@@ -1,12 +1,17 @@
 package com.ssafy.freezetag.domain.message.service.request;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class MessageRequestDto {
-    private final String memberName;
+    private String memberName;
 
-    private final String content;
+    private String content;
+
+    public MessageRequestDto(String memberName, String content) {
+        this.memberName = memberName;
+        this.content = content;
+    }
 }
