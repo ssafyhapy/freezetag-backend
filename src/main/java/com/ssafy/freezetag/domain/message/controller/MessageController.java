@@ -20,13 +20,13 @@ public class MessageController {
     private final MessageService messageService;
 
     /**
-     * "/pub/message/{roomId}" 경로로 클라이언트가 메시지를 보내면 해당 TOPIC을 구독 중인 사용자들에게 메시지 전달
+     * "/api/pub/message/{roomId}" 경로로 클라이언트가 메시지를 보내면 해당 TOPIC을 구독 중인 사용자들에게 메시지 전달
      */
-    @MessageMapping("/api/message/{roomId}")
+    @MessageMapping("/message/{roomId}")
     public void message(@DestinationVariable Long roomId, MessageRequestDto messageRequestDto){
         MessageRedis messageRedis = messageService.saveMessage(roomId, messageRequestDto);
         MessageResponseDto messageResponseDto = new MessageResponseDto(messageRedis.getMemberName(), messageRedis.getContent(), messageRedis.getCreatedDate());
-        simpMessageSendingOperations.convertAndSend("/sub/" + roomId, messageResponseDto);
+        simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId, messageResponseDto);
 
         log.info("{}번 방에 {}님이 {}를 입력하셨습니다.", roomId, messageRequestDto.getMemberName(), messageRequestDto.getContent());
     }
