@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OXResponseDto {
-    private  String content;
+public class OXReportResponseDto {
+    private String memberName;
 
-    private  boolean answer;
+    private List<OXResponseDto> oxResponseDtos;
 }
