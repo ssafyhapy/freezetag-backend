@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
@@ -39,9 +42,11 @@ public class MemberController {
     }
 
     @PatchMapping("/mypage")
-    public ResponseEntity<?> modifyMypage(@Login Long memberId, @RequestBody MypageModifyRequestDto requestDto) {
+    public ResponseEntity<?> modifyMypage(@Login Long memberId,
+                                          @RequestBody MypageModifyRequestDto requestDto,
+                                          @RequestParam(required = false) MultipartFile profileImage) throws IOException {
 
-        memberService.updateMemberHistory(memberId, requestDto);
+        memberService.updateMemberHistory(memberId, requestDto, profileImage);
         log.info("수정 완료!");
 
         return ResponseEntity.noContent()

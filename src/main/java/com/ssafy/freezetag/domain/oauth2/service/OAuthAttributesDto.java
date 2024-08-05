@@ -65,6 +65,8 @@ public class OAuthAttributesDto {
         // 개별 정보 가져옴
         String nickname = (String) profile.get("nickname");
         String profileImageUrl = (String) profile.get("profile_image_url");
+        boolean isDefaultImage = (boolean) profile.get("is_default_image");
+
         String providerEmail = (String) kakaoAccount.get("email");
 
         // 생성자를 통해 OAuthAttributesDto 객체 반환
@@ -74,7 +76,7 @@ public class OAuthAttributesDto {
                 nickname,
                 registrationId, // memberProvider(ex. kakao, google)
                 providerEmail,
-                profileImageUrl
+                isDefaultImage ? "https://sarrr.s3.ap-northeast-2.amazonaws.com/%EC%96%BC%EC%9D%8C__1_-removebg-preview.png" : profileImageUrl
         );
     }
 

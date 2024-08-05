@@ -1,14 +1,16 @@
 package com.ssafy.freezetag.domain.member.entity;
 
-import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResult;
+import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -63,5 +65,9 @@ public class Member extends BaseEntity {
     public Member updateMemberIntroduction(String memberIntroduction) {
         this.memberIntroduction = memberIntroduction;
         return this;
+    }
+
+    public void updateMemberProfileImageUrl(String url) {
+        this.memberProfileImageUrl = url;
     }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 public class MypageModifyRequestDto {
     private String memberName;
     private String memberProviderEmail;
-    private String memberProfileImageUrl;
     private String memberIntroduction;
     private List<MemberHistoryDto> memberHistoryList;
     private List<MemberMemoryboxDto> memberMemoryboxList;
