@@ -10,6 +10,10 @@ pipeline {
 
         GITHUB_BACKEND_REPO_URL = "github.com/ssafyhapy/freezetag-backend.git"
         GITHUB_FRONTEND_REPO_URL = "github.com/ssafyhapy/freezetag-frontend.git"
+
+        OPEN_AI_KEY = credentials('OPEN_AI_KEY') // OpenAI 키 추가
+        S3_ACCESS_KEY = credentials('S3_ACCESS_KEY') // OpenAI 키 추가
+        S3_SECRET_KEY = credentials('S3_SECRET_KEY') // OpenAI 키 추가
     }
 
     stages {
