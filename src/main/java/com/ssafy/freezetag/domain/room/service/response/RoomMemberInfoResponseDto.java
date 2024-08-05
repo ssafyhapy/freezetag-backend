@@ -1,11 +1,13 @@
 package com.ssafy.freezetag.domain.room.service.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomMemberInfoResponseDto {
-    private final Long memberId;
-    private final String memberName;
+    private  Long memberId;
+    private  String memberName;
 }

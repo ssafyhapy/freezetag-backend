@@ -1,14 +1,16 @@
 package com.ssafy.freezetag.domain.introresult.service.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class IntroResponseDto {
-    private final String id;
+    private  String id;
 
-    private final Long memberId;
+    private  Long memberId;
 
-    private final String content;
+    private  String content;
 }

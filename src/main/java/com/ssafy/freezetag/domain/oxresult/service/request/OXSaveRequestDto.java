@@ -1,14 +1,16 @@
 package com.ssafy.freezetag.domain.oxresult.service.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class OXSaveRequestDto {
-    private final Long roomId;
+    private  Long roomId;
 
-    private final String content;
+    private  String content;
 
-    private final boolean answer;
+    private  boolean answer;
 }

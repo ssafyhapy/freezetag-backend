@@ -1,14 +1,16 @@
 package com.ssafy.freezetag.domain.balanceresult.service.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class BalanceQuestionSaveRequestDto {
-    private final Long roomId;
+    private Long roomId;
 
-    private final String optionFirst;
+    private String optionFirst;
 
-    private final String optionSecond;
+    private String optionSecond;
 }

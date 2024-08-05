@@ -1,11 +1,13 @@
 package com.ssafy.freezetag.domain.room.service.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomCreateRequestDto {
-    private final String roomName;
-    private final Integer roomPersonCount;
+    private  String roomName;
+    private  Integer roomPersonCount;
 }

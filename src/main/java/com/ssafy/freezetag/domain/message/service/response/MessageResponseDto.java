@@ -1,16 +1,18 @@
 package com.ssafy.freezetag.domain.message.service.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class MessageResponseDto {
-    private final String memberName;
+    private  String memberName;
 
-    private final String content;
+    private  String content;
 
-    private final LocalDateTime time;
+    private  LocalDateTime time;
 }
