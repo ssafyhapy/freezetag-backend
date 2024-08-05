@@ -1,10 +1,14 @@
 package com.ssafy.freezetag.domain.member.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.member.entity.Visibility;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
 import com.ssafy.freezetag.domain.member.service.request.MypageVisibilityRequestDto;
+import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
+import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
@@ -26,7 +31,7 @@ import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 @RequestMapping("/api/member")
 @Slf4j
 public class MemberController {
-
+    private final ObjectMapper objectMapper;
     private final MemberService memberService;
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
@@ -41,12 +46,23 @@ public class MemberController {
                 .body(success(mypageResponseDto));
     }
 
-    @PatchMapping("/mypage")
+    // 잭슨이 말을 안들어요.. @ModelAttribute가 안먹음...
+    @PatchMapping(value = "/mypage", consumes = "multipart/form-data")
     public ResponseEntity<?> modifyMypage(@Login Long memberId,
-                                          @RequestBody MypageModifyRequestDto requestDto,
-                                          @RequestParam(required = false) MultipartFile profileImage) throws IOException {
+                                          @RequestParam("memberName") String memberName,
+                                          @RequestParam("memberProviderEmail") String memberProviderEmail,
+                                          @RequestParam("memberIntroduction") String memberIntroduction,
+                                          @RequestParam(value = "memberProfileImage", required = false) MultipartFile memberProfileImage,
+                                          @RequestParam(required = false) String deletedHistoryList,
+                                          @RequestParam(required = false) String memberHistoryList,
+                                          @RequestParam(required = false) String memberMemoryboxList) throws IOException {
 
-        memberService.updateMemberHistory(memberId, requestDto, profileImage);
+        List<Long> deletedHistory = objectMapper.readValue(deletedHistoryList, new TypeReference<List<Long>>() {});
+        List<MemberHistoryDto> historyList = objectMapper.readValue(memberHistoryList, new TypeReference<List<MemberHistoryDto>>() {});
+        List<MemberMemoryboxDto> memoryboxList = objectMapper.readValue(memberMemoryboxList, new TypeReference<List<MemberMemoryboxDto>>() {});
+        MypageModifyRequestDto requestDto = new MypageModifyRequestDto(memberName, memberProviderEmail, memberIntroduction, historyList, memoryboxList, deletedHistory);
+
+        memberService.updateMemberHistory(memberId, requestDto, memberProfileImage);
         log.info("수정 완료!");
 
         return ResponseEntity.noContent()
