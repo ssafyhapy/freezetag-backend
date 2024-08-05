@@ -70,9 +70,9 @@ public class OAuthAttributesDto {
         // 생성자를 통해 OAuthAttributesDto 객체 반환
         return new OAuthAttributesDto(
                 attributes,
-                userNameAttributeName,
+                userNameAttributeName, // oauth주체자가 user을 주체하는 식별자(ex. kakao는 id를 씀)
                 nickname,
-                registrationId,
+                registrationId, // memberProvider(ex. kakao, google)
                 providerEmail,
                 profileImageUrl
         );
@@ -81,8 +81,8 @@ public class OAuthAttributesDto {
     public Member toEntity() {
         return new Member(
                 memberName,
-                memberProviderEmail,
                 memberProvider,
+                memberProviderEmail,
                 memberProfileImageUrl
         );
     }
