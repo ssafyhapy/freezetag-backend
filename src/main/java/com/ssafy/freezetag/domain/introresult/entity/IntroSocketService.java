@@ -64,11 +64,11 @@ public class IntroSocketService {
         if(!intros.isEmpty()){
             IntroRedis introRedis = intros.get(0);
 
-            MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
-                    .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
-
             Member member = memberRepository.findById(introRedis.getMemberId())
                     .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+
+            MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
+                    .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
 
             // Redis에 저장된 데이터 삭제 및 DBMS에 저장
             introResultRepository.save(new IntroResult(memberRoom, introRedis.getContent()));
