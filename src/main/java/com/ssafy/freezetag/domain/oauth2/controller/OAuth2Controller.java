@@ -1,6 +1,8 @@
 package com.ssafy.freezetag.domain.oauth2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.freezetag.domain.member.entity.Member;
+import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.OAuth2Service;
@@ -27,7 +29,7 @@ public class OAuth2Controller {
 
     private final OAuth2Service oAuth2Service;
     private final TokenProvider tokenProvider;
-    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 직렬화를 위한 ObjectMapper
+    private final MemberService memberService;
 
     @PostMapping("/login")
     public ResponseEntity<?> exchangeAuthorizationCode(@RequestBody Map<String, String> request, HttpServletResponse response) {
@@ -62,8 +64,21 @@ public class OAuth2Controller {
         Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
         String memberName = (String) properties.get("nickname");
 
+
+        Long memberId = tokenProvider.getMemberId(authentication);
+        Member member = memberService.findMember(memberId);
+
+
+        String memberProviderEmail = member.getMemberProviderEmail();
+        String memberProfileImageUrl = member.getMemberProfileImageUrl();
+
+
         // LoginResponseDto 생성
-        LoginResponseDto loginResponseDto = new LoginResponseDto(memberName);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(
+                                                    memberName,
+                                                    memberId.toString(),
+                                                    memberProviderEmail,
+                                                    memberProfileImageUrl);
 
         // 응답 반환
         return ResponseEntity.ok()
