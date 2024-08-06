@@ -3,10 +3,13 @@ package com.ssafy.freezetag.domain.oxresult.entity;
 import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "ox_result")
 public class OXResult extends BaseEntity {
     @Id

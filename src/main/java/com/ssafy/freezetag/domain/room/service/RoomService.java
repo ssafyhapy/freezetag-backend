@@ -2,11 +2,24 @@ package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
+import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestion;
+import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResult;
+import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
+import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceReportResponseDto;
+import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceResultResponseDto;
+
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
+import com.ssafy.freezetag.domain.introresult.entity.IntroResult;
+import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
+import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.message.entity.MessageRedis;
 import com.ssafy.freezetag.domain.message.service.MessageService;
+import com.ssafy.freezetag.domain.oxresult.entity.OXResult;
+import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.entity.RoomRedis;
@@ -37,6 +50,9 @@ public class RoomService {
     private final OpenviduService openviduService;
     private final MemberRoomRepository memberRoomRepository;
     private final MessageService messageService;
+    private final IntroResultService introResultService;
+    private final OXResultService oxResultService;
+    private final BalanceResultService balanceResultService;
 
     @Transactional
     public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
@@ -161,4 +177,46 @@ public class RoomService {
                 .orElseThrow(RoomNotFoundException::new);
     }
 
+    public RoomReportResponseDto getRoomReport(Long roomId) {
+
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByRoomId(roomId);
+
+        List<IntroReportResponseDto> introReportResponseDtos = memberRooms.stream()
+                .map(memberRoom -> {
+                    String memberName = memberRoom.getMember().getMemberName();
+                    IntroResult introResult = introResultService.getIntroResult(memberRoom.getId());
+                    return new IntroReportResponseDto(memberName, introResult.getContent());
+                }).toList();
+
+        List<OXReportResponseDto> oxReportResponseDtos = memberRooms.stream()
+                .map(memberRoom -> {
+                    String memberName = memberRoom.getMember().getMemberName();
+                    List<OXResult> oxResults = oxResultService.getOXResult(memberRoom.getId());
+
+                    List<OXResponseDto> oxResponseDtos = oxResults.stream()
+                            .map(oxResult -> new OXResponseDto(oxResult.getOxResultContent(), oxResult.getOxResultAnswer()))
+                            .toList();
+
+                    return new OXReportResponseDto(memberName, oxResponseDtos);
+                }).toList();
+
+        // TODO : 밸런스 게임 결과 조회
+        List<BalanceQuestion> balanceQuestions = balanceResultService.getBalanceQuestion(roomId);
+
+        List<BalanceReportResponseDto> balanceReportResponseDtos = balanceQuestions.stream()
+                .map(balanceQuestion -> {
+                    List<BalanceResult> balanceResults = balanceResultService.getBalanceResult(balanceQuestion.getId());
+
+                    List<BalanceResultResponseDto> balanceResultResponseDtos = balanceResults.stream()
+                            .map(balanceResult -> new BalanceResultResponseDto(balanceResult.getMember().getMemberName(),
+                                    balanceResult.getBalanceResultSelectedOption())).toList();
+
+                    return new BalanceReportResponseDto(balanceQuestion.getBalanceQuestionOptionFirst(),
+                            balanceQuestion.getBalanceQuestionOptionSecond(),
+                            balanceResultResponseDtos);
+                }).toList();
+
+
+        return new RoomReportResponseDto(introReportResponseDtos, oxReportResponseDtos, balanceReportResponseDtos);
+    }
 }

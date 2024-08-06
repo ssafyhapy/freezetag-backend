@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.freezetag.domain.room.service.RoomService;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
+import com.ssafy.freezetag.domain.room.service.response.RoomReportResponseDto;
 import com.ssafy.freezetag.global.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 @RestController
 @RequestMapping("/api/room")
 @RequiredArgsConstructor
-public class RoomController {
+public class RoomController implements RoomControllerSwagger{
     private final RoomService roomService;
 
     @PostMapping("/create")
@@ -37,6 +38,14 @@ public class RoomController {
         roomService.exitRoom(roomId, memberId);
         return ResponseEntity.noContent()
                 .build();
+    }
+  
+    @GetMapping("/{roomId}/report")
+    public ResponseEntity<?> getRoomReport(@PathVariable Long roomId){
+        RoomReportResponseDto roomReport = roomService.getRoomReport(roomId);
+
+        return ResponseEntity.ok()
+                .body(success(roomReport));
     }
 
 }

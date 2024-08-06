@@ -95,4 +95,10 @@ public class IntroResultService {
         // Redis에서 데이터 삭제하기
         introRedisRepository.deleteAll(introRedisList);
     }
+
+    // 최종 레포트 조회
+    public IntroResult getIntroResult(Long memberRoomId){
+        return introResultRepository.findByMemberRoomId(memberRoomId)
+                .orElseThrow(() -> new RuntimeException("memberRoomId으로 작성된 한 줄 자기소개가 없습니다."));
+    }
 }

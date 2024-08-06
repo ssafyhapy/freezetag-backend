@@ -130,4 +130,12 @@ public class BalanceResultService {
         }
     }
 
+    // 최종 레포트 조회
+    public List<BalanceQuestion> getBalanceQuestion(Long roomId){
+        return balanceQuestionRepository.findAllByRoomId(roomId);
+    }
+
+    public List<BalanceResult> getBalanceResult(Long balanceQuestionId){
+        return balanceResultRepository.findAllByBalanceQuestionId(balanceQuestionId);
+    }
 }
