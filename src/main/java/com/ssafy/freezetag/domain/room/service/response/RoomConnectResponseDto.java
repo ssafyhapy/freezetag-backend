@@ -15,7 +15,6 @@ public class RoomConnectResponseDto {
     private String roomCode;
     private String roomName;
     private Integer roomPersonCount;
-    private List<RoomMemberInfoResponseDto> members;
     private Long hostId;
     private OpenviduResponseDto webrtc;
     private List<MessageRedis> messages;
