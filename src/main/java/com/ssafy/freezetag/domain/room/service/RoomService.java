@@ -1,13 +1,12 @@
 package com.ssafy.freezetag.domain.room.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestion;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResult;
 import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceReportResponseDto;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceResultResponseDto;
-
+import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.introresult.entity.IntroResult;
 import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
@@ -28,6 +27,7 @@ import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.OpenviduResponseDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
+import com.ssafy.freezetag.domain.room.service.response.RoomReportResponseDto;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -169,7 +169,7 @@ public class RoomService {
 
         // 방 테이블을 조회 후 멤버 룸을 삭제
         fetchedRoom.getMemberRooms().remove(memberRoom);
-        memberRoomRepository.deleteByMember_IdAndRoom_Id(memberId, roomId);
+        memberRoomRepository.deleteByMemberIdAndRoomId(memberId, roomId);
     }
 
     public Room fetchRoomWithMembers(Long roomId) {
