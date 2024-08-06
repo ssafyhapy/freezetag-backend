@@ -1,6 +1,5 @@
 package com.ssafy.freezetag.domain.oauth2.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.response.LoginResponseDto;
@@ -76,7 +75,7 @@ public class OAuth2Controller {
         // LoginResponseDto 생성
         LoginResponseDto loginResponseDto = new LoginResponseDto(
                                                     memberName,
-                                                    memberId.toString(),
+                                                    memberId,
                                                     memberProviderEmail,
                                                     memberProfileImageUrl);
 
