@@ -57,7 +57,7 @@ public class TokenProvider {
     }
 
 
-    private static Long getMemberId(Authentication authentication) {
+    public Long getMemberId(Authentication authentication) {
         CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
         return principal.getMemberId();
     }
