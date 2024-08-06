@@ -63,7 +63,8 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "https://i11c209.p.ssafy.io",
-                "https://sarrr.s3.ap-northeast-2.amazonaws.com"
+                "https://sarrr.s3.ap-northeast-2.amazonaws.com",
+                "https://sarrr.s3.ap-northeast-2.amazonaws.com/assets"
         ));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
