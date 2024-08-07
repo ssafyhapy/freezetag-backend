@@ -40,7 +40,7 @@ public class ResponseWrapperAspect {
                     .headers(headers)
                     .body(CommonResponse.success(responseBody));
         }
-        throw new IllegalStateException("controller 반환 값은 항상 ResponseEntity 를 사용해주세요");
+        return result;
     }
 
 }
