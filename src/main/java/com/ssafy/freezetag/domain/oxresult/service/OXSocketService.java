@@ -72,7 +72,8 @@ public class OXSocketService {
         List<OXRedis> oxs = oxRedisRepository.findAllByRoomId(roomId);
 
         if (oxs.isEmpty()) {
-            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state", new MemberStateSocketRequestDto(STATE.BALANCE));
+            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state",
+                    new MemberStateSocketRequestDto("balance"));
         }
 
         Map<Long, List<OXRedis>> groupedByMemberId = oxs.stream()

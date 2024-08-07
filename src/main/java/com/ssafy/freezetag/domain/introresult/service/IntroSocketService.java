@@ -66,7 +66,8 @@ public class IntroSocketService {
         List<IntroRedis> intros = introRedisRepository.findAllByRoomId(roomId);
 
         if (intros.isEmpty()) {
-            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state", new MemberStateSocketRequestDto(STATE.GUESSME));
+            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state",
+                    new MemberStateSocketRequestDto("photofirst"));
         }
 
         IntroRedis introRedis = intros.get(0);
