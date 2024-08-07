@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.introresult.controller;
 
-import com.ssafy.freezetag.domain.introresult.entity.IntroSocketService;
+import com.ssafy.freezetag.domain.introresult.service.IntroSocketService;
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSocketRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSocketResponseDto;
 import lombok.RequiredArgsConstructor;

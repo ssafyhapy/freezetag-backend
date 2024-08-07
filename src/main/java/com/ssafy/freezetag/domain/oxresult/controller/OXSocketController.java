@@ -1,9 +1,8 @@
 package com.ssafy.freezetag.domain.oxresult.controller;
 
-import com.ssafy.freezetag.domain.introresult.service.request.IntroSocketRequestDto;
-import com.ssafy.freezetag.domain.introresult.service.response.IntroSocketResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.OXSocketService;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketRequestDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXSocketResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -26,8 +25,8 @@ public class OXSocketController {
         oxSocketService.saveOX(roomId, oxSocketRequestDtos);
 
         if (oxSocketService.checkAllOX(roomId)) {
-            IntroSocketResponseDto firstIntro = oxSocketService.getNextIntro(roomId);
-            simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", firstIntro);
+            List<OXSocketResponseDto> firstOX = oxSocketService.getNextOX(roomId);
+            simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", firstOX);
         }
     }
 
@@ -36,7 +35,7 @@ public class OXSocketController {
      */
     @MessageMapping("/ox/{roomId}/next")
     public void getNextIntro(@DestinationVariable Long roomId) {
-        IntroSocketResponseDto nextIntro = introSocketService.getNextIntro(roomId);
-        simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", nextIntro);
+        List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
+        simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", nextOX);
     }
 }

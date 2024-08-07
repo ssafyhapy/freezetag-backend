@@ -2,8 +2,6 @@ package com.ssafy.freezetag.domain.oxresult.service;
 
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
-import com.ssafy.freezetag.domain.introresult.entity.IntroRedis;
-import com.ssafy.freezetag.domain.introresult.service.request.IntroSocketRequestDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.oxresult.entity.OXRedis;
@@ -80,10 +78,33 @@ public class OXSocketService {
 
         List<OXRedis> firstOXRedisList = groupedByMemberId.values().stream()
                 .findFirst() // 첫 번째 List<OXRedis>를 가져옵니다.
-                .orElseThrow(() -> new RuntimeException("OXRedis 리스트가 비어있습니다."));
+                .orElseThrow(() -> new RuntimeException("더이상 확인 가능한 OX가 남아있지 않습니다."));
 
 
+        List<OXSocketResponseDto> oxSocketResponseDtos = firstOXRedisList.stream()
+                .map(firstOXRedis -> {
+                    Member member = memberRepository.findById(firstOXRedis.getMemberId())
+                            .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
 
-        return null;
+                    return new OXSocketResponseDto(firstOXRedis.getMemberId(),
+                            member.getMemberName(),
+                            firstOXRedis.getContent(),
+                            firstOXRedis.getAnswer());
+                }).toList();
+
+        List<OXResult> oxResults = firstOXRedisList.stream()
+                .map(firstOXRedis -> {
+                    MemberRoom memberRoom = memberRoomRepository.findById(firstOXRedis.getMemberRoomId())
+                            .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
+
+                    return new OXResult(memberRoom,
+                            firstOXRedis.getContent(),
+                            firstOXRedis.getAnswer());
+                }).toList();
+
+        oxResultRepository.saveAll(oxResults);
+        oxRedisRepository.deleteAll(firstOXRedisList);
+
+        return oxSocketResponseDtos;
     }
 }
