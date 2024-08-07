@@ -20,7 +20,7 @@ public class RoomController implements RoomControllerSwagger{
     private final RoomService roomService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto){
+    public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) {
         // 생성된 방 정보 (방 제목, 접속 코드 등) 을 DB에 엔티티로 저장
         RoomConnectResponseDto roomConnectResponseDto = roomService.createRoom(createRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -33,6 +33,13 @@ public class RoomController implements RoomControllerSwagger{
         return ResponseEntity.ok(success(responseDto));
     }
 
+    @DeleteMapping("/exit")
+    public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam Long roomId) {
+        roomService.exitRoom(roomId, memberId);
+        return ResponseEntity.noContent()
+                .build();
+    }
+  
     @GetMapping("/{roomId}/report")
     public ResponseEntity<?> getRoomReport(@PathVariable Long roomId){
         RoomReportResponseDto roomReport = roomService.getRoomReport(roomId);
@@ -40,4 +47,5 @@ public class RoomController implements RoomControllerSwagger{
         return ResponseEntity.ok()
                 .body(success(roomReport));
     }
+
 }
