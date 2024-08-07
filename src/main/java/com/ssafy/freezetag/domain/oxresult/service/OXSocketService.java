@@ -1,6 +1,5 @@
 package com.ssafy.freezetag.domain.oxresult.service;
 
-import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
@@ -35,14 +34,14 @@ public class OXSocketService {
     private final OXRedisRepository oxRedisRepository;
     private final OXResultRepository oxResultRepository;
 
-
     @Transactional
     public void saveOX(Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos) {
-        // OX 저장
-        oxSocketRequestDtos.forEach(oxSocketRequestDto -> {
-            MemberRoom memberRoom = memberRoomRepository.findByMemberIdAndRoomId(oxSocketRequestDto.getMemberId(), roomId)
-                    .orElseThrow(() -> new MemberNotFoundException("해당 회원이 현재 방에 참여중이지 않습니다."));
+        Long memberId = oxSocketRequestDtos.get(0).getMemberId();
 
+        MemberRoom memberRoom = memberRoomRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new RuntimeException("회원이 방에 참여중이지 않습니다."));
+
+        oxSocketRequestDtos.forEach(oxSocketRequestDto -> {
             OXRedis oxRedis = new OXRedis(roomId,
                     oxSocketRequestDto.getMemberId(),
                     memberRoom.getId(),
@@ -58,7 +57,6 @@ public class OXSocketService {
 
         List<OXRedis> oxRedisList = oxRedisRepository.findAllByRoomId(roomId);
 
-        // 멤버별로 3개의 OX를 가지고 있어 memberId로 그룹핑한 것의 개수가 0인지 확인
         Map<Long, List<OXRedis>> groupedByMemberId = oxRedisList.stream()
                 .collect(Collectors.groupingBy(OXRedis::getMemberId));
 
@@ -80,27 +78,24 @@ public class OXSocketService {
                 .findFirst() // 첫 번째 List<OXRedis>를 가져옵니다.
                 .orElseThrow(() -> new RuntimeException("더이상 확인 가능한 OX가 남아있지 않습니다."));
 
+        Member member = memberRepository.findById(firstOXRedisList.get(0).getMemberId())
+                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
 
         List<OXSocketResponseDto> oxSocketResponseDtos = firstOXRedisList.stream()
-                .map(firstOXRedis -> {
-                    Member member = memberRepository.findById(firstOXRedis.getMemberId())
-                            .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+                .map(firstOXRedis -> new OXSocketResponseDto(firstOXRedis.getMemberId(),
+                        member.getMemberName(),
+                        firstOXRedis.getContent(),
+                        firstOXRedis.getAnswer()))
+                .toList();
 
-                    return new OXSocketResponseDto(firstOXRedis.getMemberId(),
-                            member.getMemberName(),
-                            firstOXRedis.getContent(),
-                            firstOXRedis.getAnswer());
-                }).toList();
+        MemberRoom memberRoom = memberRoomRepository.findById(firstOXRedisList.get(0).getMemberRoomId())
+                .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
 
         List<OXResult> oxResults = firstOXRedisList.stream()
-                .map(firstOXRedis -> {
-                    MemberRoom memberRoom = memberRoomRepository.findById(firstOXRedis.getMemberRoomId())
-                            .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
-
-                    return new OXResult(memberRoom,
-                            firstOXRedis.getContent(),
-                            firstOXRedis.getAnswer());
-                }).toList();
+                .map(firstOXRedis -> new OXResult(memberRoom,
+                        firstOXRedis.getContent(),
+                        firstOXRedis.getAnswer()))
+                .toList();
 
         oxResultRepository.saveAll(oxResults);
         oxRedisRepository.deleteAll(firstOXRedisList);

@@ -20,22 +20,25 @@ public class OXSocketController {
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final OXSocketService oxSocketService;
 
+    /**
+     * /api/pub/ox/1/check
+     */
     @MessageMapping("/ox/{roomId}/check")
     public void checkIntro(@DestinationVariable Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos){
         oxSocketService.saveOX(roomId, oxSocketRequestDtos);
 
         if (oxSocketService.checkAllOX(roomId)) {
             List<OXSocketResponseDto> firstOX = oxSocketService.getNextOX(roomId);
-            simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", firstOX);
+            simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", firstOX);
         }
     }
 
     /**
-     * /api/pub/intro/1/next
+     * /api/pub/ox/1/next
      */
     @MessageMapping("/ox/{roomId}/next")
     public void getNextIntro(@DestinationVariable Long roomId) {
         List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
-        simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", nextOX);
+        simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
     }
 }
