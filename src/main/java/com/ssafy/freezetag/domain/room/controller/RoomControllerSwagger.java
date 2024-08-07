@@ -33,7 +33,7 @@ public interface RoomControllerSwagger {
     @Operation(summary = "방 중도 퇴장")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "방 퇴장 완료", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "방 퇴장 실패", content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "404", description = "퇴장할 해당 회원이 없음", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{roomId}/exit")
     ResponseEntity<?> enterRoom(@Login Long memberId, @PathVariable Long roomId);
