@@ -33,8 +33,8 @@ public class RoomController implements RoomControllerSwagger{
         return ResponseEntity.ok(success(responseDto));
     }
 
-    @DeleteMapping("/exit")
-    public ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam Long roomId) {
+    @DeleteMapping("/{roomId}/exit")
+    public ResponseEntity<?> enterRoom(@Login Long memberId, @PathVariable Long roomId) {
         roomService.exitRoom(roomId, memberId);
         return ResponseEntity.noContent()
                 .build();
@@ -47,5 +47,6 @@ public class RoomController implements RoomControllerSwagger{
         return ResponseEntity.ok()
                 .body(success(roomReport));
     }
+
 
 }
