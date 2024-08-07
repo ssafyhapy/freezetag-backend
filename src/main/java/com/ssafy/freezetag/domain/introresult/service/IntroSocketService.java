@@ -1,10 +1,11 @@
-package com.ssafy.freezetag.domain.introresult.entity;
+package com.ssafy.freezetag.domain.introresult.service;
 
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
+import com.ssafy.freezetag.domain.introresult.entity.IntroRedis;
+import com.ssafy.freezetag.domain.introresult.entity.IntroResult;
 import com.ssafy.freezetag.domain.introresult.repository.IntroRedisRepository;
 import com.ssafy.freezetag.domain.introresult.repository.IntroResultRepository;
-import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSocketRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSocketResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
@@ -31,7 +32,6 @@ public class IntroSocketService {
     private final RoomRepository roomRepository;
     private final IntroRedisRepository introRedisRepository;
     private final IntroResultRepository introResultRepository;
-    private final IntroResultService introResultService;
 
     @Transactional
     public void saveIntro(Long roomId, IntroSocketRequestDto introSocketRequestDto) {
@@ -64,11 +64,11 @@ public class IntroSocketService {
         if(!intros.isEmpty()){
             IntroRedis introRedis = intros.get(0);
 
-            MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
-                    .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
-
             Member member = memberRepository.findById(introRedis.getMemberId())
                     .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+
+            MemberRoom memberRoom = memberRoomRepository.findById(introRedis.getMemberRoomId())
+                    .orElseThrow(() -> new RuntimeException("MemberRoom id가 없습니다"));
 
             // Redis에 저장된 데이터 삭제 및 DBMS에 저장
             introResultRepository.save(new IntroResult(memberRoom, introRedis.getContent()));
