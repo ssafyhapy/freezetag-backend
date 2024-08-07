@@ -16,15 +16,14 @@ public class RoomConverter {
                 .toList();
     }
 
-    public static RoomConnectResponseDto createRoomConnectResponseDto(Room room, String enterCode, String roomName, int roomPersonCount, OpenviduResponseDto webrtcDto, List<MessageRedis> messages) {
+    public static RoomConnectResponseDto createRoomConnectResponseDto(Room room, String enterCode, String roomName, int roomPersonCount, OpenviduResponseDto webrtcDto) {
         return new RoomConnectResponseDto(
                 room.getId(),
                 enterCode,
                 roomName,
                 roomPersonCount,
                 room.getHost().getId(),
-                webrtcDto,
-                messages
+                webrtcDto
         );
     }
 }

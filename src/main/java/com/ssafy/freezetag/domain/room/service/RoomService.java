@@ -95,16 +95,12 @@ public class RoomService {
         // Redis에 세션 및 방 정보 저장
         roomRedisService.saveRoomInfo(enterCode, webrtcDto.getSessionId(), room.getId());
 
-        // Redis에서 채팅(메세지) 정보 불러오기
-        List<MessageRedis> messages = messageService.getMessages(room.getId());
-
         return createRoomConnectResponseDto(
                 room,
                 enterCode,
                 dto.getRoomName(),
                 dto.getRoomPersonCount(),
-                webrtcDto,
-                messages
+                webrtcDto
         );
 
     }
@@ -140,17 +136,13 @@ public class RoomService {
         // OpenVidu 토큰 반환
         OpenviduResponseDto webrtcDto = openviduService.enterRoom(sessionId, member);
 
-        // Redis에서 채팅(메세지) 정보 불러오기
-        List<MessageRedis> messages = messageService.getMessages(roomId);
-
         // 현재 방 정보 반환
         return createRoomConnectResponseDto(
                 fetchJoinedRoom,
                 enterCode,
                 fetchJoinedRoom.getRoomName(),
                 fetchJoinedRoom.getRoomPersonCount(),
-                webrtcDto,
-                messages
+                webrtcDto
         );
 
     }

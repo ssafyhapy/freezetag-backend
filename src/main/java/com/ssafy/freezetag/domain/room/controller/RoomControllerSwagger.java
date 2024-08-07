@@ -30,6 +30,14 @@ public interface RoomControllerSwagger {
     @PostMapping("/enter")
     ResponseEntity<?> enterRoom(@Login Long memberId, @RequestParam String roomCode) throws JsonProcessingException;
 
+    @Operation(summary = "방 중도 퇴장")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "방 퇴장 완료", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "방 퇴장 실패", content = @Content(mediaType = "application/json"))
+    })
+    @DeleteMapping("/{roomId}/exit")
+    ResponseEntity<?> enterRoom(@Login Long memberId, @PathVariable Long roomId);
+
     @Operation(summary = "방 결과 레포트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "방 결과 레포트 조회 성공", content = @Content(mediaType = "application/json")),
