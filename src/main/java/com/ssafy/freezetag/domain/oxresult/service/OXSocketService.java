@@ -2,7 +2,9 @@ package com.ssafy.freezetag.domain.oxresult.service;
 
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
+import com.ssafy.freezetag.domain.member.entity.STATE;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.member.service.request.MemberStateSocketRequestDto;
 import com.ssafy.freezetag.domain.oxresult.entity.OXRedis;
 import com.ssafy.freezetag.domain.oxresult.entity.OXResult;
 import com.ssafy.freezetag.domain.oxresult.repository.OXRedisRepository;
@@ -15,6 +17,7 @@ import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,7 @@ public class OXSocketService {
     private final RoomRepository roomRepository;
     private final OXRedisRepository oxRedisRepository;
     private final OXResultRepository oxResultRepository;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
 
     @Transactional
     public void saveOX(Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos) {
@@ -68,7 +72,7 @@ public class OXSocketService {
         List<OXRedis> oxs = oxRedisRepository.findAllByRoomId(roomId);
 
         if (oxs.isEmpty()) {
-            throw new RuntimeException("더이상 확인 가능한 OX가 남아있지 않습니다.");
+            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state", new MemberStateSocketRequestDto(STATE.BALANCE));
         }
 
         Map<Long, List<OXRedis>> groupedByMemberId = oxs.stream()
