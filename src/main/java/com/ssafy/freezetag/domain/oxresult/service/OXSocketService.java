@@ -41,7 +41,7 @@ public class OXSocketService {
     public void saveOX(Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos) {
         Long memberId = oxSocketRequestDtos.get(0).getMemberId();
 
-        MemberRoom memberRoom = memberRoomRepository.findByMemberId(memberId)
+        MemberRoom memberRoom = memberRoomRepository.findByMemberIdAndRoomId(memberId, roomId)
                 .orElseThrow(() -> new RuntimeException("회원이 방에 참여중이지 않습니다."));
 
         oxSocketRequestDtos.forEach(oxSocketRequestDto -> {
