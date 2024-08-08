@@ -37,6 +37,8 @@ public class IntroSocketController {
     @MessageMapping("/intro/{roomId}/next")
     public void getNextIntro(@DestinationVariable Long roomId) {
         IntroSocketResponseDto nextIntro = introSocketService.getNextIntro(roomId);
-        simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", nextIntro);
+        if(nextIntro != null){
+            simpMessageSendingOperations.convertAndSend("/api/sub/intro/" + roomId + "/next", nextIntro);
+        }
     }
 }

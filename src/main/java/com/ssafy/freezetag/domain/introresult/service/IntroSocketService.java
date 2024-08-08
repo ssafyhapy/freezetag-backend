@@ -9,7 +9,6 @@ import com.ssafy.freezetag.domain.introresult.repository.IntroResultRepository;
 import com.ssafy.freezetag.domain.introresult.service.request.IntroSocketRequestDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroSocketResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.member.entity.STATE;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.request.MemberStateSocketRequestDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
@@ -66,8 +65,9 @@ public class IntroSocketService {
         List<IntroRedis> intros = introRedisRepository.findAllByRoomId(roomId);
 
         if (intros.isEmpty()) {
-            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state",
+            simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId + "/state",
                     new MemberStateSocketRequestDto("photofirst"));
+            return null;
         }
 
         IntroRedis introRedis = intros.get(0);
