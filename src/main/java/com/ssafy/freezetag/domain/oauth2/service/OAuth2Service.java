@@ -7,13 +7,8 @@ import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.entity.CustomOAuth2User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,8 +21,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2Service {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
@@ -55,7 +56,7 @@ public class OAuth2Service {
                 .queryParam("redirect_uri", clientRegistration.getRedirectUri())
                 .queryParam("client_id", clientRegistration.getClientId())
                 .queryParam("client_secret", clientRegistration.getClientSecret());
-        System.out.println(uriBuilder.toUriString());
+
         // Make the request and extract the access token from the response
         // Set headers
         HttpHeaders headers = new HttpHeaders();
@@ -64,7 +65,7 @@ public class OAuth2Service {
         // Create HttpEntity
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        System.out.println(uriBuilder.toUriString());
+        log.info("uriBuilder.toString() = {}", uriBuilder.toUriString());
 
         // Make the request and extract the access token from the response
         ResponseEntity<Map> responseEntity = restTemplate.exchange(
@@ -103,7 +104,7 @@ public class OAuth2Service {
                 .fromUriString(userInfoEndpointUri)
                 .queryParam("access_token", accessToken);
 
-        System.out.println(uriBuilder.toUriString());
+        log.info("uriBuilder.toString() = {}", uriBuilder.toUriString());
         ResponseEntity<Map> responseEntity = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, Map.class);
         Map<String, Object> userAttributes = responseEntity.getBody();
 
