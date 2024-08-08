@@ -2,7 +2,6 @@ package com.ssafy.freezetag.domain.oxresult.service;
 
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.member.entity.STATE;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.request.MemberStateSocketRequestDto;
 import com.ssafy.freezetag.domain.oxresult.entity.OXRedis;
@@ -72,7 +71,7 @@ public class OXSocketService {
         List<OXRedis> oxs = oxRedisRepository.findAllByRoomId(roomId);
 
         if (oxs.isEmpty()) {
-            simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state",
+            simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId + "/state",
                     new MemberStateSocketRequestDto("balance"));
         }
 
