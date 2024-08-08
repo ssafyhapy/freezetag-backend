@@ -73,6 +73,7 @@ public class OXSocketService {
         if (oxs.isEmpty()) {
             simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId + "/state",
                     new MemberStateSocketRequestDto("balance"));
+            return null;
         }
 
         Map<Long, List<OXRedis>> groupedByMemberId = oxs.stream()
