@@ -1,7 +1,9 @@
 package com.ssafy.freezetag.domain.oxresult.controller;
 
 import com.ssafy.freezetag.domain.oxresult.service.OXSocketService;
+import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketNextRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketRequestDto;
+import com.ssafy.freezetag.domain.oxresult.service.response.OXSocketNextResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXSocketResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,7 @@ public class OXSocketController {
      * /api/pub/ox/1/check
      */
     @MessageMapping("/ox/{roomId}/check")
-    public void checkIntro(@DestinationVariable Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos){
+    public void checkOX(@DestinationVariable Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos) {
         oxSocketService.saveOX(roomId, oxSocketRequestDtos);
 
         if (oxSocketService.checkAllOX(roomId)) {
@@ -33,14 +35,29 @@ public class OXSocketController {
         }
     }
 
-    /**
-     * /api/pub/ox/1/next
-     */
+    /*
+    사용 보류 프론트와 논의 후 지우기!!!
     @MessageMapping("/ox/{roomId}/next")
-    public void getNextIntro(@DestinationVariable Long roomId) {
+    public void getNextOX(@DestinationVariable Long roomId) {
         List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
-        if(nextOX != null){
+        if (nextOX != null) {
             simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
         }
+    }*/
+
+    @MessageMapping("/ox/{roomId}/next")
+    public void getMyNextOx(@DestinationVariable Long roomId, OXSocketNextRequestDto oxSocketNextRequestDto) {
+        int currentIndex = oxSocketNextRequestDto.getNowIndex();
+
+        if (currentIndex < 2) {
+            OXSocketNextResponseDto oxSocketNextResponseDto = new OXSocketNextResponseDto(oxSocketNextRequestDto.getMemberId(), currentIndex + 1);
+            simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", oxSocketNextResponseDto);
+        } else if (currentIndex == 2) {
+            List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
+            if (nextOX != null) {
+                simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
+            }
+        }
     }
+
 }
