@@ -72,8 +72,8 @@ public class BalanceResultService {
     }
 
     @Transactional
-    public BalanceQuestionRedis saveBalanceQuestion(BalanceQuestionSaveRequestDto balanceQuestionSaveRequestDto){
-        BalanceQuestionRedis balanceQuestionRedis = new BalanceQuestionRedis(balanceQuestionSaveRequestDto.getRoomId(),
+    public BalanceQuestionRedis saveBalanceQuestion(Long roomId, BalanceQuestionSaveRequestDto balanceQuestionSaveRequestDto){
+        BalanceQuestionRedis balanceQuestionRedis = new BalanceQuestionRedis(roomId,
                 balanceQuestionSaveRequestDto.getOptionFirst(),
                 balanceQuestionSaveRequestDto.getOptionSecond());
 

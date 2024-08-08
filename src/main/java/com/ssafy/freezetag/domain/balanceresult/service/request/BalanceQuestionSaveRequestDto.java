@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BalanceQuestionSaveRequestDto {
-    private Long roomId;
-
     private String optionFirst;
 
     private String optionSecond;

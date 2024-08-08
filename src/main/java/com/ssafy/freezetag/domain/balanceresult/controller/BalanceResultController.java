@@ -1,10 +1,8 @@
 package com.ssafy.freezetag.domain.balanceresult.controller;
 
-import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestionRedis;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResultRedis;
 import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionRequestDto;
-import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceResultSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceQuestionResponseDto;
 import com.ssafy.freezetag.global.argumentresolver.Login;
@@ -18,7 +16,7 @@ import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 @RequiredArgsConstructor
 @RequestMapping("/api/result/balance")
 @RestController
-public class BalanceResultController implements BalanceResultControllerSwagger{
+public class BalanceResultController{
 
     private final BalanceResultService balanceResultService;
 
@@ -29,13 +27,13 @@ public class BalanceResultController implements BalanceResultControllerSwagger{
                 .body(success(question));
     }
 
-    @PostMapping("/question")
+    /*@PostMapping("/question")
     public ResponseEntity<?> saveBalanceQuestion(@RequestBody BalanceQuestionSaveRequestDto balanceQuestionSaveRequestDto){
         BalanceQuestionRedis savedBalanceQuestion = balanceResultService.saveBalanceQuestion(balanceQuestionSaveRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(savedBalanceQuestion));
-    }
+    }*/
 
     // 타이머 종료시 사용자들의 선택 저장하기
     @PostMapping("/selection")
