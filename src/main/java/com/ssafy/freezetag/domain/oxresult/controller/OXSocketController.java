@@ -39,6 +39,8 @@ public class OXSocketController {
     @MessageMapping("/ox/{roomId}/next")
     public void getNextIntro(@DestinationVariable Long roomId) {
         List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
-        simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
+        if(nextOX != null){
+            simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
+        }
     }
 }
