@@ -61,8 +61,12 @@ public class OAuth2Controller {
         // 'properties' 객체에서 'nickname'을 가져오는 과정
         @SuppressWarnings("unchecked")
         Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
-        String memberName = (String) properties.get("nickname");
-
+        String memberName;
+        if (properties == null) {
+            memberName = (String) oAuth2User.getAttributes().get("name");
+        } else {
+            memberName = (String) properties.get("nickname");
+        }
 
         Long memberId = tokenProvider.getMemberId(authentication);
         Member member = memberService.findMember(memberId);
@@ -74,10 +78,10 @@ public class OAuth2Controller {
 
         // LoginResponseDto 생성
         LoginResponseDto loginResponseDto = new LoginResponseDto(
-                                                    memberName,
-                                                    memberId,
-                                                    memberProviderEmail,
-                                                    memberProfileImageUrl);
+                memberName,
+                memberId,
+                memberProviderEmail,
+                memberProfileImageUrl);
 
         // 응답 반환
         return ResponseEntity.ok()
