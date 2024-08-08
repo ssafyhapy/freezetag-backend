@@ -22,7 +22,7 @@ public class MemberStateSocketController {
     public void getNowState(@DestinationVariable Long roomId, MemberStateSocketRequestDto memberStateSocketRequestDto) {
 
         log.info("{}번 회원님이 {}상태로 넘어가도록 알림을 보냈습니다.", roomId, memberStateSocketRequestDto.getMemberState());
-        simpMessageSendingOperations.convertAndSend("/api/sub" + roomId + "/state", memberStateSocketRequestDto);
+        simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId + "/state", memberStateSocketRequestDto);
         log.info("{}번 회원님이 {}상태로 성공적으로 넘어갔습니다.", roomId, memberStateSocketRequestDto.getMemberState());
     }
 
