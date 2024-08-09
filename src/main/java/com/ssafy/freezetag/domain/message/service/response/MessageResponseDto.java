@@ -10,9 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageResponseDto {
-    private  String memberName;
+    private String memberProfileImageUrl;
 
-    private  String content;
+    private String memberName;
 
-    private  LocalDateTime time;
+    private String content;
+
+    private LocalDateTime time;
 }
