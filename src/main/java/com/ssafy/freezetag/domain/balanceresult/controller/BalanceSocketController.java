@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
+@MessageMapping("/balance")
 public class BalanceSocketController {
 
     private final SimpMessageSendingOperations simpMessageSendingOperations;
@@ -27,7 +28,7 @@ public class BalanceSocketController {
      * /api/pub/balance/1/get-question
      * 방장만 주제 리롤 가능
      */
-    @MessageMapping("/balance/{roomId}/get-question")
+    @MessageMapping("/{roomId}/get-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
                                    BalanceQuestionRequestDto balanceQuestionRequestDto){
         log.info("{}번 방에서 {} 모임 목적을 입력했습니다", roomId, balanceQuestionRequestDto.getPurpose());
@@ -39,7 +40,7 @@ public class BalanceSocketController {
      * /api/pub/balance/1/save-question
      * 방장만 주제 확정 가능
      */
-    @MessageMapping("/balance/{roomId}/save-question")
+    @MessageMapping("/{roomId}/save-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
                                    BalanceQuestionSaveRequestDto balanceQuestionRequestDto){
         log.info("{}번 방에서 {} OR {} 밸런스 주제를 확정했습니다.", roomId, balanceQuestionRequestDto.getOptionFirst(), balanceQuestionRequestDto.getOptionSecond());
@@ -49,7 +50,7 @@ public class BalanceSocketController {
 
 
     // 타이머 종료시 각 사용자들이 A or B 중 무엇을 선택했는지 소켓으로 전송 그리고 Redis 저장
-    @MessageMapping("/balance/{roomId}/selection")
+    @MessageMapping("/{roomId}/selection")
     public void saveBalanceSelection(@DestinationVariable Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
         log.info("{}번 방에서 {}번 회원님이 {}를 선택했습니다.", roomId, balanceResultSaveRequestDto.getMemberId(), balanceResultSaveRequestDto.getBalanceResultSelectedOption());
         BalanceResultRedis balanceResultRedis = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
