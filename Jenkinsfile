@@ -14,6 +14,8 @@ pipeline {
         OPEN_AI_KEY = credentials('OPEN_AI_KEY') // OpenAI 키 추가
         S3_ACCESS_KEY = credentials('S3_ACCESS_KEY') // OpenAI 키 추가
         S3_SECRET_KEY = credentials('S3_SECRET_KEY') // OpenAI 키 추가
+        RDS_URI = credentials('RDS_URI') // RDS URI
+        RDS_PW = credentials('RDS_PW') // RDS PW
     }
 
     stages {
@@ -38,11 +40,20 @@ pipeline {
                     echo "OPEN_AI_KEY: ${env.OPEN_AI_KEY}"
                     echo "S3_ACCESS_KEY: ${env.S3_ACCESS_KEY}"
                     echo "S3_SECRET_KEY: ${env.S3_SECRET_KEY}"
+                    echo "RDS_URI: ${env.RDS_URI}"
+                    echo "RDS_PW: ${env.RDS_PW}"
 
-                    def app = docker.build("${DOCKER_HUB_REPO}:latest", "--build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} --build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} --build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} .")
+                    def app = docker.build("${DOCKER_HUB_REPO}:latest",
+                        "--build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} " +
+                        "--build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} " +
+                        "--build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} " +
+                        "--build-arg RDS_URI=${env.RDS_URI} " +
+                        "--build-arg RDS_PW=${env.RDS_PW} ."
+                    )
                 }
             }
         }
+
 
 
         stage('Push to Docker Hub') {
