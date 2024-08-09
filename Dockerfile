@@ -22,10 +22,14 @@ FROM openjdk:17-slim
 ARG OPEN_AI_KEY
 ARG S3_ACCESS_KEY
 ARG S3_SECRET_KEY
+ARG RDS_URI
+ARG RDS_PW
 
 ENV OPEN_AI_KEY=${OPEN_AI_KEY}
 ENV S3_ACCESS_KEY=${S3_ACCESS_KEY}
 ENV S3_SECRET_KEY=${S3_SECRET_KEY}
+ENV RDS_URI=${RDS_URI}
+ENV RDS_PW=${RDS_PW}
 
 # 빌드된 jar 파일을 Docker 이미지에 복사합니다.
 COPY --from=build /app/build/libs/freezetag-0.0.1-SNAPSHOT.jar app.jar
