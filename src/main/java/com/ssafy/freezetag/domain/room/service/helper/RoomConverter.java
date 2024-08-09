@@ -22,7 +22,7 @@ public class RoomConverter {
                 enterCode,
                 roomName,
                 roomPersonCount,
-                room.getHost().getId(),
+                room.getHost().getMember().getId(),
                 webrtcDto
         );
     }
