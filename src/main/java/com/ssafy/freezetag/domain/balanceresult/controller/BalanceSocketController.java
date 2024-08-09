@@ -1,11 +1,13 @@
 package com.ssafy.freezetag.domain.balanceresult.controller;
 
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestionRedis;
+import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResultRedis;
 import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceResultSaveRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceQuestionResponseDto;
+import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceResultSaveResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -47,7 +49,11 @@ public class BalanceSocketController {
     // 타이머 종료시 각 사용자들이 A or B 중 무엇을 선택했는지 소켓으로 전송 그리고 Redis 저장
     @MessageMapping("/balance/{roomId}/selection")
     public void saveBalanceSelection(@DestinationVariable Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
-
+        BalanceResultRedis balanceResultRedis = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
+        BalanceResultSaveResponseDto balanceResultSaveResponseDto = new BalanceResultSaveResponseDto(balanceResultRedis.getMemberId(),
+                balanceResultRedis.getBalanceResultSelectedOption());
+        simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/selection", balanceResultSaveResponseDto);
     }
+
 
 }

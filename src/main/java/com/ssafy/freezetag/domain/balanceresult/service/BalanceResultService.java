@@ -81,9 +81,9 @@ public class BalanceResultService {
     }
 
     @Transactional
-    public BalanceResultRedis saveBalanceResult(Long memberId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+    public BalanceResultRedis saveBalanceResult(BalanceResultSaveRequestDto balanceResultSaveRequestDto){
         BalanceResultRedis balanceResultRedis = new BalanceResultRedis(balanceResultSaveRequestDto.getBalanceQuestionId(),
-                memberId,
+                balanceResultSaveRequestDto.getMemberId(),
                 balanceResultSaveRequestDto.getBalanceResultSelectedOption());
 
         return balanceResultRedisRepository.save(balanceResultRedis);
