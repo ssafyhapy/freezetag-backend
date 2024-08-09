@@ -19,14 +19,16 @@ public class MemoryBoxService {
     private final S3UploadService s3UploadService;
 
     public void uploadBeforeMemoryImage(Long roomId, MultipartFile image) throws IOException {
-        Room room = roomRepository.findById(roomId).orElseThrow(RoomNotFoundException::new);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(RoomNotFoundException::new);
 
         String s3UploadUrl = s3UploadService.saveFile(image);
         room.assignBeforeImage(s3UploadUrl);
     }
 
     public void uploadAfterMemoryImage(Long roomId, MultipartFile image) throws IOException {
-        Room room = roomRepository.findById(roomId).orElseThrow(RoomNotFoundException::new);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(RoomNotFoundException::new);
 
         String s3UploadUrl = s3UploadService.saveFile(image);
         room.assignAfterImage(s3UploadUrl);
