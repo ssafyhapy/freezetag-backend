@@ -30,6 +30,7 @@ public class BalanceSocketController {
     @MessageMapping("/balance/{roomId}/get-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
                                    BalanceQuestionRequestDto balanceQuestionRequestDto){
+        log.info("{}번 방에서 {} 모임 목적을 입력했습니다", roomId, balanceQuestionRequestDto.getPurpose());
         BalanceQuestionResponseDto question = balanceResultService.getQuestion(balanceQuestionRequestDto);
         simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/get-question", question);
     }
@@ -41,6 +42,7 @@ public class BalanceSocketController {
     @MessageMapping("/balance/{roomId}/save-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
                                    BalanceQuestionSaveRequestDto balanceQuestionRequestDto){
+        log.info("{}번 방에서 {} OR {} 밸런스 주제를 확정했습니다.", roomId, balanceQuestionRequestDto.getOptionFirst(), balanceQuestionRequestDto.getOptionSecond());
         BalanceQuestionRedis balanceQuestionRedis = balanceResultService.saveBalanceQuestion(roomId, balanceQuestionRequestDto);
         simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/save-question", balanceQuestionRedis);
     }
@@ -49,11 +51,11 @@ public class BalanceSocketController {
     // 타이머 종료시 각 사용자들이 A or B 중 무엇을 선택했는지 소켓으로 전송 그리고 Redis 저장
     @MessageMapping("/balance/{roomId}/selection")
     public void saveBalanceSelection(@DestinationVariable Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+        log.info("{}번 방에서 {}번 회원님이 {}를 선택했습니다.", roomId, balanceResultSaveRequestDto.getMemberId(), balanceResultSaveRequestDto.getBalanceResultSelectedOption());
         BalanceResultRedis balanceResultRedis = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
         BalanceResultSaveResponseDto balanceResultSaveResponseDto = new BalanceResultSaveResponseDto(balanceResultRedis.getMemberId(),
                 balanceResultRedis.getBalanceResultSelectedOption());
         simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/selection", balanceResultSaveResponseDto);
     }
-
 
 }
