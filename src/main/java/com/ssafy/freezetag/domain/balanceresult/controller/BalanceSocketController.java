@@ -26,7 +26,6 @@ public class BalanceSocketController {
 
     /**
      * /api/pub/balance/1/get-question
-     * 방장만 주제 리롤 가능
      */
     @MessageMapping("/{roomId}/get-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
@@ -38,7 +37,6 @@ public class BalanceSocketController {
 
     /**
      * /api/pub/balance/1/save-question
-     * 방장만 주제 확정 가능
      */
     @MessageMapping("/{roomId}/save-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
