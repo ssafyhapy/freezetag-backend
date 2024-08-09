@@ -1,6 +1,8 @@
 package com.ssafy.freezetag.domain.room.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ssafy.freezetag.domain.member.service.MemberService;
+import com.ssafy.freezetag.domain.room.service.MemoryBoxService;
 import com.ssafy.freezetag.domain.room.service.RoomService;
 import com.ssafy.freezetag.domain.room.service.request.RoomCreateRequestDto;
 import com.ssafy.freezetag.domain.room.service.response.RoomConnectResponseDto;
@@ -10,14 +12,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
 @RestController
 @RequestMapping("/api/room")
 @RequiredArgsConstructor
-public class RoomController implements RoomControllerSwagger{
+public class RoomController implements RoomControllerSwagger {
     private final RoomService roomService;
+    private final MemberService memberService;
+    private final MemoryBoxService memoryBoxService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(@Login Long memberId, @RequestBody RoomCreateRequestDto createRequestDto) {
@@ -39,13 +46,27 @@ public class RoomController implements RoomControllerSwagger{
         return ResponseEntity.noContent()
                 .build();
     }
-  
+
     @GetMapping("/{roomId}/report")
-    public ResponseEntity<?> getRoomReport(@PathVariable Long roomId){
+    public ResponseEntity<?> getRoomReport(@PathVariable Long roomId) {
         RoomReportResponseDto roomReport = roomService.getRoomReport(roomId);
 
         return ResponseEntity.ok()
                 .body(success(roomReport));
+    }
+
+    @PostMapping("/{roomId}/memoryBox/before")
+    public ResponseEntity<?> createBeforeMemoryPicture(@PathVariable("roomId") Long roomId, MultipartFile image) throws IOException {
+        memoryBoxService.uploadBeforeMemoryImage(roomId, image);
+        return ResponseEntity.noContent()
+                .build();
+    }
+
+    @GetMapping("/{roomId}/memoryBox/after")
+    public ResponseEntity<?> createAfterMemoryPicture(@PathVariable("roomId") Long roomId, MultipartFile image) throws IOException {
+        memoryBoxService.uploadAfterMemoryImage(roomId, image);
+        return ResponseEntity.noContent()
+                .build();
     }
 
 
