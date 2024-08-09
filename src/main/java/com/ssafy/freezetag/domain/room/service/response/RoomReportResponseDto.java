@@ -2,21 +2,27 @@ package com.ssafy.freezetag.domain.room.service.response;
 
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceReportResponseDto;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.MemberReportResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomReportResponseDto {
-    // TODO : 참여 회원 정보 (이름, 프로필 이미지 경로)
+    private List<MemberReportResponseDto> memberReportResponseDtos;
 
-    private final List<IntroReportResponseDto> introReportResponseDtos;
+    private List<IntroReportResponseDto> introReportResponseDtos;
 
-    private final List<OXReportResponseDto> oxReportResponseDtos;
+    private List<OXReportResponseDto> oxReportResponseDtos;
 
-    private final List<BalanceReportResponseDto> balanceReportResponseDtos;
+    private List<BalanceReportResponseDto> balanceReportResponseDtos;
 
+    private String roomBeforeImageUrl;
+
+    private String roomAfterImageUrl;
 }
