@@ -35,16 +35,6 @@ public class OXSocketController {
         }
     }
 
-    /*
-    사용 보류 프론트와 논의 후 지우기!!!
-    @MessageMapping("/ox/{roomId}/next")
-    public void getNextOX(@DestinationVariable Long roomId) {
-        List<OXSocketResponseDto> nextOX = oxSocketService.getNextOX(roomId);
-        if (nextOX != null) {
-            simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/next", nextOX);
-        }
-    }*/
-
     @MessageMapping("/ox/{roomId}/next")
     public void getMyNextOx(@DestinationVariable Long roomId, OXSocketNextRequestDto oxSocketNextRequestDto) {
         int currentIndex = oxSocketNextRequestDto.getNowIndex();
