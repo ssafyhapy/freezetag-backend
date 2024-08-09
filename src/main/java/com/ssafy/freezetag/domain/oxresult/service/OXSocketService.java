@@ -54,7 +54,7 @@ public class OXSocketService {
         });
     }
 
-    public boolean checkAllOX(Long roomId){
+    public boolean checkAllOX(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(RoomNotFoundException::new);
 
@@ -67,7 +67,7 @@ public class OXSocketService {
     }
 
     @Transactional
-    public List<OXSocketResponseDto> getNextOX(Long roomId){
+    public List<OXSocketResponseDto> getNextOX(Long roomId) {
         List<OXRedis> oxs = oxRedisRepository.findAllByRoomId(roomId);
 
         if (oxs.isEmpty()) {
