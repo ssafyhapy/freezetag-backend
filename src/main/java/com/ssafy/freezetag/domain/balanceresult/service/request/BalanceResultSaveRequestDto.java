@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BalanceResultSaveRequestDto {
-
     // BalanceQuestion id -> 식별키
     private  String balanceQuestionId;
+
+    private Long memberId;
 
     private  SelectedOption balanceResultSelectedOption;
 }
