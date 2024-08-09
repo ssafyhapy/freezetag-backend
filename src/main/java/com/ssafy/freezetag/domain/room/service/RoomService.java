@@ -13,8 +13,6 @@ import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
-import com.ssafy.freezetag.domain.message.entity.MessageRedis;
-import com.ssafy.freezetag.domain.message.service.MessageService;
 import com.ssafy.freezetag.domain.oxresult.entity.OXResult;
 import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
@@ -49,7 +47,6 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final OpenviduService openviduService;
     private final MemberRoomRepository memberRoomRepository;
-    private final MessageService messageService;
     private final IntroResultService introResultService;
     private final OXResultService oxResultService;
     private final BalanceResultService balanceResultService;

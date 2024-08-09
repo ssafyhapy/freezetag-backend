@@ -31,6 +31,10 @@ public class Room extends BaseEntity {
 
     private Integer roomPersonCount;
 
+    private String roomBeforeImageUrl;
+
+    private String roomAfterImageUrl;
+
     @OneToMany(mappedBy = "room")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
@@ -50,7 +54,13 @@ public class Room extends BaseEntity {
         host.setRoom(this);
     }
 
+    public void assignBeforeImage(String s3Url) {
+        this.roomBeforeImageUrl = s3Url;
+    }
 
+    public void assignAfterImage(String s3Url) {
+        this.roomAfterImageUrl = s3Url;
+    }
 
 
 }
