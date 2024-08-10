@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Tag(name = "방", description = "방 관련 api")
 public interface RoomControllerSwagger {
@@ -45,4 +48,20 @@ public interface RoomControllerSwagger {
     })
     @GetMapping("/{roomId}/report")
     ResponseEntity<?> getRoomReport(@PathVariable Long roomId);
+
+    @Operation(summary = "before 기념사진 촬영")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "기념사진 촬영 성공", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
+    })
+    @PostMapping("/{roomId}/memoryBox/before")
+    ResponseEntity<?> createBeforeMemoryPicture(@PathVariable("roomId") Long roomId, MultipartFile image) throws IOException;
+
+    @Operation(summary = "after 기념사진 촬영")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "기념사진 촬영 성공", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "유효하지 않은 입력", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/{roomId}/memoryBox/after")
+    ResponseEntity<?> createAfterMemoryPicture(@PathVariable("roomId") Long roomId, MultipartFile image) throws IOException;
 }
