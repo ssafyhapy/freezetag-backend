@@ -10,11 +10,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberMemoryboxDto {
-    /*
-    private  LocalDate memberHistoryDate;
-    private  String memberHistoryContent;
-    private  String thumbnailUrl;
-    */
     private Long roomId;
     private String memberMemoryBoxName;
     private LocalDate memberMemoryBoxDate;

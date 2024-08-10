@@ -45,10 +45,8 @@ public class MemberService {
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
     private final MemberHistoryRepository memberHistoryRepository;
-    private final MemberMemoryboxRepository memberMemoryboxRepository;
     private final S3UploadService s3UploadService;
     private final MemberRoomRepository memberRoomRepository;
-    private final RoomRepository roomRepository;
 
     /*
         member 찾는 부분 메소드화
@@ -72,26 +70,16 @@ public class MemberService {
                         history.getMemberHistoryContent()
                         )).toList();
 
-        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberId(member.getId());
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoin(member.getId());
 
         List<MemberMemoryboxDto> memberMemoryboxList = memberRooms.stream()
                 .map(memberRoom -> {
-                    Room room = roomRepository.findById(memberRoom.getRoom().getId())
-                            .orElseThrow(RoomNotFoundException::new);
+                    Room room = memberRoom.getRoom();
                     return new MemberMemoryboxDto(room.getId(),
                             room.getRoomName(),
                             room.getCreatedDate(),
                             room.getRoomAfterImageUrl());
                 }).toList();
-
-        /*
-        List<MemberMemoryboxDto> memberMemoryboxList = memberMemoryboxRepository.findByMemberId(memberId).stream()
-                .map(memorybox -> new MemberMemoryboxDto(
-                        memorybox.getMemberHistoryDate(),
-                        memorybox.getMemberHistoryContent(),
-                        memorybox.getThumbnailUrl()
-                        )).toList();
-        */
 
         return new MypageResponseDto(
                 member.getMemberName(),
