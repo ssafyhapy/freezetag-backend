@@ -1,7 +1,10 @@
 package com.ssafy.freezetag.domain.member.service;
 
+import static com.ssafy.freezetag.domain.member.entity.Visibility.PRIVATE;
+
 import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
+import com.ssafy.freezetag.domain.exception.custom.MemberNotPublicException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.entity.MemberHistory;
@@ -13,6 +16,7 @@ import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.ProfileResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
@@ -55,21 +59,23 @@ public class MemberService {
     }
 
     /*
-        memberId를 통해서 ResponseDto 생성
+    연혁 찾는 부분 DTO화
      */
-    public MypageResponseDto getMypage(Long memberId) {
-        Member member = findMember(memberId);
-
-        List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
-                .map(history -> new MemberHistoryDto(
-                        history.getId(),
-                        history.getMemberHistoryDate(),
-                        history.getMemberHistoryContent()
-                        )).toList();
-
+    private List<MemberHistoryDto> findMemberHistoryList(Long memberId) {
+            return memberHistoryRepository.findByMemberId(memberId).stream()
+                                            .map(history -> new MemberHistoryDto(
+                                                    history.getId(),
+                                                    history.getMemberHistoryDate(),
+                                                    history.getMemberHistoryContent()
+                                                     )).toList();
+    }
+    /*
+       추억상자 찾는 법 DTO화
+     */
+    private List<MemberMemoryboxDto> findMemberMemoryboxList(Member member) {
         List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(member.getId());
 
-        List<MemberMemoryboxDto> memberMemoryboxList = memberRooms.stream()
+        return memberRooms.stream()
                 .map(memberRoom -> {
                     Room room = memberRoom.getRoom();
                     return new MemberMemoryboxDto(room.getId(),
@@ -77,6 +83,17 @@ public class MemberService {
                             room.getCreatedDate(),
                             room.getRoomAfterImageUrl());
                 }).toList();
+    }
+
+    /*
+        memberId를 통해서 ResponseDto 생성
+     */
+    public MypageResponseDto getMypage(Long memberId) {
+        Member member = findMember(memberId);
+
+        List<MemberHistoryDto> memberHistoryList = findMemberHistoryList(memberId);
+
+        List<MemberMemoryboxDto> memberMemoryboxList = findMemberMemoryboxList(member);
 
         return new MypageResponseDto(
                 member.getMemberName(),
@@ -228,5 +245,34 @@ public class MemberService {
             }
         }
         return refreshToken;
+    }
+
+    /*
+        memberId를 통해서 ResponseDto 생성
+     */
+    public ProfileResponseDto getProfile(Long memberId) {
+        // 우선 공개, 비공개 여부 조회
+        Member member = findMember(memberId);
+
+        // 만약 비공개라면
+        if(member.getMemberVisibility().equals(PRIVATE)) {
+            throw new MemberNotPublicException("프로필 비공개 멤버입니다.");
+        }
+        // 멤버 정보 조회
+        List<MemberHistoryDto> memberHistoryList = findMemberHistoryList(memberId);
+
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(member.getId());
+
+        List<MemberMemoryboxDto> memberMemoryboxList = findMemberMemoryboxList(member);
+
+        // 반환
+        return new ProfileResponseDto(
+                member.getMemberName(),
+                member.getMemberProviderEmail(),
+                member.getMemberProfileImageUrl(),
+                member.getMemberIntroduction(),
+                memberHistoryList,
+                memberMemoryboxList
+        );
     }
 }
