@@ -22,7 +22,7 @@ public class MemberStateSocketController {
      */
     @MessageMapping("/{roomId}/state")
     public void getNowState(@DestinationVariable Long roomId, MemberStateSocketRequestDto memberStateSocketRequestDto) {
-        if(memberStateSocketRequestDto.getMemberState().equals("photolast")){
+        if(memberStateSocketRequestDto.getMemberState().equals("wrapup")){
             balanceResultService.deleteBalanceQuestion(roomId);
         }
 

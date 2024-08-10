@@ -2,6 +2,7 @@ package com.ssafy.freezetag.domain.member.service;
 
 import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
+import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.entity.MemberHistory;
@@ -16,6 +17,10 @@ import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
+import com.ssafy.freezetag.domain.room.entity.MemberRoom;
+import com.ssafy.freezetag.domain.room.entity.Room;
+import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
+import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.global.s3.S3UploadService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +47,8 @@ public class MemberService {
     private final MemberHistoryRepository memberHistoryRepository;
     private final MemberMemoryboxRepository memberMemoryboxRepository;
     private final S3UploadService s3UploadService;
+    private final MemberRoomRepository memberRoomRepository;
+    private final RoomRepository roomRepository;
 
     /*
         member 찾는 부분 메소드화
@@ -65,13 +72,26 @@ public class MemberService {
                         history.getMemberHistoryContent()
                         )).toList();
 
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberId(member.getId());
+
+        List<MemberMemoryboxDto> memberMemoryboxList = memberRooms.stream()
+                .map(memberRoom -> {
+                    Room room = roomRepository.findById(memberRoom.getRoom().getId())
+                            .orElseThrow(RoomNotFoundException::new);
+                    return new MemberMemoryboxDto(room.getId(),
+                            room.getRoomName(),
+                            room.getCreatedDate(),
+                            room.getRoomAfterImageUrl());
+                }).toList();
+
+        /*
         List<MemberMemoryboxDto> memberMemoryboxList = memberMemoryboxRepository.findByMemberId(memberId).stream()
                 .map(memorybox -> new MemberMemoryboxDto(
                         memorybox.getMemberHistoryDate(),
                         memorybox.getMemberHistoryContent(),
                         memorybox.getThumbnailUrl()
                         )).toList();
-
+        */
 
         return new MypageResponseDto(
                 member.getMemberName(),
