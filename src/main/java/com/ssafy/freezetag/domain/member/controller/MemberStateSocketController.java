@@ -4,6 +4,7 @@ import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.member.service.request.MemberStateSocketRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -22,7 +23,7 @@ public class MemberStateSocketController {
      */
     @MessageMapping("/{roomId}/state")
     public void getNowState(@DestinationVariable Long roomId, MemberStateSocketRequestDto memberStateSocketRequestDto) {
-        if(memberStateSocketRequestDto.getMemberState().equals("wrapup")){
+        if(StringUtils.equals(memberStateSocketRequestDto.getMemberState(), "wrapup")){
             balanceResultService.deleteBalanceQuestion(roomId);
         }
 
