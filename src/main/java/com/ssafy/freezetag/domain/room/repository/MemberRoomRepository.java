@@ -15,5 +15,5 @@ public interface MemberRoomRepository extends JpaRepository<MemberRoom, Long> {
             "FROM MemberRoom mr " +
             "JOIN FETCH mr.room r " +
             "WHERE mr.member.id = :memberId")
-    List<MemberRoom> findAllByMemberIdWithFetchJoin(Long memberId);
+    List<MemberRoom> findAllByMemberIdWithFetchJoinRoom(Long memberId);
 }

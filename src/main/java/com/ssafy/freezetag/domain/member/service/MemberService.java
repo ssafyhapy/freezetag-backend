@@ -2,13 +2,11 @@ package com.ssafy.freezetag.domain.member.service;
 
 import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
-import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.entity.MemberHistory;
 import com.ssafy.freezetag.domain.member.entity.Visibility;
 import com.ssafy.freezetag.domain.member.repository.MemberHistoryRepository;
-import com.ssafy.freezetag.domain.member.repository.MemberMemoryboxRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
@@ -20,7 +18,6 @@ import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
-import com.ssafy.freezetag.domain.room.repository.RoomRepository;
 import com.ssafy.freezetag.global.s3.S3UploadService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,7 +67,7 @@ public class MemberService {
                         history.getMemberHistoryContent()
                         )).toList();
 
-        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoin(member.getId());
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(member.getId());
 
         List<MemberMemoryboxDto> memberMemoryboxList = memberRooms.stream()
                 .map(memberRoom -> {
