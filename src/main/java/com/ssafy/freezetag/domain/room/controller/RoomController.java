@@ -62,7 +62,7 @@ public class RoomController implements RoomControllerSwagger {
                 .build();
     }
 
-    @GetMapping("/{roomId}/memoryBox/after")
+    @PostMapping("/{roomId}/memoryBox/after")
     public ResponseEntity<?> createAfterMemoryPicture(@PathVariable("roomId") Long roomId, MultipartFile image) throws IOException {
         memoryBoxService.uploadAfterMemoryImage(roomId, image);
         return ResponseEntity.noContent()
