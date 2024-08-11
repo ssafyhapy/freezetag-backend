@@ -36,7 +36,7 @@ public class DailyRoomBatchJob implements Job {
             for (MemberRoom memberRoom : memberRooms) {
                 Member member = memberRoom.getMember();
                 try {
-                    mailService.sendEmail(member.getMemberProviderEmail(), MEMORYBOX_MAIL_TITLE, null);
+                    mailService.sendEmail(member.getMemberProviderEmail(), MEMORYBOX_MAIL_TITLE, mailService.buildVerificationEmail());
                 } catch (Exception e) {
                     log.error("{} 님을 찾지 못했습니다. 아이디 : {}",member.getMemberName(), member.getId());
                 }

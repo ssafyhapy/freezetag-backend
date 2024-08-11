@@ -38,11 +38,11 @@ public class MailService {
         }
     }
 
-    public String buildVerificationEmail(String code) {
+    public String buildVerificationEmail() {
         try {
-            Resource resource = resourceLoader.getResource("classpath:templates/verification-email.html");
+            Resource resource = resourceLoader.getResource("classpath:templates/memorybox-email.html");
             String content = Files.readString(Path.of(resource.getURI()), StandardCharsets.UTF_8);
-            return content.replace("{{code}}", code);
+            return content.replace("{{YOUR_URL_HERE}}", "https://i11c209.p.ssafy.io/mypage");
         } catch (Exception e) {
             log.error("이메일 템플릿 로딩 실패", e);
             throw new RuntimeException("이메일 템플릿 로딩에 실패했습니다.");
