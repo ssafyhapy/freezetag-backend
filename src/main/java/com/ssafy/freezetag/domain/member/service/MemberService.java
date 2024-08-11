@@ -63,7 +63,11 @@ public class MemberService {
      */
     public MypageResponseDto getMypage(Long memberId) {
         Member member = memberHistoryRepository.findMemberWithHistories(memberId);
-        log.info("member: {}", member);
+        // 멤버 없을 시 예외처리
+        if(member == null) {
+            throw new MemberNotFoundException("회원이 존재하지 않습니다.");
+        }
+        log.info("member: {}", member.toString());
         List<MemberHistory> memberHistories = member.getMemberHistories();
 
         List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(memberId);
@@ -222,7 +226,14 @@ public class MemberService {
     public ProfileResponseDto getProfile(Long memberId) {
 
         Member member = memberHistoryRepository.findMemberWithHistories(memberId);
+
+        // 멤버 없을 시 예외처리
+        if(member == null) {
+            throw new MemberNotFoundException("회원이 존재하지 않습니다.");
+        }
         log.info("member: {}", member.toString());
+
+
         List<MemberHistory> memberHistories = member.getMemberHistories();
 
 

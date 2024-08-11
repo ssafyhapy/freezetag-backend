@@ -16,12 +16,4 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
             "WHERE m.id = :memberId")
     Member findMemberWithHistories(Long memberId);
 
-
-//    // history가 없을 수도 있으므로 RIGHT JOIN 해야 함
-//    @Query("SELECT mh " +
-//            "FROM MemberHistory mh " +
-//            "RIGHT JOIN FETCH mh.member m " +
-//            "WHERE m.id = :memberId")
-//    List<MemberHistory> findAllByMemberIdWithFetchJoinHistory(Long memberId);
-
 }
