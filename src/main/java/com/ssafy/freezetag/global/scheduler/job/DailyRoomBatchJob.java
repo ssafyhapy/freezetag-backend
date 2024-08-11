@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.ssafy.freezetag.domain.common.constant.MailConstant.MEMORYBOX_MAIL_TITLE;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -34,7 +36,7 @@ public class DailyRoomBatchJob implements Job {
             for (MemberRoom memberRoom : memberRooms) {
                 Member member = memberRoom.getMember();
                 try {
-                    mailService.sendEmail(member.getMemberProviderEmail(), "[사르르] 우리가 만났던 날들을 기억하시나요?", null);
+                    mailService.sendEmail(member.getMemberProviderEmail(), MEMORYBOX_MAIL_TITLE, null);
                 } catch (Exception e) {
                     log.error("{} 님을 찾지 못했습니다. 아이디 : {}",member.getMemberName(), member.getId());
                 }
