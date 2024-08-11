@@ -62,11 +62,9 @@ public class MemberService {
         memberId를 통해서 ResponseDto 생성
      */
     public MypageResponseDto getMypage(Long memberId) {
-        Member member = memberHistoryRepository.findMemberWithHistories(memberId);
-        // 멤버 없을 시 예외처리
-        if(member == null) {
-            throw new MemberNotFoundException("회원이 존재하지 않습니다.");
-        }
+        Member member = memberHistoryRepository.findMemberWithHistories(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+
         log.info("member: {}", member.toString());
         List<MemberHistory> memberHistories = member.getMemberHistories();
 
@@ -225,12 +223,8 @@ public class MemberService {
      */
     public ProfileResponseDto getProfile(Long memberId) {
 
-        Member member = memberHistoryRepository.findMemberWithHistories(memberId);
-
-        // 멤버 없을 시 예외처리
-        if(member == null) {
-            throw new MemberNotFoundException("회원이 존재하지 않습니다.");
-        }
+        Member member = memberHistoryRepository.findMemberWithHistories(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
         log.info("member: {}", member.toString());
 
 
