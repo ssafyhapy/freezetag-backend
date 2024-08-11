@@ -1,4 +1,4 @@
-package com.ssafy.freezetag.global.s3;
+package com.ssafy.freezetag.global.util.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;

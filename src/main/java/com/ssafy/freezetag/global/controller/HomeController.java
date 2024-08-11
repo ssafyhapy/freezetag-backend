@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.global.controller;
 
-import com.ssafy.freezetag.global.s3.S3UploadService;
+import com.ssafy.freezetag.global.util.s3.S3UploadService;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

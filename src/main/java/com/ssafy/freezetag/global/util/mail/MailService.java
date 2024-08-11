@@ -1,4 +1,5 @@
-package com.ssafy.freezetag.domain.member.service;
+package com.ssafy.freezetag.global.util.mail;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -8,15 +9,15 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.ssafy.freezetag.domain.common.constant.MailConstant.MEMORYBOX_MAIL_TARGET_URL;
+
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class MailService {
 
@@ -42,7 +43,7 @@ public class MailService {
         try {
             Resource resource = resourceLoader.getResource("classpath:templates/memorybox-email.html");
             String content = Files.readString(Path.of(resource.getURI()), StandardCharsets.UTF_8);
-            return content.replace("{{YOUR_URL_HERE}}", "https://i11c209.p.ssafy.io/mypage");
+            return content.replace("{{YOUR_URL_HERE}}", MEMORYBOX_MAIL_TARGET_URL);
         } catch (Exception e) {
             log.error("이메일 템플릿 로딩 실패", e);
             throw new RuntimeException("이메일 템플릿 로딩에 실패했습니다.");

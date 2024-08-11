@@ -3,7 +3,7 @@ package com.ssafy.freezetag.domain.room.service;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
-import com.ssafy.freezetag.global.s3.S3UploadService;
+import com.ssafy.freezetag.global.util.s3.S3UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
