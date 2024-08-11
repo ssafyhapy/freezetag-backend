@@ -29,7 +29,7 @@ import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/member")
 @Slf4j
 public class MemberController {
     private final ObjectMapper objectMapper;
@@ -37,7 +37,7 @@ public class MemberController {
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
 
-    @GetMapping("/member/mypage")
+    @GetMapping("/mypage")
     public ResponseEntity<?> mypage(@Login Long memberId) {
 
         MypageResponseDto mypageResponseDto = memberService.getMypage(memberId);
@@ -70,7 +70,7 @@ public class MemberController {
                 .build();
     }
 
-    @PutMapping("/member/mypage/visibility")
+    @PutMapping("/mypage/visibility")
     public ResponseEntity<?> visibility(@Login Long memberId, @RequestBody MypageVisibilityRequestDto requestDto) {
         Visibility requestVisibility = requestDto.getVisibility();
         MypageVisibilityResponseDto mypageVisibilityResponseDto = memberService.setMypageVisibility(memberId, requestVisibility);
@@ -78,7 +78,7 @@ public class MemberController {
                 .body(success(mypageVisibilityResponseDto));
     }
 
-    @PostMapping("/member/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         // 현재 로그인 인증정보 확인
         memberService.checkAuthentication(request);
@@ -91,7 +91,7 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("member/profile/{memberId}")
+    @GetMapping("/{memberId}")
     public ResponseEntity<?> profile(@PathVariable Long memberId) {
         // 다른 사람의 memberId를 통해서 프로필 조회하는 코드
         ProfileResponseDto profileResponseDto = memberService.getProfile(memberId);
