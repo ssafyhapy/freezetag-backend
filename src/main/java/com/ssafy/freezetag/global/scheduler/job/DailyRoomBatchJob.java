@@ -1,16 +1,16 @@
 package com.ssafy.freezetag.global.scheduler.job;
 
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.member.service.MailService;
-import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.RoomRepository;
+import com.ssafy.freezetag.global.util.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +24,7 @@ public class DailyRoomBatchJob implements Job {
     private final RoomRepository roomRepository;
     private final MailService mailService;
 
+    @Transactional
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // 30일이 지난 룸을 조회
@@ -31,17 +32,21 @@ public class DailyRoomBatchJob implements Job {
         List<Room> appliedRooms = roomRepository.findByCreatedDateBefore(thirtyDaysAgo);
 
         // 각 룸에 대해 이메일 발송
-        for (Room room : appliedRooms) {
-            List<MemberRoom> memberRooms = room.getMemberRooms();
-            for (MemberRoom memberRoom : memberRooms) {
+        appliedRooms.forEach(room -> {
+            room.getMemberRooms().forEach(memberRoom -> {
                 Member member = memberRoom.getMember();
-                try {
-                    mailService.sendEmail(member.getMemberProviderEmail(), MEMORYBOX_MAIL_TITLE, mailService.buildVerificationEmail());
-                } catch (Exception e) {
-                    log.error("{} 님을 찾지 못했습니다. 아이디 : {}",member.getMemberName(), member.getId());
-                }
-            }
+                sendEmail(member, room);
+            });
             room.updateSentStatus(true);
+        });
+
+    }
+
+    public void sendEmail(Member member, Room room) {
+        try {
+            mailService.sendEmail(member.getMemberProviderEmail(), MEMORYBOX_MAIL_TITLE, mailService.buildVerificationEmail());
+        } catch (Exception e) {
+            log.error("{} 님에게 이메일 전송 실패. 아이디: {}, 룸 아이디: {}", member.getMemberName(), member.getId(), room.getId(), e);
         }
     }
 }
