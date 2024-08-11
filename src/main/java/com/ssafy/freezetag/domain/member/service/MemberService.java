@@ -80,6 +80,7 @@ public class MemberService {
 
         return new MypageResponseDto(
                 member.getMemberName(),
+                member.getMemberVisibility(),
                 member.getMemberProviderEmail(),
                 member.getMemberProfileImageUrl(),
                 member.getMemberIntroduction(),
