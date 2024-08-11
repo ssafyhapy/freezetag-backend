@@ -11,6 +11,7 @@ import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.ProfileResponseDto;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.argumentresolver.Login;
 import jakarta.servlet.http.HttpServletRequest;
@@ -89,6 +90,17 @@ public class MemberController {
         return ResponseEntity.noContent()
                 .build();
     }
+
+    @GetMapping("/{memberId}")
+    public ResponseEntity<?> profile(@PathVariable Long memberId) {
+        // 다른 사람의 memberId를 통해서 프로필 조회하는 코드
+        ProfileResponseDto profileResponseDto = memberService.getProfile(memberId);
+        // 반환
+        return ResponseEntity.ok()
+                .body(success(profileResponseDto));
+    }
+
+
 }
 
 

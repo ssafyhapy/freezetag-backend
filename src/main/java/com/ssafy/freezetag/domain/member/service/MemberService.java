@@ -1,22 +1,26 @@
 package com.ssafy.freezetag.domain.member.service;
 
+import static com.ssafy.freezetag.domain.member.entity.Visibility.PRIVATE;
+
 import com.ssafy.freezetag.domain.exception.custom.InvalidMemberVisibilityException;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
+import com.ssafy.freezetag.domain.exception.custom.MemberNotPublicException;
 import com.ssafy.freezetag.domain.exception.custom.TokenException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.entity.MemberHistory;
 import com.ssafy.freezetag.domain.member.entity.Visibility;
 import com.ssafy.freezetag.domain.member.repository.MemberHistoryRepository;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
+import com.ssafy.freezetag.domain.member.service.helper.MemberConverter;
 import com.ssafy.freezetag.domain.member.service.request.MypageModifyRequestDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberHistoryDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberMemoryboxDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MypageVisibilityResponseDto;
+import com.ssafy.freezetag.domain.member.service.response.ProfileResponseDto;
 import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
-import com.ssafy.freezetag.domain.room.entity.Room;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
 import com.ssafy.freezetag.global.s3.S3UploadService;
 import jakarta.servlet.http.Cookie;
@@ -58,34 +62,17 @@ public class MemberService {
         memberId를 통해서 ResponseDto 생성
      */
     public MypageResponseDto getMypage(Long memberId) {
-        Member member = findMember(memberId);
+        Member member = memberHistoryRepository.findMemberWithHistories(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
 
-        List<MemberHistoryDto> memberHistoryList = memberHistoryRepository.findByMemberId(memberId).stream()
-                .map(history -> new MemberHistoryDto(
-                        history.getId(),
-                        history.getMemberHistoryDate(),
-                        history.getMemberHistoryContent()
-                        )).toList();
+        log.info("member: {}", member.toString());
+        List<MemberHistory> memberHistories = member.getMemberHistories();
 
-        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(member.getId());
-
-        List<MemberMemoryboxDto> memberMemoryboxList = memberRooms.stream()
-                .map(memberRoom -> {
-                    Room room = memberRoom.getRoom();
-                    return new MemberMemoryboxDto(room.getId(),
-                            room.getRoomName(),
-                            room.getCreatedDate(),
-                            room.getRoomAfterImageUrl());
-                }).toList();
-
-        return new MypageResponseDto(
-                member.getMemberName(),
-                member.getMemberVisibility(),
-                member.getMemberProviderEmail(),
-                member.getMemberProfileImageUrl(),
-                member.getMemberIntroduction(),
-                memberHistoryList,
-                memberMemoryboxList
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(memberId);
+        return MemberConverter.createMypageResponseDto(
+                member,
+                memberHistories,
+                memberRooms
         );
 
     }
@@ -229,5 +216,33 @@ public class MemberService {
             }
         }
         return refreshToken;
+    }
+
+    /*
+        memberId를 통해서 ResponseDto 생성
+     */
+    public ProfileResponseDto getProfile(Long memberId) {
+
+        Member member = memberHistoryRepository.findMemberWithHistories(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다."));
+        log.info("member: {}", member.toString());
+
+
+        List<MemberHistory> memberHistories = member.getMemberHistories();
+
+
+        // 만약 비공개라면
+        if(member.getMemberVisibility().equals(PRIVATE)) {
+            throw new MemberNotPublicException("프로필 비공개 멤버입니다.");
+        }
+
+        List<MemberRoom> memberRooms = memberRoomRepository.findAllByMemberIdWithFetchJoinRoom(memberId);
+
+        // 반환
+        return MemberConverter.createProfileResponseDto(
+                member,
+                memberHistories,
+                memberRooms
+        );
     }
 }
