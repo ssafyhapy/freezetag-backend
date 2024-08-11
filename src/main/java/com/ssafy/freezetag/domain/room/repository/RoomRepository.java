@@ -13,5 +13,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     Optional<Room> findById(Long id);
 
     @EntityGraph(attributePaths = {"memberRooms", "memberRooms.member"})
-    List<Room> findByCreatedDateBeforeAndIsSentFalse(LocalDate createdDate);
+    List<Room> findByCreatedDateBeforeAndEmailSentFalse(LocalDate createdDate);
 }
