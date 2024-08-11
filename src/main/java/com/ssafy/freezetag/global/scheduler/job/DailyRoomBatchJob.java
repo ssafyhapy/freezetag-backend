@@ -29,17 +29,15 @@ public class DailyRoomBatchJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // 30일이 지난 룸을 조회
         LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
-        List<Room> appliedRooms = roomRepository.findByCreatedDateBefore(thirtyDaysAgo);
+        List<Room> appliedRooms = roomRepository.findByCreatedDateBeforeAndIsSentFalse(thirtyDaysAgo);
 
         // 각 룸에 대해 이메일 발송
         appliedRooms.forEach(room -> {
-            if (!room.isEmailSent()) {
-                room.getMemberRooms().forEach(memberRoom -> {
-                    Member member = memberRoom.getMember();
-                    sendEmail(member, room);
-                });
-                room.updateSentStatus(true);
-            }
+            room.getMemberRooms().forEach(memberRoom -> {
+                Member member = memberRoom.getMember();
+                sendEmail(member, room);
+            });
+            room.updateSentStatus(true);
         });
 
     }
