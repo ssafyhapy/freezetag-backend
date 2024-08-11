@@ -35,6 +35,8 @@ public class Room extends BaseEntity {
 
     private String roomAfterImageUrl;
 
+    private boolean emailSent = false;
+
     @OneToMany(mappedBy = "room")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
@@ -60,6 +62,10 @@ public class Room extends BaseEntity {
 
     public void assignAfterImage(String s3Url) {
         this.roomAfterImageUrl = s3Url;
+    }
+
+    public void updateSentStatus(final boolean sent) {
+        this.emailSent = sent;
     }
 
 
