@@ -21,7 +21,7 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)
                 .withIdentity("dailyRoomBatchTrigger")
-                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(0, 0))  // 매일 자정에 실행
+                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(18, 0))  // 매일 오후 6시에 실행
                 .build();
     }
 }
