@@ -38,26 +38,32 @@ public class MemberConverter {
 
     public static MypageResponseDto createMypageResponseDto(Member member, List<MemberHistory> memberHistoryList, List<MemberRoom> memberRooms) {
 
+        // null값일 경우 빈 문자열 반환
+        String memberIntroduction = (member.getMemberIntroduction() != null) ? member.getMemberIntroduction() : "";
+
         // MypageResponseDto 생성 및 반환
         return new MypageResponseDto(
                 member.getMemberName(),
                 member.getMemberVisibility(),
                 member.getMemberProviderEmail(),
                 member.getMemberProfileImageUrl(),
-                member.getMemberIntroduction(),
+                memberIntroduction, // Use the checked or empty string here
                 convertToMemberHistoryDto(memberHistoryList),
                 convertToMemberMemoryboxDto(memberRooms)
         );
     }
 
+
     public static ProfileResponseDto createProfileResponseDto(Member member, List<MemberHistory> memberHistoryList, List<MemberRoom> memberRooms) {
+
+        String memberIntroduction = (member.getMemberIntroduction() != null) ? member.getMemberIntroduction() : "";
 
         // MypageResponseDto 생성 및 반환
         return new ProfileResponseDto(
                 member.getMemberName(),
                 member.getMemberProviderEmail(),
                 member.getMemberProfileImageUrl(),
-                member.getMemberIntroduction(),
+                memberIntroduction,
                 convertToMemberHistoryDto(memberHistoryList),
                 convertToMemberMemoryboxDto(memberRooms)
         );
