@@ -31,7 +31,7 @@ import static com.ssafy.freezetag.domain.common.CommonResponse.success;
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
 @Slf4j
-public class MemberController {
+public class MemberController implements MemberControllerSwagger{
     private final ObjectMapper objectMapper;
     private final MemberService memberService;
     private final TokenService tokenService;
