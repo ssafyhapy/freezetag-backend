@@ -22,7 +22,7 @@ import com.ssafy.freezetag.domain.oauth2.TokenProvider;
 import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.repository.MemberRoomRepository;
-import com.ssafy.freezetag.global.s3.S3UploadService;
+import com.ssafy.freezetag.global.util.s3.S3UploadService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
