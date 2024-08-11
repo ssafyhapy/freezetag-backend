@@ -33,11 +33,13 @@ public class DailyRoomBatchJob implements Job {
 
         // 각 룸에 대해 이메일 발송
         appliedRooms.forEach(room -> {
-            room.getMemberRooms().forEach(memberRoom -> {
-                Member member = memberRoom.getMember();
-                sendEmail(member, room);
-            });
-            room.updateSentStatus(true);
+            if (!room.isEmailSent()) {
+                room.getMemberRooms().forEach(memberRoom -> {
+                    Member member = memberRoom.getMember();
+                    sendEmail(member, room);
+                });
+                room.updateSentStatus(true);
+            }
         });
 
     }
