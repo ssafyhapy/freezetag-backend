@@ -39,24 +39,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Building Docker image with the following environment variables:"
-                    echo "OPEN_AI_KEY: ${env.OPEN_AI_KEY}"
-                    echo "S3_ACCESS_KEY: ${env.S3_ACCESS_KEY}"
-                    echo "S3_SECRET_KEY: ${env.S3_SECRET_KEY}"
-                    echo "RDS_URI: ${env.RDS_URI}"
-                    echo "RDS_PW: ${env.RDS_PW}"
-                    echo "MAIL_USERNAME: ${env.MAIL_USERNAME}"
-                    echo "MAIL_PASSWORD: ${env.MAIL_PASSWORD}"
-
-                    def app = docker.build("${DOCKER_HUB_REPO}:latest",
-                        "--build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} " +
-                        "--build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} " +
-                        "--build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} " +
-                        "--build-arg RDS_URI=${env.RDS_URI} " +
-                        "--build-arg RDS_PW=${env.RDS_PW} " +
-                        "--build-arg MAIL_USERNAME=${env.MAIL_USERNAME} " +
-                        "--build-arg MAIL_PASSWORD=${env.MAIL_PASSWORD} ."
-                    )
+                    sh """
+                    docker build -t ${DOCKER_HUB_REPO}:latest \
+                    --build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} \
+                    --build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} \
+                    --build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} \
+                    --build-arg RDS_URI=${env.RDS_URI} \
+                    --build-arg RDS_PW=${env.RDS_PW} \
+                    --build-arg MAIL_USERNAME=${env.MAIL_USERNAME} \
+                    --build-arg MAIL_PASSWORD=${env.MAIL_PASSWORD} .
+                    """
                 }
             }
         }
