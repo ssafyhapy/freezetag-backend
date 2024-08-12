@@ -38,16 +38,24 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
+                withEnv([
+                    "OPEN_AI_KEY=${env.OPEN_AI_KEY}",
+                    "S3_ACCESS_KEY=${env.S3_ACCESS_KEY}",
+                    "S3_SECRET_KEY=${env.S3_SECRET_KEY}",
+                    "RDS_URI=${env.RDS_URI}",
+                    "RDS_PW=${env.RDS_PW}",
+                    "MAIL_USERNAME=${env.MAIL_USERNAME}",
+                    "MAIL_PASSWORD=${env.MAIL_PASSWORD}"
+                ]) {
                     sh """
                     docker build -t ${DOCKER_HUB_REPO}:latest \
-                    --build-arg OPEN_AI_KEY=${env.OPEN_AI_KEY} \
-                    --build-arg S3_ACCESS_KEY=${env.S3_ACCESS_KEY} \
-                    --build-arg S3_SECRET_KEY=${env.S3_SECRET_KEY} \
-                    --build-arg RDS_URI=${env.RDS_URI} \
-                    --build-arg RDS_PW=${env.RDS_PW} \
-                    --build-arg MAIL_USERNAME=${env.MAIL_USERNAME} \
-                    --build-arg MAIL_PASSWORD=${env.MAIL_PASSWORD} .
+                    --build-arg OPEN_AI_KEY=$OPEN_AI_KEY \
+                    --build-arg S3_ACCESS_KEY=$S3_ACCESS_KEY \
+                    --build-arg S3_SECRET_KEY=$S3_SECRET_KEY \
+                    --build-arg RDS_URI=$RDS_URI \
+                    --build-arg RDS_PW=$RDS_PW \
+                    --build-arg MAIL_USERNAME=$MAIL_USERNAME \
+                    --build-arg MAIL_PASSWORD=$MAIL_PASSWORD .
                     """
                 }
             }
