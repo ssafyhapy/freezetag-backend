@@ -47,7 +47,6 @@ pipeline {
                         "--build-arg RDS_PW=${env.RDS_PW} " +
                         "--build-arg MAIL_USERNAME=${env.MAIL_USERNAME} " +
                         "--build-arg MAIL_PASSWORD=${env.MAIL_PASSWORD} ."
-
                     )
                 }
             }
