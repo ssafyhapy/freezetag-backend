@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberReportResponseDto {
+    private Long memberId;
     private String memberName;
-
     private String memberProfileImageUrl;
 }

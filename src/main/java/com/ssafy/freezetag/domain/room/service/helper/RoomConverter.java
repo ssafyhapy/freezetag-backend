@@ -42,7 +42,8 @@ public class RoomConverter {
     public static List<MemberReportResponseDto> getMemberReportResponseDtos(List<MemberRoom> memberRooms) {
         return memberRooms.stream()
                 .map(memberRoom -> {
-                    return new MemberReportResponseDto(memberRoom.getMember().getMemberName(),
+                    return new MemberReportResponseDto(memberRoom.getMember().getId(),
+                            memberRoom.getMember().getMemberName(),
                             memberRoom.getMember().getMemberProfileImageUrl());
                 }).toList();
     }
