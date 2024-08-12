@@ -11,6 +11,7 @@ import com.ssafy.freezetag.domain.introresult.service.response.IntroReportRespon
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.response.MemberReportResponseDto;
+import com.ssafy.freezetag.domain.message.service.response.MessageResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
@@ -25,9 +26,11 @@ import com.ssafy.freezetag.domain.room.service.response.RoomReportResponseDto;
 import com.ssafy.freezetag.global.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.ssafy.freezetag.domain.room.service.helper.RoomConverter.*;
@@ -46,6 +49,7 @@ public class RoomService {
     private final IntroResultService introResultService;
     private final OXResultService oxResultService;
     private final BalanceResultService balanceResultService;
+    private final SimpMessageSendingOperations simpMessageSendingOperations;
 
     @Transactional
     public RoomConnectResponseDto createRoom(RoomCreateRequestDto dto, Long memberId) {
@@ -129,6 +133,13 @@ public class RoomService {
         // OpenVidu 토큰 반환
         OpenviduResponseDto webrtcDto = openviduService.enterRoom(sessionId, member);
 
+        simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId,
+                new MessageResponseDto(member.getMemberProfileImageUrl(),
+                        member.getMemberName(),
+                        member.getMemberName() + "님이 입장하셨습니다.",
+                        LocalDateTime.now()
+                ));
+
         // 현재 방 정보 반환
         return createRoomConnectResponseDto(
                 fetchJoinedRoom,
@@ -151,6 +162,13 @@ public class RoomService {
 
         // 실제 방 조회
         Room fetchedRoom = fetchRoomWithMembers(roomId);
+
+        simpMessageSendingOperations.convertAndSend("/api/sub/" + roomId,
+                new MessageResponseDto(member.getMemberProfileImageUrl(),
+                        member.getMemberName(),
+                        member.getMemberName() + "님이 방을 나갔습니다.",
+                        LocalDateTime.now()
+                ));
 
         // 방 테이블을 조회 후 멤버 룸을 삭제
         fetchedRoom.getMemberRooms().remove(memberRoom);
