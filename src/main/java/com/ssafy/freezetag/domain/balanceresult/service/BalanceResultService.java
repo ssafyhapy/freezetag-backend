@@ -1,5 +1,7 @@
 package com.ssafy.freezetag.domain.balanceresult.service;
 
+import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceResultSaveResponseDto;
+import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.repository.MemberRepository;
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestion;
@@ -26,6 +28,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.ssafy.freezetag.domain.common.constant.OpenAiConstant.*;
@@ -89,7 +92,23 @@ public class BalanceResultService {
         return balanceResultRedisRepository.save(balanceResultRedis);
     }
 
-    @Transactional
+    public List<BalanceResultSaveResponseDto> checkAllBalance(Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(RoomNotFoundException::new);
+
+        String balanceQuestionId = balanceResultSaveRequestDto.getBalanceQuestionId();
+        List<BalanceResultRedis> balanceResultRedisList = balanceResultRedisRepository.findAllByBalanceQuestionId(balanceQuestionId);
+
+        if(balanceResultRedisList.size() >= room.getRoomPersonCount()){
+            return balanceResultRedisList.stream()
+                    .map(balanceResultRedis -> new BalanceResultSaveResponseDto(balanceResultRedis.getMemberId(),
+                            balanceResultRedis.getBalanceResultSelectedOption())).toList();
+        }
+
+        return Collections.emptyList();
+    }
+
+        @Transactional
     public void deleteBalanceQuestion(Long roomId){
         List<BalanceQuestionRedis> balanceQuestionRedisList = balanceQuestionRedisRepository.findAllByRoomId(roomId);
 

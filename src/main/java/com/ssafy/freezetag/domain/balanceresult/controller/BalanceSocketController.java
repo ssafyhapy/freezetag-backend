@@ -1,7 +1,6 @@
 package com.ssafy.freezetag.domain.balanceresult.controller;
 
 import com.ssafy.freezetag.domain.balanceresult.entity.BalanceQuestionRedis;
-import com.ssafy.freezetag.domain.balanceresult.entity.BalanceResultRedis;
 import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionRequestDto;
 import com.ssafy.freezetag.domain.balanceresult.service.request.BalanceQuestionSaveRequestDto;
@@ -14,6 +13,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,10 +60,11 @@ public class BalanceSocketController {
     @MessageMapping("/{roomId}/selection")
     public void saveBalanceSelection(@DestinationVariable Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
         log.info("{}번 방에서 {}번 회원님이 {}를 선택했습니다.", roomId, balanceResultSaveRequestDto.getMemberId(), balanceResultSaveRequestDto.getBalanceResultSelectedOption());
-        BalanceResultRedis balanceResultRedis = balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
-        BalanceResultSaveResponseDto balanceResultSaveResponseDto = new BalanceResultSaveResponseDto(balanceResultRedis.getMemberId(),
-                balanceResultRedis.getBalanceResultSelectedOption());
-        simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/selection", balanceResultSaveResponseDto);
+        balanceResultService.saveBalanceResult(balanceResultSaveRequestDto);
+        List<BalanceResultSaveResponseDto> balanceResultSaveResponseDtos = balanceResultService.checkAllBalance(roomId, balanceResultSaveRequestDto);
+        if(!balanceResultSaveResponseDtos.isEmpty()){
+            simpMessageSendingOperations.convertAndSend("/api/sub/balance/" + roomId + "/selection", balanceResultSaveResponseDtos);
+        }
     }
 
 }
