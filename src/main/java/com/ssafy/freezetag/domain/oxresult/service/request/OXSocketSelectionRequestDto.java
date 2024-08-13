@@ -1,5 +1,6 @@
 package com.ssafy.freezetag.domain.oxresult.service.request;
 
+import com.ssafy.freezetag.domain.oxresult.entity.OXMotion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OXSocketSelectionRequestDto {
     private Long memberId;
-    private boolean answer;
+    private OXMotion answer;
 }

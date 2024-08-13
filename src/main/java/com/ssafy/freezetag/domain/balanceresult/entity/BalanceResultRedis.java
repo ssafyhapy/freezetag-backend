@@ -1,6 +1,5 @@
 package com.ssafy.freezetag.domain.balanceresult.entity;
 
-import com.ssafy.freezetag.domain.oxresult.entity.SelectedOption;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
