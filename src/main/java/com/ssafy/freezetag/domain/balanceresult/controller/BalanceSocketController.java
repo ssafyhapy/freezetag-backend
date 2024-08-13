@@ -25,7 +25,9 @@ public class BalanceSocketController {
     private final BalanceResultService balanceResultService;
 
     /**
-     * /api/pub/balance/1/get-question
+     * OpenAI 밸런스 주제 조회
+     * @param roomId
+     * @param balanceQuestionRequestDto
      */
     @MessageMapping("/{roomId}/get-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
@@ -36,7 +38,9 @@ public class BalanceSocketController {
     }
 
     /**
-     * /api/pub/balance/1/save-question
+     * Redis 밸런스 주제 저장
+     * @param roomId
+     * @param balanceQuestionRequestDto
      */
     @MessageMapping("/{roomId}/save-question")
     public void getBalanceQuestion(@DestinationVariable Long roomId,
@@ -47,7 +51,11 @@ public class BalanceSocketController {
     }
 
 
-    // 타이머 종료시 각 사용자들이 A or B 중 무엇을 선택했는지 소켓으로 전송 그리고 Redis 저장
+    /**
+     * 타이머 종료 시 사용자들의 밸런스 선택 Redis 저장
+     * @param roomId
+     * @param balanceResultSaveRequestDto
+     */
     @MessageMapping("/{roomId}/selection")
     public void saveBalanceSelection(@DestinationVariable Long roomId, BalanceResultSaveRequestDto balanceResultSaveRequestDto){
         log.info("{}번 방에서 {}번 회원님이 {}를 선택했습니다.", roomId, balanceResultSaveRequestDto.getMemberId(), balanceResultSaveRequestDto.getBalanceResultSelectedOption());

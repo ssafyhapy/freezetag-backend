@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BalanceQuestionResponseDto {
-
     private  String optionFirst;
 
     private  String optionSecond;
