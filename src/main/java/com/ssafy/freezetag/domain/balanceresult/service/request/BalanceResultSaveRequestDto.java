@@ -1,6 +1,6 @@
 package com.ssafy.freezetag.domain.balanceresult.service.request;
 
-import com.ssafy.freezetag.domain.oxresult.entity.SelectedOption;
+import com.ssafy.freezetag.domain.balanceresult.entity.SelectedOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

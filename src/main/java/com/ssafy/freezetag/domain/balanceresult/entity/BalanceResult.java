@@ -2,7 +2,6 @@ package com.ssafy.freezetag.domain.balanceresult.entity;
 
 import com.ssafy.freezetag.domain.common.BaseEntity;
 import com.ssafy.freezetag.domain.member.entity.Member;
-import com.ssafy.freezetag.domain.oxresult.entity.SelectedOption;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
