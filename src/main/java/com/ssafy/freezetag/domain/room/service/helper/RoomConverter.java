@@ -6,11 +6,11 @@ import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceReportResponseDto;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceResultResponseDto;
 import com.ssafy.freezetag.domain.introresult.entity.IntroResult;
-import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
+import com.ssafy.freezetag.domain.introresult.service.IntroSocketService;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
 import com.ssafy.freezetag.domain.member.service.response.MemberReportResponseDto;
 import com.ssafy.freezetag.domain.oxresult.entity.OXResult;
-import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
+import com.ssafy.freezetag.domain.oxresult.service.OXSocketService;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
@@ -48,20 +48,20 @@ public class RoomConverter {
                 }).toList();
     }
 
-    public static List<IntroReportResponseDto> getIntroReportResponseDtos(List<MemberRoom> memberRooms, IntroResultService introResultService) {
+    public static List<IntroReportResponseDto> getIntroReportResponseDtos(List<MemberRoom> memberRooms, IntroSocketService introSocketService) {
         return memberRooms.stream()
                 .map(memberRoom -> {
                     String memberName = memberRoom.getMember().getMemberName();
-                    IntroResult introResult = introResultService.getIntroResult(memberRoom.getId());
+                    IntroResult introResult = introSocketService.getIntroResult(memberRoom.getId());
                     return new IntroReportResponseDto(memberName, introResult.getContent());
                 }).toList();
     }
 
-    public static List<OXReportResponseDto> getOxReportResponseDtos(List<MemberRoom> memberRooms, OXResultService oxResultService) {
+    public static List<OXReportResponseDto> getOxReportResponseDtos(List<MemberRoom> memberRooms, OXSocketService oxSocketService) {
         return memberRooms.stream()
                 .map(memberRoom -> {
                     String memberName = memberRoom.getMember().getMemberName();
-                    List<OXResult> oxResults = oxResultService.getOXResult(memberRoom.getId());
+                    List<OXResult> oxResults = oxSocketService.getOXResult(memberRoom.getId());
 
                     List<OXResponseDto> oxResponseDtos = oxResults.stream()
                             .map(oxResult -> new OXResponseDto(oxResult.getOxResultContent(), oxResult.getOxResultAnswer()))
