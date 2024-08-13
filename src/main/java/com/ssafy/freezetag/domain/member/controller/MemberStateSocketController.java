@@ -19,7 +19,9 @@ public class MemberStateSocketController {
     private final BalanceResultService balanceResultService;
 
     /**
-     * /api/pub/1/state
+     * 게임 단계 확인 Topic
+     * @param roomId
+     * @param memberStateSocketRequestDto
      */
     @MessageMapping("/{roomId}/state")
     public void getNowState(@DestinationVariable Long roomId, MemberStateSocketRequestDto memberStateSocketRequestDto) {
