@@ -25,9 +25,6 @@ public class Member extends BaseEntity {
     private String memberProviderEmail;
     private String memberProvider;
 
-    @Enumerated(EnumType.STRING)
-    private Age memberAge;
-
     private String memberProfileImageUrl;
     private String memberIntroduction;
 

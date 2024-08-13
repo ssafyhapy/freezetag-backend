@@ -6,13 +6,13 @@ import com.ssafy.freezetag.domain.balanceresult.service.BalanceResultService;
 import com.ssafy.freezetag.domain.balanceresult.service.response.BalanceReportResponseDto;
 import com.ssafy.freezetag.domain.exception.custom.MemberNotFoundException;
 import com.ssafy.freezetag.domain.exception.custom.RoomNotFoundException;
-import com.ssafy.freezetag.domain.introresult.service.IntroResultService;
+import com.ssafy.freezetag.domain.introresult.service.IntroSocketService;
 import com.ssafy.freezetag.domain.introresult.service.response.IntroReportResponseDto;
 import com.ssafy.freezetag.domain.member.entity.Member;
 import com.ssafy.freezetag.domain.member.service.MemberService;
 import com.ssafy.freezetag.domain.member.service.response.MemberReportResponseDto;
 import com.ssafy.freezetag.domain.message.service.response.MessageResponseDto;
-import com.ssafy.freezetag.domain.oxresult.service.OXResultService;
+import com.ssafy.freezetag.domain.oxresult.service.OXSocketService;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXReportResponseDto;
 import com.ssafy.freezetag.domain.room.entity.MemberRoom;
 import com.ssafy.freezetag.domain.room.entity.Room;
@@ -46,8 +46,8 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final OpenviduService openviduService;
     private final MemberRoomRepository memberRoomRepository;
-    private final IntroResultService introResultService;
-    private final OXResultService oxResultService;
+    private final IntroSocketService introSocketService;
+    private final OXSocketService oxSocketService;
     private final BalanceResultService balanceResultService;
     private final SimpMessageSendingOperations simpMessageSendingOperations;
 
@@ -184,8 +184,8 @@ public class RoomService {
         List<MemberRoom> memberRooms = memberRoomRepository.findAllByRoomId(roomId);
 
         List<MemberReportResponseDto> memberReportResponseDtos = getMemberReportResponseDtos(memberRooms);
-        List<IntroReportResponseDto> introReportResponseDtos = getIntroReportResponseDtos(memberRooms, introResultService);
-        List<OXReportResponseDto> oxReportResponseDtos = getOxReportResponseDtos(memberRooms, oxResultService);
+        List<IntroReportResponseDto> introReportResponseDtos = getIntroReportResponseDtos(memberRooms, introSocketService);
+        List<OXReportResponseDto> oxReportResponseDtos = getOxReportResponseDtos(memberRooms, oxSocketService);
         List<BalanceQuestion> balanceQuestions = balanceResultService.getBalanceQuestion(roomId);
         List<BalanceReportResponseDto> balanceReportResponseDtos = getBalanceReportResponseDtos(balanceQuestions, balanceResultService);
 

@@ -107,4 +107,9 @@ public class OXSocketService {
 
         return oxSocketResponseDtos;
     }
+
+    // 최종 레포트 조회
+    public List<OXResult> getOXResult(Long memberRoomId) {
+        return oxResultRepository.findAllByMemberRoomId(memberRoomId);
+    }
 }

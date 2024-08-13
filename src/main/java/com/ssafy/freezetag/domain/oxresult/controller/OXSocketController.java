@@ -23,7 +23,10 @@ public class OXSocketController {
     private final OXSocketService oxSocketService;
 
     /**
-     * /api/pub/ox/1/check
+     * OX 작성(저장)
+     * 모든 사람 작성 완료시 하나의 OX 리스트 반환
+     * @param roomId
+     * @param oxSocketRequestDtos
      */
     @MessageMapping("/ox/{roomId}/check")
     public void checkOX(@DestinationVariable Long roomId, List<OXSocketRequestDto> oxSocketRequestDtos) {
@@ -35,6 +38,13 @@ public class OXSocketController {
         }
     }
 
+    /**
+     * 다음 버튼 클릭
+     * 현재 index가 0 or 1 경우 다음 index 반환
+     * 현재 index가 2 경우 다음 OX 리스트 반환
+     * @param roomId
+     * @param oxSocketNextRequestDto
+     */
     @MessageMapping("/ox/{roomId}/next")
     public void getMyNextOx(@DestinationVariable Long roomId, OXSocketNextRequestDto oxSocketNextRequestDto) {
         int currentIndex = oxSocketNextRequestDto.getNowIndex();

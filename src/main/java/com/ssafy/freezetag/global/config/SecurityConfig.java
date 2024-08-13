@@ -1,7 +1,5 @@
 package com.ssafy.freezetag.global.config;
 
-import com.ssafy.freezetag.domain.oauth2.service.CustomOAuth2UserService;
-import com.ssafy.freezetag.domain.oauth2.service.TokenService;
 import com.ssafy.freezetag.global.filter.TokenAuthenticationFilter;
 import com.ssafy.freezetag.global.filter.TokenExceptionFilter;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +25,8 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final TokenExceptionFilter tokenExceptionFilter;
-    private final TokenService tokenService; // 추가
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
