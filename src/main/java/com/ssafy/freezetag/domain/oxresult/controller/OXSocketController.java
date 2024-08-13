@@ -3,6 +3,7 @@ package com.ssafy.freezetag.domain.oxresult.controller;
 import com.ssafy.freezetag.domain.oxresult.service.OXSocketService;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketNextRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketRequestDto;
+import com.ssafy.freezetag.domain.oxresult.service.request.OXSocketSelectionRequestDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXSocketNextResponseDto;
 import com.ssafy.freezetag.domain.oxresult.service.response.OXSocketResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -60,4 +61,13 @@ public class OXSocketController {
         }
     }
 
+    /**
+     * OX 결과 선택 Topic
+     * @param roomId
+     * @param oxSocketSelectionRequestDto
+     */
+    @MessageMapping("/ox/{roomId}/selection")
+    public void getOXSelection(@DestinationVariable Long roomId, OXSocketSelectionRequestDto oxSocketSelectionRequestDto){
+        simpMessageSendingOperations.convertAndSend("/api/sub/ox/" + roomId + "/selection", oxSocketSelectionRequestDto);
+    }
 }
