@@ -19,7 +19,10 @@ public class IntroSocketController {
     private final IntroSocketService introSocketService;
 
     /**
-     * /api/pub/intro/1/check
+     * 자기소개 작성(저장)
+     * 모든 사람 작성 완료시 하나의 자기소개 반환
+     * @param roomId
+     * @param introSocketRequestDto
      */
     @MessageMapping("/intro/{roomId}/check")
     public void checkIntro(@DestinationVariable Long roomId, IntroSocketRequestDto introSocketRequestDto){
@@ -32,7 +35,9 @@ public class IntroSocketController {
     }
 
     /**
-     * /api/pub/intro/1/next
+     * 다음 버튼 클릭
+     * 다른 회원의 자기소개 반환
+     * @param roomId
      */
     @MessageMapping("/intro/{roomId}/next")
     public void getNextIntro(@DestinationVariable Long roomId) {
