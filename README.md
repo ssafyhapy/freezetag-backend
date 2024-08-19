@@ -29,9 +29,11 @@
 ## 2. 실시간 양방향 통신
 
 ### Web Socket
+![websocket](https://github.com/user-attachments/assets/4c19a8a1-ca58-47b9-844b-740d10c70aac)
 > Websocket이란 ws 프로토콜을 기반으로 클라이언트와 서버 사이에 지속적인 양방향 연결 스트림을 만들어주는 기술입니다. 이는 stateless한 성질을 가지는 HTTP 일부 통신의 한계를 극복해 주는 것으로 서버는 클라이언트에 데이터를 실시간으로 전달할 수 있게 됩니다.
 
 ### STOMP Protocol
+![pubsub](https://github.com/user-attachments/assets/53511229-bcb0-4804-b859-ffc9d994cc6a)
  > STOMP(Simple/Streaming Text Oriented Messaging Protocol)는 텍스트 기반의 메시징 프로토콜로, 주로 메시지 브로커와 상호작용하기 위해 설계되었습니다. 주로 비동기 메시지 전달에 사용되며, 메시지를 주고받는 시스템에서 클라이언트가 메시지 브로커에 연결하여 메시지를 보내거나(pub) 구독(sub)할 수 있게 해줍니다.
  > 
  > 이때 실시간 양방향 통신을 위해 STOMP는 WebSocket 위에서(연결 상태) 동작하는 것이 일반적입니다. 
