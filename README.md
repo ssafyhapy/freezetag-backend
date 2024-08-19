@@ -87,6 +87,18 @@
 - 사용자가 게임을 시작한 지 30일이 지난 시점에 자동으로 게임의 레포트를 이메일로 발송하는 기능을 제공
 - 30일이 지난 시점을 판단하기 위해 Quartz 라이브러리를 사용
 
+## 5. Teachable Machine
+![모션인식학습](https://github.com/user-attachments/assets/c36069b2-727b-449c-9b21-f9c55a18e71d)
+
+
+![모션인식결과](https://github.com/user-attachments/assets/cde27727-1f32-4b86-9398-7972800e05ed)
+
+### 모션인식
+- 실시간 영상에서 O,X 모션을 인식
+- `O, X, N` 3-Class classification task
+- 약 10,000여개의 이미지 데이터를 활용해 이미지 분류
+- Teachable Machine을 활용하여 별도의 GPU 서버를 활용하지 않고 효율적으로 훈련
+
 # 🐴 서비스 아키텍처
 
 ![](https://i.imgur.com/yinPQjZ.png)
