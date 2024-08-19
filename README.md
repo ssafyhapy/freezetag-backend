@@ -75,20 +75,20 @@
 ### 적용
 
 - **다른 유저들과 실시간 채팅**
-  - "/api/pub/message/{roomId}"
-  - "/api/sub/message/{roomId}"
+  - `"/api/pub/message/{roomId}"`
+  - `"/api/sub/message/{roomId}"`
 - **게임에 존재하는 4단계의 게임 중 다음 단계로 넘기기**
-  - "/api/pub/{roomId}/state"
-  - "/api/sub/{roomId}/state"
+  - `"/api/pub/{roomId}/state"`
+  - `"/api/sub/{roomId}/state"`
 - **작성 및 전체 유저 작성 여부 확인**
-  - "/api/pub/{게임이름}/{roomId}/check"
-  - "/api/sub/{게임이름}/{roomId}/check"
+  - `"/api/pub/{게임이름}/{roomId}/check"`
+  - `"/api/sub/{게임이름}/{roomId}/check"`
 - **하나의 게임내에서 다음 유저 차례 넘기기**
-  - "/api/pub/{게임이름}/{roomId}/next"
-  - "/api/sub/{게임이름}/{roomId}/next"
+  - `"/api/pub/{게임이름}/{roomId}/next"`
+  - `"/api/sub/{게임이름}/{roomId}/next"`
 - **유저 화상화면 뒷배경 색상 변경**
-  - "/api/pub/{게임이름}/{roomId}/selection"
-  - "/api/sub/{게임이름}/{roomId}/selection"
+  - `"/api/pub/{게임이름}/{roomId}/selection"`
+  - `"/api/sub/{게임이름}/{roomId}/selection"`
 
 ## 3. Redis
 ![redis](https://github.com/user-attachments/assets/c4ff132f-7092-4581-b6fc-e2f5bcbfa636)
