@@ -88,9 +88,6 @@
 - 30일이 지난 시점을 판단하기 위해 Quartz 라이브러리를 사용
 
 ## 5. Teachable Machine
-![모션인식학습](https://github.com/user-attachments/assets/c36069b2-727b-449c-9b21-f9c55a18e71d)
-
-
 ![모션인식결과](https://github.com/user-attachments/assets/cde27727-1f32-4b86-9398-7972800e05ed)
 
 ### 모션인식
