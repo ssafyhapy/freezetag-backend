@@ -146,7 +146,7 @@
 
 ## 프로젝트 산출물
 ## 1. Figma(https://ko.fm/7HO)
-![프로토타입](https://github.com/user-attachments/assets/72a093eb-057d-406f-96d2-f64515fcdec1)
+![사르르-프로토타입](https://github.com/user-attachments/assets/4d057112-9fc5-4685-bb22-89094c2c223f)
 
 ## 2. ERD
 ![ERD](https://github.com/user-attachments/assets/a4abc0a0-c634-49ad-bb9f-0ac908a22fc4)
