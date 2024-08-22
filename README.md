@@ -157,12 +157,12 @@
 
 ### 적용
 1. texture가 포함된 3D모델링 파일(.glb) 로드
-2. Webcam의 mediastream에서 Mediapipe를 활용해 Face Landmark Detection을 활용해 얼굴 인식
+2. Webcam의 `mediaStream`에서 Mediapipe를 활용해 **Face Landmark Detection**을 활용해 얼굴 인식
 3. 인식한 얼굴 중에서 코를 인식하여 코를 중심으로 웹캠의 모습에 따라 실시간으로 가면 위치 및 크기 변환
 4. 사용자의 모습(video tag)과 가면의 모습(canvas tag)을 overlay시켜 가면을 씌움
 
 ### 차별점
-> 얼굴의 회전, 웹캠과 얼굴의 거리에 따른 얼굴의 크기를 고려하여 사용자의 모습에 딱 맞는 AR 가면을 씌움
+> **얼굴의 회전, 웹캠과 얼굴의 거리에 따른 얼굴의 크기를 고려하여 사용자의 모습에 딱 맞는 AR 가면을 씌움**
 1. 얼굴의 각 Landmark를 행렬변환 시켜 rotation을 실시간으로 계산
 2. 사용자의 미간을 기준으로 얼굴 크기를 계산하여 실시간으로 얼굴 크기에 따른 가면 크기를 계산
 
