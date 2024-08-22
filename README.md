@@ -10,6 +10,7 @@
 3. [기술 스택](#-기술-스택)
 4. [서비스 아키텍처](#-서비스-아키텍처)
 5. [프로젝트 산출물](#-프로젝트-산출물)
+6. [팀원 구성](#-팀원-구성)
 
 # ✨ 서비스 소개
 ### 기획 배경
@@ -175,3 +176,16 @@
 
 ## 3. 요구사항 명세서
 ![요구사항명세서](https://github.com/user-attachments/assets/ab43c099-70f7-4f5b-bcd5-f5465ed09d0f)
+
+# 👨‍👨‍👧‍👦 팀원 구성
+### BackEnd
+|       박선홍(팀장)       |       고민호       |       손지석       |
+|:------------------:|:-----------------:|:-----------------:|
+| <img src="https://avatars.githubusercontent.com/u/62554639?v=4" width=100px alt="박선홍"/> | <img src="https://avatars.githubusercontent.com/u/101318473?v=4" width=100px alt="고민호"/> | <img src="https://avatars.githubusercontent.com/u/105180696?v=4" width=100px alt="손지석"/> |
+| [박선홍](https://github.com/chestnut1717) | [고민호](https://github.com/MinhoKK) | [손지석](https://github.com/sonjiseokk) |
+
+### FrontEnd
+|       강두홍       |       김희주       |       이명욱       |
+|:------------------:|:-----------------:|:-----------------:|
+| <img src="https://avatars.githubusercontent.com/u/152072710?v=4" width=100px alt="강두홍"/> | <img src="https://avatars.githubusercontent.com/u/156279335?v=4" width=100px alt="김희주"/> | <img src="https://avatars.githubusercontent.com/u/123948643?v=4" width=100px alt="이명욱"/> |
+| [강두홍](https://github.com/dhkang0912) | [김희주](https://github.com/walley78) | [이명욱](https://github.com/LEEMYEONGUK) |
