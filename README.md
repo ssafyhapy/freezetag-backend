@@ -32,7 +32,13 @@
 2. 한 줄 자기소개, 나를 맞춰봐(OX게임), 밸런스게임 등 서로를 충분히 알아갈 수 있는 게임 요소 제공
 3. 게임 결과를 기록하여 추억을 돌아볼 수 있는 결과 레포트 제공
 
+
+
 # 💻 화면 소개
+<details>
+ <summary>📢 화면 소개</summary>
+ <div markdonw="1">
+  
 ![슬라이드1](https://github.com/user-attachments/assets/c96bc0e0-7cc8-42b7-83fa-5aea529b1ca3)
 ![슬라이드2](https://github.com/user-attachments/assets/0865c3a4-be6a-45b5-a3e1-ff04cac9735c)
 ![메인페이지](https://github.com/user-attachments/assets/2688f44c-06f5-48a3-9e17-114dbe625071)
@@ -61,7 +67,8 @@
 ![슬라이드28](https://github.com/user-attachments/assets/7dd32c32-f1bb-4c2e-aeac-1516349a43e7)
 ![슬라이드29](https://github.com/user-attachments/assets/822148ae-b095-4573-a748-578f6101125f)
 ![슬라이드32](https://github.com/user-attachments/assets/59cb0541-4c36-4e9e-827e-ac3de469c796)
-
+ </div>
+</details>
 
 # 🛠 기술 스택
 ## 1. WebRTC
