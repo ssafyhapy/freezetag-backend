@@ -150,6 +150,30 @@
 - 약 10,000여개의 이미지 데이터를 활용해 이미지 분류
 - Teachable Machine을 활용하여 별도의 GPU 서버를 활용하지 않고 효율적으로 훈련
 
+## 6. AR(Augmented Reality)
+![AR](https://github.com/user-attachments/assets/3e6d1b76-2ffd-4f94-a6a1-e067c0080345)
+
+> Three.js 및 Mediapipe의 Face Landmark Detection을 활용해 AR 기능을 구현하였습니다.
+
+### 적용
+1. texture가 포함된 3D모델링 파일(.glb) 로드
+2. Webcam의 mediastream에서 Mediapipe를 활용해 Face Landmark Detection을 활용해 얼굴 인식
+3. 인식한 얼굴 중에서 코를 인식하여 코를 중심으로 웹캠의 모습에 따라 실시간으로 가면 위치 및 크기 변환
+4. 사용자의 모습(video tag)과 가면의 모습(canvas tag)을 overlay시켜 가면을 씌움
+
+### 차별점
+> 얼굴의 회전, 웹캠과 얼굴의 거리에 따른 얼굴의 크기를 고려하여 사용자의 모습에 딱 맞는 AR 가면을 씌움
+1. 얼굴의 각 Landmark를 행렬변환 시켜 rotation을 실시간으로 계산
+2. 사용자의 미간을 기준으로 얼굴 크기를 계산하여 실시간으로 얼굴 크기에 따른 가면 크기를 계산
+
+
+### cf. **Face Landmark Detection**
+
+![Landmark](https://github.com/user-attachments/assets/b7fa0a30-a604-4e49-b015-c0928ee6b71c)
+- Google에서 개발한 실시간 얼굴 인식과 주요 얼굴 특징 포인트를 추출하는 데 사용되는 라이브러리
+- **정확한 3D 얼굴 랜드마크**: Mediapipe Face Landmark Detection은 얼굴의 주요 부분을 나타내는 468개의 3D 랜드마크를 실시간으로 감지하여 눈, 코, 입, 눈썹, 얼굴 윤곽 등의 세밀한 특징을 잡아낼 수 있음
+- **실시간 성능**: 최적화된 ML 모델을 활용해 실시간으로 얼굴 랜드마크를 추출하여 통해 실시간 얼굴 애니메이션, 얼굴 기반 제스처 인식, 얼굴 필터링 등 다양한 기능에서 활용 가능
+
 # 🎨 서비스 아키텍처
 
 ![](https://i.imgur.com/yinPQjZ.png)
